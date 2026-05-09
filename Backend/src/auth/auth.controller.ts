@@ -1,13 +1,47 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Roles } from './decorators/roles.decorator';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { UserRole } from '../user/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('signup')
+  @Post('register')
   registerUser(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.registerUser(createAuthDto);
+  }
+
+  @Post('login')
+  loginUser(@Body() loginAuthDto: LoginAuthDto) {
+    return this.authService.loginUser(loginAuthDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getCurrentUser(@Req() req) {
+    return req.user;
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Get('admin-only')
+  adminOnly() {
+    return {
+      message: 'Only admin can access this route',
+    };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT)
+  @Get('student-only')
+  studentOnly() {
+    return {
+      message: 'Only student can access this route',
+    };
   }
 }
