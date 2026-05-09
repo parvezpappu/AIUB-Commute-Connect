@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CommuteModule } from './commute/commute.module';
+import { ParticipationModule } from './participation/participation.module';
 
 
 @Module({
@@ -22,6 +23,7 @@ import { CommuteModule } from './commute/commute.module';
     AuthModule,
     UserModule,
     CommuteModule,
+    ParticipationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

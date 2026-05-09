@@ -44,7 +44,16 @@ export class UserService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async findByAiubId(aiubId: string) {
-    return this.userRepository.findOne({ where: { aiubId } });
+ async findByAiubId(aiubId: string, includePassword = false) {
+  const query = this.userRepository
+    .createQueryBuilder('user')
+    .where('user.aiubId = :aiubId', { aiubId });
+
+  if (includePassword) {
+    query.addSelect('user.password');
   }
+
+  return query.getOne();
+}
+
 }

@@ -17,7 +17,7 @@ export class AuthService {
   }
 
   async loginUser(loginAuthDto: LoginAuthDto) {
-    const user = await this.userService.findByAiubId(loginAuthDto.aiubId);
+    const user = await this.userService.findByAiubId(loginAuthDto.aiubId,true);
 
     if (!user) {
       throw new UnauthorizedException('Invalid AIUB ID or password');

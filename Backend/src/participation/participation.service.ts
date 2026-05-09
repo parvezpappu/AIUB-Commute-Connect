@@ -1,0 +1,197 @@
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Commute, CommuteStatus } from '../commute/entities/commute.entity';
+import { User, UserRole } from '../user/entities/user.entity';
+import {
+  Participation,
+  ParticipationStatus,
+} from './entities/participation.entity';
+
+@Injectable()
+export class ParticipationService {
+  constructor(
+    @InjectRepository(Participation)
+    private readonly participationRepository: Repository<Participation>,
+
+    @InjectRepository(Commute)
+    private readonly commuteRepository: Repository<Commute>,
+  ) {}
+
+  async joinCommute(commuteId: number, user: User) {
+    const commute = await this.commuteRepository.findOne({
+      where: { id: commuteId },
+    });
+
+    if (!commute) {
+      throw new NotFoundException('Commute not found');
+    }
+
+    if (commute.status !== CommuteStatus.OPEN) {
+      throw new BadRequestException('This commute is not open for joining');
+    }
+
+    if (commute.creator.id === user.id) {
+      throw new BadRequestException('You cannot join your own commute');
+    }
+
+    const existingParticipation = await this.participationRepository.findOne({
+      where: {
+        user: { id: user.id },
+        commute: { id: commuteId },
+      },
+    });
+
+    if (existingParticipation) {
+      throw new BadRequestException(
+        'You already requested to join this commute',
+      );
+    }
+
+    const participation = this.participationRepository.create({
+      user,
+      commute,
+      status: ParticipationStatus.PENDING,
+    });
+
+    return this.participationRepository.save(participation);
+  }
+
+  async updateJoinRequest(
+    commuteId: number,
+    userId: number,
+    status: ParticipationStatus,
+    currentUser: User,
+  ) {
+    if (
+      status !== ParticipationStatus.ACCEPTED &&
+      status !== ParticipationStatus.REJECTED
+    ) {
+      throw new BadRequestException('Status must be ACCEPTED or REJECTED');
+    }
+
+    const commute = await this.commuteRepository.findOne({
+      where: { id: commuteId },
+    });
+
+    if (!commute) {
+      throw new NotFoundException('Commute not found');
+    }
+
+    const isCreator = commute.creator.id === currentUser.id;
+    const isAdmin = currentUser.role === UserRole.ADMIN;
+
+    if (!isCreator && !isAdmin) {
+      throw new ForbiddenException(
+        'You are not allowed to manage this request',
+      );
+    }
+
+    const participation = await this.participationRepository.findOne({
+      where: {
+        user: { id: userId },
+        commute: { id: commuteId },
+      },
+    });
+
+    if (!participation) {
+      throw new NotFoundException('Join request not found');
+    }
+
+    if (status === ParticipationStatus.ACCEPTED) {
+      const acceptedCount = await this.participationRepository.count({
+        where: {
+          commute: { id: commuteId },
+          status: ParticipationStatus.ACCEPTED,
+        },
+      });
+
+      if (acceptedCount >= commute.seats) {
+        throw new BadRequestException('No seats available for this commute');
+      }
+    }
+
+    participation.status = status;
+
+    const updatedParticipation =
+      await this.participationRepository.save(participation);
+
+    if (status === ParticipationStatus.ACCEPTED) {
+      const acceptedCount = await this.participationRepository.count({
+        where: {
+          commute: { id: commuteId },
+          status: ParticipationStatus.ACCEPTED,
+        },
+      });
+
+      if (acceptedCount >= commute.seats) {
+        commute.status = CommuteStatus.CLOSED;
+        await this.commuteRepository.save(commute);
+      }
+    }
+
+    return updatedParticipation;
+  }
+
+  async leaveCommute(commuteId: number, user: User) {
+    const participation = await this.participationRepository.findOne({
+      where: {
+        user: { id: user.id },
+        commute: { id: commuteId },
+      },
+    });
+
+    if (!participation) {
+      throw new NotFoundException('Participation not found');
+    }
+
+    participation.status = ParticipationStatus.CANCELLED;
+
+    return this.participationRepository.save(participation);
+  }
+
+  async findCommuteRequests(commuteId: number, currentUser: User) {
+    const commute = await this.commuteRepository.findOne({
+      where: { id: commuteId },
+    });
+
+    if (!commute) {
+      throw new NotFoundException('Commute not found');
+    }
+
+    const isCreator = commute.creator.id === currentUser.id;
+    const isAdmin = currentUser.role === UserRole.ADMIN;
+
+    if (!isCreator && !isAdmin) {
+      throw new ForbiddenException(
+        'You are not allowed to view these requests',
+      );
+    }
+
+    return this.participationRepository.find({
+      where: {
+        commute: { id: commuteId },
+        status: ParticipationStatus.PENDING,
+      },
+      order: {
+        joinedAt: 'ASC',
+      },
+    });
+  }
+
+  async findMyParticipations(userId: number) {
+    return this.participationRepository.find({
+      where: {
+        user: { id: userId },
+      },
+      order: {
+        joinedAt: 'DESC',
+      },
+    });
+  }
+}

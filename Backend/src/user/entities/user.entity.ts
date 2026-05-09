@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Commute } from '../../commute/entities/commute.entity';
 
 export enum UserRole {
   STUDENT = 'STUDENT',
@@ -25,8 +27,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
+
 
   @Column({
     type: 'enum',
@@ -37,6 +40,9 @@ export class User {
 
   @Column({ default: false })
   isVerified: boolean;
+
+  @OneToMany(() => Commute, (commute) => commute.creator)
+  commutes: Commute[];
 
   @CreateDateColumn()
   createdAt: Date;
