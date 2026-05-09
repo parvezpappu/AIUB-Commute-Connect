@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,6 +29,7 @@ export class UserService {
 
     const user = this.userRepository.create({
       ...createAuthDto,
+      role: UserRole.STUDENT,
       password: hashedPassword,
       isVerified: false,
     });

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -17,11 +26,40 @@ export class AuthController {
   }
 
   @Post('login')
-  loginUser(@Body() loginAuthDto: LoginAuthDto) {
-    return this.authService.loginUser(loginAuthDto);
+  async loginUser(
+    @Body() loginAuthDto: LoginAuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const data = await this.authService.loginUser(loginAuthDto);
+
+    res.cookie('accessToken', data.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return {
+      message: data.message,
+      user: data.user,
+    };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  logoutUser(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+    });
+
+    return {
+      message: 'Logout successful',
+    };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
   @Get('me')
   getCurrentUser(@Req() req) {
     return req.user;
