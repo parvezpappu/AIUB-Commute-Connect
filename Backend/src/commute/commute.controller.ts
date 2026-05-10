@@ -44,4 +44,11 @@ export class CommuteController {
   close(@Param('id') id: string, @Req() req) {
     return this.commuteService.close(+id, req.user);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Patch(':id/cancel')
+  cancel(@Param('id') id: string, @Req() req) {
+    return this.commuteService.cancel(+id, req.user);
+  }
 }

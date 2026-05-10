@@ -24,6 +24,12 @@ export class ParticipationController {
   return this.participationService.findCommuteRequests(+id, req.user);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Get('commutes/:id/participants')
+  findAcceptedParticipants(@Param('id') id: string, @Req() req) {
+    return this.participationService.findAcceptedParticipants(+id, req.user);
+  }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STUDENT, UserRole.ADMIN)

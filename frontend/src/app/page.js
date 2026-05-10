@@ -29,6 +29,12 @@ export default function HomePage() {
               Login
             </Link>
             <Link
+              href="/dashboard"
+              className="rounded-md px-4 py-2 text-sm font-medium text-[#003b73] transition hover:bg-slate-100"
+            >
+              Dashboard
+            </Link>
+            <Link
               href="/register"
               className="rounded-md bg-[#003b73] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#002f5c]"
             >
@@ -70,10 +76,17 @@ export default function HomePage() {
             </Link>
 
             <Link
-              href="/profile"
+              href="/commutes"
+              className="rounded-md border border-[#003b73]/30 bg-white px-6 py-3 text-center text-sm font-semibold text-[#003b73] transition hover:border-[#003b73]"
+            >
+              Browse commutes
+            </Link>
+
+            <Link
+              href="/dashboard"
               className="rounded-md px-6 py-3 text-center text-sm font-semibold text-[#003b73] transition hover:bg-white"
             >
-              My profile
+              Open dashboard
             </Link>
           </div>
 

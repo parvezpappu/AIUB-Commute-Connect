@@ -48,7 +48,7 @@ export default function LoginPage() {
 
     try {
       await loginUser(formData);
-      router.push("/profile");
+      router.push("/dashboard");
     } catch (error) {
       setError(error.message);
     } finally {

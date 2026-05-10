@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CommuteModule } from './commute/commute.module';
 import { ParticipationModule } from './participation/participation.module';
+import { NotificationModule } from './notification/notification.module';
 
 
 @Module({
@@ -24,6 +25,7 @@ import { ParticipationModule } from './participation/participation.module';
     UserModule,
     CommuteModule,
     ParticipationModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

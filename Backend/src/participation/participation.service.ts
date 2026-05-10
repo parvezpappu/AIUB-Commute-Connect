@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Commute, CommuteStatus } from '../commute/entities/commute.entity';
 import { User, UserRole } from '../user/entities/user.entity';
+import { NotificationType } from '../notification/entities/notification.entity';
+import { NotificationService } from '../notification/notification.service';
 import {
   Participation,
   ParticipationStatus,
@@ -21,6 +23,8 @@ export class ParticipationService {
 
     @InjectRepository(Commute)
     private readonly commuteRepository: Repository<Commute>,
+
+    private readonly notificationService: NotificationService,
   ) {}
 
   async joinCommute(commuteId: number, user: User) {
@@ -48,9 +52,28 @@ export class ParticipationService {
     });
 
     if (existingParticipation) {
-      throw new BadRequestException(
-        'You already requested to join this commute',
+      if (existingParticipation.status === ParticipationStatus.PENDING) {
+        throw new BadRequestException(
+          'You already requested to join this commute',
+        );
+      }
+
+      if (existingParticipation.status === ParticipationStatus.ACCEPTED) {
+        throw new BadRequestException(
+          'You are already accepted for this commute',
+        );
+      }
+
+      existingParticipation.status = ParticipationStatus.PENDING;
+      const savedParticipation =
+        await this.participationRepository.save(existingParticipation);
+
+      await this.notificationService.createJoinRequestNotification(
+        user,
+        commute,
       );
+
+      return savedParticipation;
     }
 
     const participation = this.participationRepository.create({
@@ -59,7 +82,12 @@ export class ParticipationService {
       status: ParticipationStatus.PENDING,
     });
 
-    return this.participationRepository.save(participation);
+    const savedParticipation =
+      await this.participationRepository.save(participation);
+
+    await this.notificationService.createJoinRequestNotification(user, commute);
+
+    return savedParticipation;
   }
 
   async updateJoinRequest(
@@ -121,6 +149,14 @@ export class ParticipationService {
     const updatedParticipation =
       await this.participationRepository.save(participation);
 
+    await this.notificationService.createRequestDecisionNotification(
+      participation.user,
+      commute,
+      status === ParticipationStatus.ACCEPTED
+        ? NotificationType.REQUEST_ACCEPTED
+        : NotificationType.REQUEST_REJECTED,
+    );
+
     if (status === ParticipationStatus.ACCEPTED) {
       const acceptedCount = await this.participationRepository.count({
         where: {
@@ -136,6 +172,42 @@ export class ParticipationService {
     }
 
     return updatedParticipation;
+  }
+
+  async findAcceptedParticipants(commuteId: number, currentUser: User) {
+    const commute = await this.commuteRepository.findOne({
+      where: { id: commuteId },
+    });
+
+    if (!commute) {
+      throw new NotFoundException('Commute not found');
+    }
+
+    const isCreator = commute.creator.id === currentUser.id;
+    const isAdmin = currentUser.role === UserRole.ADMIN;
+    const acceptedParticipation = await this.participationRepository.findOne({
+      where: {
+        user: { id: currentUser.id },
+        commute: { id: commuteId },
+        status: ParticipationStatus.ACCEPTED,
+      },
+    });
+
+    if (!isCreator && !isAdmin && !acceptedParticipation) {
+      throw new ForbiddenException(
+        'You are not allowed to view these participants',
+      );
+    }
+
+    return this.participationRepository.find({
+      where: {
+        commute: { id: commuteId },
+        status: ParticipationStatus.ACCEPTED,
+      },
+      order: {
+        updatedAt: 'ASC',
+      },
+    });
   }
 
   async leaveCommute(commuteId: number, user: User) {

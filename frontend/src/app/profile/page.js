@@ -76,13 +76,48 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          <div className="flex gap-2">
+            <Link
+              href="/dashboard"
+              className="rounded-md bg-[#003b73] px-4 py-2 text-sm font-medium text-white"
+            >
+              Dashboard
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/commutes"
+            className="rounded-md bg-[#003b73] px-4 py-3 text-center text-sm font-semibold text-white"
           >
-            Logout
-          </button>
+            Browse available commutes
+          </Link>
+          <Link
+            href="/commutes/create"
+            className="rounded-md border border-slate-300 px-4 py-3 text-center text-sm font-semibold text-slate-700"
+          >
+            Create a commute
+          </Link>
+          <Link
+            href="/commutes/my"
+            className="rounded-md border border-[#003b73]/30 px-4 py-3 text-center text-sm font-semibold text-[#003b73]"
+          >
+            My commute posts
+          </Link>
+          <Link
+            href="/commutes/joined"
+            className="rounded-md border border-slate-300 px-4 py-3 text-center text-sm font-semibold text-slate-700"
+          >
+            Joined commutes
+          </Link>
         </div>
 
         <div className="space-y-3">
