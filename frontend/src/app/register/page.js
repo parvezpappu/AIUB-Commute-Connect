@@ -2,10 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { registerUser } from "../lib/api";
+import { useRedirectIfAuthenticated } from "../lib/auth";
 import { hasValidationErrors, validateRegisterForm } from "../lib/validation";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const isCheckingAuth = useRedirectIfAuthenticated();
+
   const [formData, setFormData] = useState({
     fullName: "",
     aiubId: "",
@@ -14,7 +19,6 @@ export default function RegisterPage() {
   });
 
   const [fieldErrors, setFieldErrors] = useState({});
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,7 +39,6 @@ export default function RegisterPage() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    setMessage("");
     setError("");
 
     const validationErrors = validateRegisterForm(formData);
@@ -55,19 +58,20 @@ export default function RegisterPage() {
         password: formData.password,
       });
 
-      setMessage("Registration successful. You can now login.");
-      setFormData({
-        fullName: "",
-        aiubId: "",
-        email: "",
-        password: "",
-      });
-      setFieldErrors({});
+      router.push(`/verify-email?email=${encodeURIComponent(formData.email.trim())}`);
     } catch (error) {
       setError(error.message);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (isCheckingAuth) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
+        <p className="text-slate-700">Checking session...</p>
+      </main>
+    );
   }
 
   return (
@@ -79,6 +83,11 @@ export default function RegisterPage() {
           </h1>
           <p className="mt-2 text-sm text-slate-600">
             Register with your AIUB student information.
+          </p>
+          <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Use your full name and student ID exactly as shown on your
+            university ID card. You will verify your email with an OTP after
+            registration.
           </p>
         </div>
 
@@ -112,7 +121,7 @@ export default function RegisterPage() {
               htmlFor="aiubId"
               className="mb-1 block text-sm font-medium text-slate-700"
             >
-              AIUB ID
+              University ID
             </label>
             <input
               id="aiubId"
@@ -174,12 +183,6 @@ export default function RegisterPage() {
               </p>
             )}
           </div>
-
-          {message && (
-            <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-              {message}
-            </p>
-          )}
 
           {error && (
             <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">

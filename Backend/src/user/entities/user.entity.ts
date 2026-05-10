@@ -41,6 +41,12 @@ export class User {
   @Column({ default: false })
   isVerified: boolean;
 
+  @Column({ type: 'varchar', nullable: true, select: false })
+  emailVerificationOtp: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  emailVerificationOtpExpiresAt: Date | null;
+
   @OneToMany(() => Commute, (commute) => commute.creator)
   commutes: Commute[];
 

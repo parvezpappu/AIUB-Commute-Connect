@@ -23,12 +23,22 @@ function getErrorMessage(error, fallbackMessage) {
   return error.message || fallbackMessage;
 }
 
+function createApiError(error, fallbackMessage) {
+  const apiError = new Error(getErrorMessage(error, fallbackMessage));
+  apiError.status = error.response?.status;
+  return apiError;
+}
+
+export function isAuthError(error) {
+  return error.status === 401 || error.status === 403;
+}
+
 export async function registerUser(registerData) {
   try {
     const response = await api.post("/auth/register", registerData);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Registration failed"));
+    throw createApiError(error, "Registration failed");
   }
 }
 
@@ -37,7 +47,27 @@ export async function loginUser(loginData) {
     const response = await api.post("/auth/login", loginData);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Login failed"));
+    throw createApiError(error, "Login failed");
+  }
+}
+
+export async function verifyEmail(verifyData) {
+  try {
+    const response = await api.post("/auth/verify-email", verifyData);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Email verification failed");
+  }
+}
+
+export async function resendVerificationOtp(email) {
+  try {
+    const response = await api.post("/auth/resend-verification-otp", {
+      email,
+    });
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to resend OTP");
   }
 }
 
@@ -46,7 +76,7 @@ export async function getCurrentUser() {
     const response = await api.get("/auth/me");
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load profile"));
+    throw createApiError(error, "Failed to load profile");
   }
 }
 
@@ -55,7 +85,7 @@ export async function logoutUser() {
     const response = await api.post("/auth/logout");
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Logout failed"));
+    throw createApiError(error, "Logout failed");
   }
 }
 
@@ -64,7 +94,7 @@ export async function getCommutes() {
     const response = await api.get("/commutes");
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load commutes"));
+    throw createApiError(error, "Failed to load commutes");
   }
 }
 
@@ -73,7 +103,7 @@ export async function getCommute(commuteId) {
     const response = await api.get(`/commutes/${commuteId}`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load commute"));
+    throw createApiError(error, "Failed to load commute");
   }
 }
 
@@ -82,7 +112,7 @@ export async function createCommute(commuteData) {
     const response = await api.post("/commutes", commuteData);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to create commute"));
+    throw createApiError(error, "Failed to create commute");
   }
 }
 
@@ -91,7 +121,7 @@ export async function joinCommute(commuteId) {
     const response = await api.post(`/commutes/${commuteId}/join`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to join commute"));
+    throw createApiError(error, "Failed to join commute");
   }
 }
 
@@ -100,7 +130,7 @@ export async function getMyCommutes() {
     const response = await api.get("/commutes/my");
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load my commutes"));
+    throw createApiError(error, "Failed to load my commutes");
   }
 }
 
@@ -109,7 +139,7 @@ export async function closeCommute(commuteId) {
     const response = await api.patch(`/commutes/${commuteId}/close`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to close commute"));
+    throw createApiError(error, "Failed to close commute");
   }
 }
 
@@ -118,7 +148,7 @@ export async function cancelCommute(commuteId) {
     const response = await api.patch(`/commutes/${commuteId}/cancel`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to cancel commute"));
+    throw createApiError(error, "Failed to cancel commute");
   }
 }
 
@@ -127,7 +157,7 @@ export async function getMyParticipations() {
     const response = await api.get("/participations/my");
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load participations"));
+    throw createApiError(error, "Failed to load participations");
   }
 }
 
@@ -136,7 +166,7 @@ export async function leaveCommute(commuteId) {
     const response = await api.delete(`/commutes/${commuteId}/leave`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to leave commute"));
+    throw createApiError(error, "Failed to leave commute");
   }
 }
 
@@ -146,7 +176,7 @@ export async function getCommuteRequests(commuteId) {
     const response = await api.get(`/commutes/${commuteId}/requests`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load commute requests"));
+    throw createApiError(error, "Failed to load commute requests");
   }
 }
 
@@ -155,7 +185,7 @@ export async function getCommuteParticipants(commuteId) {
     const response = await api.get(`/commutes/${commuteId}/participants`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load participants"));
+    throw createApiError(error, "Failed to load participants");
   }
 }
 
@@ -166,7 +196,7 @@ export async function updateJoinRequest(commuteId, userId, status) {
     });
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to update join request"));
+    throw createApiError(error, "Failed to update join request");
   }
 }
 
@@ -175,7 +205,7 @@ export async function getMyNotifications() {
     const response = await api.get("/notifications/my");
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to load notifications"));
+    throw createApiError(error, "Failed to load notifications");
   }
 }
 
@@ -184,6 +214,24 @@ export async function markNotificationRead(notificationId) {
     const response = await api.patch(`/notifications/${notificationId}/read`);
     return response.data;
   } catch (error) {
-    throw new Error(getErrorMessage(error, "Failed to update notification"));
+    throw createApiError(error, "Failed to update notification");
+  }
+}
+
+export async function getAdminUsers() {
+  try {
+    const response = await api.get("/users");
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to load users");
+  }
+}
+
+export async function deleteAdminUser(userId) {
+  try {
+    const response = await api.delete(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to delete user");
   }
 }

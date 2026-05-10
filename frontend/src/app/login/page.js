@@ -4,10 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginUser } from "../lib/api";
+import { useRedirectIfAuthenticated } from "../lib/auth";
 import { hasValidationErrors, validateLoginForm } from "../lib/validation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const isCheckingAuth = useRedirectIfAuthenticated();
 
   const [formData, setFormData] = useState({
     aiubId: "",
@@ -56,13 +58,21 @@ export default function LoginPage() {
     }
   }
 
+  if (isCheckingAuth) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
+        <p className="text-slate-700">Checking session...</p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-10">
       <section className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-sm">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-slate-900">Login</h1>
           <p className="mt-2 text-sm text-slate-600">
-            Use your AIUB ID and password to continue.
+            Use your university ID and password to continue.
           </p>
         </div>
 
@@ -72,7 +82,7 @@ export default function LoginPage() {
               htmlFor="aiubId"
               className="mb-1 block text-sm font-medium text-slate-700"
             >
-              AIUB ID
+              University ID
             </label>
             <input
               id="aiubId"

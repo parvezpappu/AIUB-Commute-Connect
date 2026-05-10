@@ -12,8 +12,8 @@
     aiubId: z
         .string()
         .trim()
-        .min(1, "AIUB ID is required")
-        .regex(aiubIdRegex, "AIUB ID must be in valid format, for example 22-49155-3"),
+        .min(1, "University ID is required")
+        .regex(aiubIdRegex, "University ID must be in valid format, for example 22-49155-3"),
 
     email: z
         .string()
@@ -32,10 +32,49 @@
     aiubId: z
         .string()
         .trim()
-        .min(1, "AIUB ID is required")
-        .regex(aiubIdRegex, "AIUB ID must be in valid format, for example 22-49155-3"),
+        .min(1, "University ID is required")
+        .regex(aiubIdRegex, "University ID must be in valid format, for example 22-49155-3"),
 
     password: z.string().min(1, "Password is required"),
+    });
+
+    const createCommuteSchema = z.object({
+    transportType: z.enum(["BIKE", "CNG", "RICKSHAW", "WALKING"], {
+        message: "Select a valid transport type",
+    }),
+
+    fromLocation: z
+        .string()
+        .trim()
+        .min(1, "From location is required")
+        .min(2, "From location must be at least 2 characters"),
+
+    toLocation: z
+        .string()
+        .trim()
+        .min(1, "To location is required")
+        .min(2, "To location must be at least 2 characters"),
+
+    departureTime: z
+        .string()
+        .min(1, "Departure time is required")
+        .refine((value) => {
+        const departureDate = new Date(value);
+        return !Number.isNaN(departureDate.getTime()) && departureDate > new Date();
+        }, "Departure time must be in the future"),
+
+    seats: z
+        .string()
+        .min(1, "Seats are required")
+        .refine((value) => Number.isInteger(Number(value)), "Seats must be a whole number")
+        .refine((value) => Number(value) >= 1, "Seats must be at least 1")
+        .refine((value) => Number(value) <= 10, "Seats must not be more than 10"),
+
+    costPerPerson: z
+        .string()
+        .min(1, "Cost is required")
+        .refine((value) => Number.isInteger(Number(value)), "Cost must be a whole number")
+        .refine((value) => Number(value) >= 0, "Cost must be 0 or more"),
     });
 
     function formatZodErrors(result) {
@@ -63,6 +102,11 @@
 
     export function validateLoginForm(formData) {
     const result = loginSchema.safeParse(formData);
+    return formatZodErrors(result);
+    }
+
+    export function validateCreateCommuteForm(formData) {
+    const result = createCommuteSchema.safeParse(formData);
     return formatZodErrors(result);
     }
 

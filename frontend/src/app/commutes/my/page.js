@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import AuthenticatedNav from "../../components/AuthenticatedNav";
+import { useRequireStudent } from "../../lib/auth";
 import {
   cancelCommute,
   closeCommute,
@@ -19,6 +21,7 @@ function formatDateTime(value) {
 }
 
 export default function MyCommutesPage() {
+  const isCheckingAuth = useRequireStudent();
   const [commutes, setCommutes] = useState([]);
   const [requestsByCommute, setRequestsByCommute] = useState({});
   const [participantsByCommute, setParticipantsByCommute] = useState({});
@@ -102,17 +105,20 @@ export default function MyCommutesPage() {
     }
   }
 
-  if (isLoading) {
+  if (isCheckingAuth || isLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-        <p className="text-slate-600">Loading your commute posts...</p>
+        <p className="text-slate-600">
+          {isCheckingAuth ? "Checking session..." : "Loading your commute posts..."}
+        </p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f7fb] px-4 py-8 text-slate-950">
-      <section className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
+      <AuthenticatedNav />
+      <section className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-[#003b73]">

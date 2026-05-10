@@ -1,9 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { createCommute } from "../../lib/api";
+import { useEffect, useState } from "react";
+import AuthenticatedNav from "../../components/AuthenticatedNav";
+import { createCommute, getCurrentUser } from "../../lib/api";
+import { useRequireStudent } from "../../lib/auth";
+import {
+  hasValidationErrors,
+  validateCreateCommuteForm,
+} from "../../lib/validation";
 
 const transportTypes = [
   { value: "CNG", label: "CNG" },
@@ -14,6 +19,8 @@ const transportTypes = [
 
 export default function CreateCommutePage() {
   const router = useRouter();
+  const isCheckingAuth = useRequireStudent();
+  const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
     transportType: "CNG",
     fromLocation: "",
@@ -22,8 +29,22 @@ export default function CreateCommutePage() {
     seats: "1",
     costPerPerson: "0",
   });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadCurrentUser() {
+      try {
+        const data = await getCurrentUser();
+        setCurrentUser(data);
+      } catch {
+        setCurrentUser(null);
+      }
+    }
+
+    loadCurrentUser();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -32,11 +53,29 @@ export default function CreateCommutePage() {
       ...formData,
       [name]: value,
     });
+
+    setFieldErrors({
+      ...fieldErrors,
+      [name]: "",
+    });
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+
+    if (!currentUser?.isVerified) {
+      setError("Please verify your email before creating a commute.");
+      return;
+    }
+
+    const validationErrors = validateCreateCommuteForm(formData);
+    setFieldErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -57,18 +96,17 @@ export default function CreateCommutePage() {
     }
   }
 
+  if (isCheckingAuth) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
+        <p className="text-slate-600">Checking session...</p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
-        <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link href="/commutes" className="text-sm font-semibold text-[#003b73]">
-            Back to commutes
-          </Link>
-          <Link href="/profile" className="text-sm font-medium text-slate-600">
-            Profile
-          </Link>
-        </nav>
-      </header>
+      <AuthenticatedNav />
 
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[0.75fr_1.25fr]">
         <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
@@ -149,6 +187,11 @@ export default function CreateCommutePage() {
                   placeholder="Kuril Bishwa Road"
                   required
                 />
+                {fieldErrors.fromLocation && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {fieldErrors.fromLocation}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -164,6 +207,11 @@ export default function CreateCommutePage() {
                   placeholder="AIUB Campus"
                   required
                 />
+                {fieldErrors.toLocation && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {fieldErrors.toLocation}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -180,6 +228,11 @@ export default function CreateCommutePage() {
                   className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
                   required
                 />
+                {fieldErrors.departureTime && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {fieldErrors.departureTime}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -196,6 +249,11 @@ export default function CreateCommutePage() {
                   className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
                   required
                 />
+                {fieldErrors.seats && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {fieldErrors.seats}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -211,6 +269,11 @@ export default function CreateCommutePage() {
                   className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
                   required
                 />
+                {fieldErrors.costPerPerson && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {fieldErrors.costPerPerson}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -220,9 +283,23 @@ export default function CreateCommutePage() {
               </div>
             )}
 
+            {currentUser && !currentUser.isVerified && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                Verify your email before publishing commute posts.
+                <a
+                  href={`/verify-email?email=${encodeURIComponent(
+                    currentUser.email,
+                  )}`}
+                  className="ml-1 font-semibold text-[#003b73]"
+                >
+                  Verify now
+                </a>
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || (currentUser && !currentUser.isVerified)}
               className="w-full rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#002f5c] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isLoading ? "Creating commute..." : "Publish commute"}

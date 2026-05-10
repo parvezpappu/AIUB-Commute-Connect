@@ -1,17 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import AuthenticatedNav from "../components/AuthenticatedNav";
 import {
   getCommuteRequests,
   getCommutes,
   getCurrentUser,
+  getAdminUsers,
   getMyCommutes,
   getMyParticipations,
-  logoutUser,
 } from "../lib/api";
-import NotificationBell from "../components/NotificationBell";
+import { useRequireAuth } from "../lib/auth";
 
 function formatTime(value) {
   return new Intl.DateTimeFormat("en-BD", {
@@ -37,22 +37,40 @@ function getStatusTone(status) {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
+  const isCheckingAuth = useRequireAuth();
 
   const [user, setUser] = useState(null);
   const [openCommutes, setOpenCommutes] = useState([]);
   const [myCommutes, setMyCommutes] = useState([]);
   const [participations, setParticipations] = useState([]);
   const [pendingCreatorRequests, setPendingCreatorRequests] = useState(0);
+  const [userCount, setUserCount] = useState(0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadDashboard() {
       try {
-        const [userData, commuteData, createdData, participationData] =
+        const userData = await getCurrentUser();
+        const isAdminUser = userData.role === "ADMIN";
+
+        if (isAdminUser) {
+          const [commuteData, userDataList] = await Promise.all([
+            getCommutes(),
+            getAdminUsers(),
+          ]);
+
+          setUser(userData);
+          setOpenCommutes(commuteData);
+          setUserCount(userDataList.length);
+          setMyCommutes([]);
+          setParticipations([]);
+          setPendingCreatorRequests(0);
+          return;
+        }
+
+        const [commuteData, createdData, participationData] =
           await Promise.all([
-            getCurrentUser(),
             getCommutes(),
             getMyCommutes(),
             getMyParticipations(),
@@ -83,6 +101,8 @@ export default function DashboardPage() {
     loadDashboard();
   }, []);
 
+  const isAdmin = user?.role === "ADMIN";
+
   const participationStats = useMemo(() => {
     return participations.reduce(
       (summary, item) => {
@@ -108,18 +128,12 @@ export default function DashboardPage() {
       )[0];
   }, [participations]);
 
-  async function handleLogout() {
-    try {
-      await logoutUser();
-    } finally {
-      router.push("/login");
-    }
-  }
-
-  if (isLoading) {
+  if (isCheckingAuth || isLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-        <p className="text-slate-600">Preparing your dashboard...</p>
+        <p className="text-slate-600">
+          {isCheckingAuth ? "Checking session..." : "Preparing your dashboard..."}
+        </p>
       </main>
     );
   }
@@ -145,70 +159,13 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
-      <header className="border-b border-slate-200 bg-[#111718] text-white">
-        <nav className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 lg:flex-row lg:items-center lg:justify-between">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-[#003b73] text-sm font-bold">
-              AC
-            </div>
-            <div>
-              <p className="text-lg font-semibold tracking-wide">
-                AIUB Commute Connect
-              </p>
-              <p className="text-xs text-slate-300">
-                Student commute dashboard
-              </p>
-            </div>
-          </Link>
-
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <Link
-              href="/commutes"
-              className="rounded-md px-3 py-2 text-slate-200 hover:bg-white/10"
-            >
-              Browse
-            </Link>
-            <Link
-              href="/commutes/create"
-              className="rounded-md px-3 py-2 text-slate-200 hover:bg-white/10"
-            >
-              Create
-            </Link>
-            <Link
-              href="/commutes/my"
-              className="rounded-md px-3 py-2 text-slate-200 hover:bg-white/10"
-            >
-              My posts
-            </Link>
-            <Link
-              href="/commutes/joined"
-              className="rounded-md px-3 py-2 text-slate-200 hover:bg-white/10"
-            >
-              Joined
-            </Link>
-            <Link
-              href="/profile"
-              className="rounded-md px-3 py-2 text-slate-200 hover:bg-white/10"
-            >
-              Profile
-            </Link>
-            <NotificationBell />
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-md border border-white/20 px-3 py-2 text-slate-100 hover:bg-white/10"
-            >
-              Logout
-            </button>
-          </div>
-        </nav>
-      </header>
+      <AuthenticatedNav />
 
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
           <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm font-medium uppercase tracking-wide text-[#003b73]">
-              Welcome back
+              {isAdmin ? "Admin access" : "Welcome back"}
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight">
               {user?.fullName}
@@ -237,14 +194,23 @@ export default function DashboardPage() {
                 href="/commutes"
                 className="rounded-md bg-[#003b73] px-4 py-3 text-center text-sm font-semibold text-white"
               >
-                Find a commute
+                {isAdmin ? "View commute posts" : "Find a commute"}
               </Link>
-              <Link
-                href="/commutes/create"
-                className="rounded-md border border-slate-300 px-4 py-3 text-center text-sm font-semibold text-slate-700"
-              >
-                Create commute post
-              </Link>
+              {isAdmin ? (
+                <Link
+                  href="/admin/users"
+                  className="rounded-md border border-slate-300 px-4 py-3 text-center text-sm font-semibold text-slate-700"
+                >
+                  Manage users
+                </Link>
+              ) : (
+                <Link
+                  href="/commutes/create"
+                  className="rounded-md border border-slate-300 px-4 py-3 text-center text-sm font-semibold text-slate-700"
+                >
+                  Create commute post
+                </Link>
+              )}
             </div>
           </aside>
 
@@ -259,26 +225,26 @@ export default function DashboardPage() {
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-xs font-medium uppercase text-slate-500">
-                My posts
+                {isAdmin ? "Users" : "My posts"}
               </p>
               <p className="mt-2 text-3xl font-semibold text-[#003b73]">
-                {myCommutes.length}
+                {isAdmin ? userCount : myCommutes.length}
               </p>
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-xs font-medium uppercase text-slate-500">
-                Pending requests
+                {isAdmin ? "Student posts" : "Pending requests"}
               </p>
               <p className="mt-2 text-3xl font-semibold text-amber-600">
-                {participationStats.PENDING}
+                {isAdmin ? openCommutes.length : participationStats.PENDING}
               </p>
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-xs font-medium uppercase text-slate-500">
-                Creator approvals
+                {isAdmin ? "Admin tools" : "Creator approvals"}
               </p>
               <p className="mt-2 text-3xl font-semibold text-emerald-600">
-                {pendingCreatorRequests}
+                {isAdmin ? 2 : pendingCreatorRequests}
               </p>
             </div>
           </div>
@@ -289,10 +255,12 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-slate-950">
-                  Available commutes
+                  {isAdmin ? "Open commute posts" : "Available commutes"}
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Recent open posts around campus routes.
+                  {isAdmin
+                    ? "Open student commute posts visible in Browse."
+                    : "Recent open posts around campus routes."}
                 </p>
               </div>
               <Link
@@ -338,21 +306,31 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-slate-950">
-                  My request status
+                  {isAdmin ? "User management" : "My request status"}
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Latest commute participation updates.
+                  {isAdmin
+                    ? "Review registered accounts and remove users if needed."
+                    : "Latest commute participation updates."}
                 </p>
               </div>
               <Link
-                href="/commutes/joined"
+                href={isAdmin ? "/admin/users" : "/commutes/joined"}
                 className="text-sm font-semibold text-[#003b73]"
               >
                 Details
               </Link>
             </div>
 
-            {nextAcceptedCommute && (
+            {isAdmin ? (
+              <div className="mt-5 rounded-md border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm text-slate-600">
+                  Admin can view all registered users from the Users page.
+                  Student commute actions like Create, My posts, and Joined are
+                  hidden for admin accounts.
+                </p>
+              </div>
+            ) : nextAcceptedCommute ? (
               <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 p-4">
                 <p className="text-xs font-semibold uppercase text-emerald-700">
                   Next accepted commute
@@ -365,8 +343,9 @@ export default function DashboardPage() {
                   {formatTime(nextAcceptedCommute.commute.departureTime)}
                 </p>
               </div>
-            )}
+            ) : null}
 
+            {!isAdmin && (
             <div className="mt-5 space-y-3">
               {participations.slice(0, 4).map((item) => (
                 <div
@@ -397,6 +376,7 @@ export default function DashboardPage() {
                 </p>
               )}
             </div>
+            )}
           </section>
         </div>
       </section>

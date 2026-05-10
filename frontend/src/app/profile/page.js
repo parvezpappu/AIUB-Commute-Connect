@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import AuthenticatedNav from "../components/AuthenticatedNav";
 import { getCurrentUser, logoutUser } from "../lib/api";
+import { useRequireAuth } from "../lib/auth";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const isCheckingAuth = useRequireAuth();
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
@@ -35,10 +38,12 @@ export default function ProfilePage() {
     }
   }
 
-  if (isLoading) {
+  if (isCheckingAuth || isLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-        <p className="text-slate-700">Loading profile...</p>
+        <p className="text-slate-700">
+          {isCheckingAuth ? "Checking session..." : "Loading profile..."}
+        </p>
       </main>
     );
   }
@@ -64,8 +69,10 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-10">
-      <section className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-sm">
+    <main className="min-h-screen bg-slate-100">
+      <AuthenticatedNav />
+      <section className="mx-auto max-w-2xl px-4 py-10">
+        <div className="rounded-lg bg-white p-6 shadow-sm">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">
@@ -130,7 +137,7 @@ export default function ProfilePage() {
 
           <div className="rounded-md border border-slate-200 p-4">
             <p className="text-xs font-medium uppercase text-slate-500">
-              AIUB ID
+              University ID
             </p>
             <p className="mt-1 text-slate-900">{user.aiubId}</p>
           </div>
@@ -159,6 +166,7 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
+        </div>
         </div>
       </section>
     </main>

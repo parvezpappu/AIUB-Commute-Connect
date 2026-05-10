@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import AuthenticatedNav from "../components/AuthenticatedNav";
 import {
   getCommutes,
   getCurrentUser,
   getMyParticipations,
   joinCommute,
 } from "../lib/api";
+import { useRequireAuth } from "../lib/auth";
 
 const transportTheme = {
   BIKE: {
@@ -82,6 +84,7 @@ function getJoinButtonLabel(participationStatus, noSeatsLeft, isJoining) {
 }
 
 export default function CommutesPage() {
+  const isCheckingAuth = useRequireAuth();
   const [commutes, setCommutes] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [participationStatusByCommute, setParticipationStatusByCommute] =
@@ -119,8 +122,14 @@ export default function CommutesPage() {
   }, []);
 
   const browseCommutes = useMemo(() => {
+    if (currentUser?.role === "ADMIN") {
+      return commutes;
+    }
+
     return commutes.filter((commute) => commute.creator?.id !== currentUser?.id);
   }, [commutes, currentUser]);
+
+  const isAdmin = currentUser?.role === "ADMIN";
 
   const stats = useMemo(() => {
     const openCount = browseCommutes.length;
@@ -160,19 +169,27 @@ export default function CommutesPage() {
     }
   }
 
-  if (isLoading) {
+  if (isCheckingAuth || isLoading) {
     return (
       <main className="min-h-screen bg-[#f4f7fb] px-4 py-10">
         <section className="mx-auto max-w-6xl">
-          <div className="h-48 animate-pulse rounded-lg bg-white" />
-          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {[1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="h-72 animate-pulse rounded-lg bg-white"
-              />
-            ))}
-          </div>
+          {isCheckingAuth ? (
+            <div className="flex min-h-[60vh] items-center justify-center">
+              <p className="text-slate-600">Checking session...</p>
+            </div>
+          ) : (
+            <>
+              <div className="h-48 animate-pulse rounded-lg bg-white" />
+              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {[1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="h-72 animate-pulse rounded-lg bg-white"
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </section>
       </main>
     );
@@ -180,36 +197,7 @@ export default function CommutesPage() {
 
   return (
     <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#003b73] text-sm font-bold text-white">
-              AC
-            </div>
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-[#003b73]">
-                AIUB Commute Connect
-              </p>
-              <p className="text-xs text-slate-500">Available commute board</p>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/profile"
-              className="rounded-md px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-            >
-              Profile
-            </Link>
-            <Link
-              href="/commutes/create"
-              className="rounded-md bg-[#003b73] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#002f5c]"
-            >
-              Create commute
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <AuthenticatedNav />
 
       <section className="mx-auto max-w-6xl px-4 py-8">
         <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
@@ -219,11 +207,14 @@ export default function CommutesPage() {
                 Live commute marketplace
               </p>
               <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                Choose a commute that matches your route, time, and budget.
+                {isAdmin
+                  ? "Review open commute posts created by students."
+                  : "Choose a commute that matches your route, time, and budget."}
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-                Every request goes to the commute creator first. You will appear
-                as pending until the creator accepts your seat.
+                {isAdmin
+                  ? "Admin accounts can inspect commute posts but cannot send join requests."
+                  : "Every request goes to the commute creator first. You will appear as pending until the creator accepts your seat."}
               </p>
             </div>
 
@@ -265,17 +256,20 @@ export default function CommutesPage() {
         {browseCommutes.length === 0 ? (
           <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
             <h2 className="text-xl font-semibold text-slate-900">
-              No commute posts from other students yet
+              {isAdmin
+                ? "No open commute posts yet"
+                : "No commute posts from other students yet"}
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
-              Your own posts live in My posts. Browse will show open commute
-              posts created by other students.
+              {isAdmin
+                ? "When students create open commute posts, they will appear here."
+                : "Your own posts live in My posts. Browse will show open commute posts created by other students."}
             </p>
             <Link
-              href="/commutes/my"
+              href={isAdmin ? "/admin/users" : "/commutes/my"}
               className="mt-5 inline-block rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white"
             >
-              View my posts
+              {isAdmin ? "Manage users" : "View my posts"}
             </Link>
           </div>
         ) : (
@@ -288,6 +282,8 @@ export default function CommutesPage() {
               const hasRequested =
                 participationStatus === "PENDING" ||
                 participationStatus === "ACCEPTED";
+              const needsVerification =
+                currentUser?.role === "STUDENT" && !currentUser?.isVerified;
 
               return (
                 <article
@@ -372,20 +368,32 @@ export default function CommutesPage() {
                     <button
                       type="button"
                       disabled={
-                        noSeatsLeft || hasRequested || joiningId === commute.id
+                        isAdmin ||
+                        needsVerification ||
+                        noSeatsLeft ||
+                        hasRequested ||
+                        joiningId === commute.id
                       }
                       onClick={() => handleJoin(commute.id)}
                       className={`mt-5 w-full rounded-md px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed ${
-                        hasRequested
+                        isAdmin
+                          ? "bg-slate-100 text-slate-600"
+                          : needsVerification
+                            ? "bg-amber-50 text-amber-700"
+                          : hasRequested
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-[#003b73] text-white hover:bg-[#002f5c] disabled:bg-slate-300"
                       }`}
                     >
-                      {getJoinButtonLabel(
-                        participationStatus,
-                        noSeatsLeft,
-                        joiningId === commute.id,
-                      )}
+                      {isAdmin
+                        ? "Admin view"
+                        : needsVerification
+                          ? "Verify email to join"
+                        : getJoinButtonLabel(
+                            participationStatus,
+                            noSeatsLeft,
+                            joiningId === commute.id,
+                          )}
                     </button>
                   </div>
                 </article>

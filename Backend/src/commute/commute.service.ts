@@ -23,6 +23,12 @@ export class CommuteService {
   ) {}
 
   async create(createCommuteDto: CreateCommuteDto, creator: User) {
+    if (!creator.isVerified) {
+      throw new ForbiddenException(
+        'Please verify your email before creating a commute',
+      );
+    }
+
     const commute = this.commuteRepository.create({
       ...createCommuteDto,
       departureTime: new Date(createCommuteDto.departureTime),

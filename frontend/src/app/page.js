@@ -55,7 +55,7 @@ export default function HomePage() {
           </h1>
 
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-            Register with your AIUB ID, login securely, view your profile, and
+            Register with your university ID, login securely, view your profile, and
             get ready to create or join shared commute groups based on route,
             time, transport type, and available seats.
           </p>
@@ -72,7 +72,7 @@ export default function HomePage() {
               href="/login"
               className="rounded-md border border-slate-300 bg-white px-6 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-[#003b73]/40"
             >
-              Login with AIUB ID
+              Login with University ID
             </Link>
 
             <Link
@@ -99,7 +99,9 @@ export default function HomePage() {
             </div>
 
             <div className="rounded-md border border-slate-200 bg-white p-4">
-              <p className="text-2xl font-semibold text-[#003b73]">AIUB ID</p>
+              <p className="text-2xl font-semibold text-[#003b73]">
+                University ID
+              </p>
               <p className="mt-1 text-sm text-slate-600">
                 Student identity format is verified.
               </p>

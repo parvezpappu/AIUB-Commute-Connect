@@ -7,7 +7,7 @@ export class CreateAuthDto {
 
   @IsString()
   @Matches(/^\d{2}-\d{5}-\d$/, {
-    message: 'AIUB ID must be in valid format, for example 22-49155-3',
+    message: 'University ID must be in valid format, for example 22-49155-3',
   })
   aiubId: string;
 

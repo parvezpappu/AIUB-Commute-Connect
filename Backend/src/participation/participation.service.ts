@@ -28,6 +28,12 @@ export class ParticipationService {
   ) {}
 
   async joinCommute(commuteId: number, user: User) {
+    if (!user.isVerified) {
+      throw new ForbiddenException(
+        'Please verify your email before joining a commute',
+      );
+    }
+
     const commute = await this.commuteRepository.findOne({
       where: { id: commuteId },
     });

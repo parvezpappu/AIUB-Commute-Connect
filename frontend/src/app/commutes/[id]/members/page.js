@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCommute, getCommuteParticipants } from "../../../lib/api";
+import { useRequireAuth } from "../../../lib/auth";
 
 function formatDateTime(value) {
   return new Intl.DateTimeFormat("en-BD", {
@@ -15,6 +16,7 @@ function formatDateTime(value) {
 export default function CommuteMembersPage() {
   const params = useParams();
   const commuteId = params.id;
+  const isCheckingAuth = useRequireAuth();
 
   const [commute, setCommute] = useState(null);
   const [participants, setParticipants] = useState([]);
@@ -41,10 +43,12 @@ export default function CommuteMembersPage() {
     loadCommuteMembers();
   }, [commuteId]);
 
-  if (isLoading) {
+  if (isCheckingAuth || isLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-        <p className="text-slate-600">Loading commute members...</p>
+        <p className="text-slate-600">
+          {isCheckingAuth ? "Checking session..." : "Loading commute members..."}
+        </p>
       </main>
     );
   }

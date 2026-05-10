@@ -12,6 +12,8 @@ import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
+import { ResendVerificationOtpDto } from './dto/resend-verification-otp.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { UserRole } from '../user/entities/user.entity';
@@ -36,13 +38,25 @@ export class AuthController {
       httpOnly: true,
       secure: false,
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
 
     return {
       message: data.message,
       user: data.user,
     };
+  }
+
+  @Post('verify-email')
+  verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+    return this.authService.verifyEmail(verifyEmailDto);
+  }
+
+  @Post('resend-verification-otp')
+  resendVerificationOtp(
+    @Body() resendVerificationOtpDto: ResendVerificationOtpDto,
+  ) {
+    return this.authService.resendVerificationOtp(resendVerificationOtpDto);
   }
 
   @Post('logout')
