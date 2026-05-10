@@ -121,6 +121,14 @@ export default function LoginPage() {
                 {fieldErrors.password}
               </p>
             )}
+            <div className="mt-2 text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-slate-900"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           {error && (

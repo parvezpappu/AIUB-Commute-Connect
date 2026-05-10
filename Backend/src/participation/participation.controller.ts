@@ -61,4 +61,11 @@ export class ParticipationController {
   findMyParticipations(@Req() req) {
     return this.participationService.findMyParticipations(req.user.id);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT)
+  @Delete('participations/my/:id')
+  deleteMyHistoryParticipation(@Param('id') id: string, @Req() req) {
+    return this.participationService.deleteMyHistoryParticipation(+id, req.user);
+  }
 }

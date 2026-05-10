@@ -41,11 +41,20 @@ export class User {
   @Column({ default: false })
   isVerified: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  profilePictureUrl: string | null;
+
   @Column({ type: 'varchar', nullable: true, select: false })
   emailVerificationOtp: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
   emailVerificationOtpExpiresAt: Date | null;
+
+  @Column({ type: 'varchar', nullable: true, select: false })
+  passwordResetOtp: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  passwordResetOtpExpiresAt: Date | null;
 
   @OneToMany(() => Commute, (commute) => commute.creator)
   commutes: Commute[];

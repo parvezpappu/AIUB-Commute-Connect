@@ -272,4 +272,34 @@ export class ParticipationService {
       },
     });
   }
+
+  async deleteMyHistoryParticipation(participationId: number, user: User) {
+    const participation = await this.participationRepository.findOne({
+      where: {
+        id: participationId,
+        user: { id: user.id },
+      },
+    });
+
+    if (!participation) {
+      throw new NotFoundException('Participation not found');
+    }
+
+    const isHistory =
+      participation.status === ParticipationStatus.REJECTED ||
+      participation.status === ParticipationStatus.CANCELLED ||
+      participation.commute.status === CommuteStatus.CLOSED;
+
+    if (!isHistory) {
+      throw new BadRequestException(
+        'Only history participation records can be deleted',
+      );
+    }
+
+    await this.participationRepository.remove(participation);
+
+    return {
+      message: 'Participation history deleted successfully',
+    };
+  }
 }

@@ -71,6 +71,26 @@ export async function resendVerificationOtp(email) {
   }
 }
 
+export async function forgotPassword(email) {
+  try {
+    const response = await api.post("/auth/forgot-password", {
+      email,
+    });
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to send password reset OTP");
+  }
+}
+
+export async function resetPassword(resetData) {
+  try {
+    const response = await api.post("/auth/reset-password", resetData);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to reset password");
+  }
+}
+
 export async function getCurrentUser() {
   try {
     const response = await api.get("/auth/me");
@@ -170,6 +190,14 @@ export async function leaveCommute(commuteId) {
   }
 }
 
+export async function deleteParticipationHistory(participationId) {
+  try {
+    const response = await api.delete(`/participations/my/${participationId}`);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to delete participation history");
+  }
+}
 
 export async function getCommuteRequests(commuteId) {
   try {
@@ -215,6 +243,36 @@ export async function markNotificationRead(notificationId) {
     return response.data;
   } catch (error) {
     throw createApiError(error, "Failed to update notification");
+  }
+}
+
+export async function changePassword(passwordData) {
+  try {
+    const response = await api.post("/auth/change-password", passwordData);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to change password");
+  }
+}
+
+export async function uploadProfilePicture(file) {
+  const formData = new FormData();
+  formData.append("profilePicture", file);
+
+  try {
+    const response = await api.patch("/users/me/profile-picture", formData);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to upload profile picture");
+  }
+}
+
+export async function clearProfilePicture() {
+  try {
+    const response = await api.delete("/users/me/profile-picture");
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to clear profile picture");
   }
 }
 

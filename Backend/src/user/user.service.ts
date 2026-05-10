@@ -66,6 +66,18 @@ export class UserService {
     return this.userRepository.findOne({ where: { email } });
   }
 
+  async findById(id: number, includePassword = false) {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id });
+
+    if (includePassword) {
+      query.addSelect('user.password');
+    }
+
+    return query.getOne();
+  }
+
   findAll() {
     return this.userRepository.find({
       order: {
@@ -114,8 +126,42 @@ export class UserService {
     .getOne();
 }
 
+ async findByEmailForPasswordReset(email: string) {
+  return this.userRepository
+    .createQueryBuilder('user')
+    .addSelect('user.passwordResetOtp')
+    .where('user.email = :email', { email })
+    .getOne();
+}
+
  async save(user: User) {
   return this.userRepository.save(user);
+}
+
+ async updateProfilePicture(id: number, profilePictureUrl: string) {
+  const user = await this.findById(id);
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  user.profilePictureUrl = profilePictureUrl;
+  const savedUser = await this.userRepository.save(user);
+  const { password, ...result } = savedUser;
+  return result;
+}
+
+ async clearProfilePicture(id: number) {
+  const user = await this.findById(id);
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  user.profilePictureUrl = null;
+  const savedUser = await this.userRepository.save(user);
+  const { password, ...result } = savedUser;
+  return result;
 }
 
 }

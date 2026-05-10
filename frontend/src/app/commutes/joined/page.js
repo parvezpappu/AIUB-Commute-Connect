@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
-import { getMyParticipations, leaveCommute } from "../../lib/api";
+import {
+  deleteParticipationHistory,
+  getMyParticipations,
+  leaveCommute,
+} from "../../lib/api";
 import { useRequireStudent } from "../../lib/auth";
 
 const statusStyles = {
@@ -27,6 +31,9 @@ export default function JoinedCommutesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [leavingId, setLeavingId] = useState(null);
+  const [selectedHistoryIds, setSelectedHistoryIds] = useState([]);
+  const [openHistoryId, setOpenHistoryId] = useState(null);
+  const [isDeletingHistory, setIsDeletingHistory] = useState(false);
 
   async function loadParticipations() {
     setError("");
@@ -88,7 +95,10 @@ export default function JoinedCommutesPage() {
   }, [participations]);
 
   const acceptedParticipations = useMemo(() => {
-    return participations.filter((item) => item.status === "ACCEPTED");
+    return participations.filter(
+      (item) =>
+        item.status === "ACCEPTED" && item.commute.status !== "CLOSED",
+    );
   }, [participations]);
 
   const pendingParticipations = useMemo(() => {
@@ -97,9 +107,67 @@ export default function JoinedCommutesPage() {
 
   const historyParticipations = useMemo(() => {
     return participations.filter(
-      (item) => item.status === "REJECTED" || item.status === "CANCELLED",
+      (item) =>
+        item.status === "REJECTED" ||
+        item.status === "CANCELLED" ||
+        item.commute.status === "CLOSED",
     );
   }, [participations]);
+
+  const isAllHistorySelected =
+    historyParticipations.length > 0 &&
+    selectedHistoryIds.length === historyParticipations.length;
+
+  function handleHistorySelection(participationId) {
+    setSelectedHistoryIds((currentIds) =>
+      currentIds.includes(participationId)
+        ? currentIds.filter((id) => id !== participationId)
+        : [...currentIds, participationId],
+    );
+  }
+
+  function handleSelectAllHistory() {
+    if (isAllHistorySelected) {
+      setSelectedHistoryIds([]);
+      return;
+    }
+
+    setSelectedHistoryIds(
+      historyParticipations.map((participation) => participation.id),
+    );
+  }
+
+  async function handleDeleteSelectedHistory() {
+    if (selectedHistoryIds.length === 0) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete ${selectedHistoryIds.length} selected history record?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError("");
+    setMessage("");
+    setIsDeletingHistory(true);
+
+    try {
+      await Promise.all(
+        selectedHistoryIds.map((id) => deleteParticipationHistory(id)),
+      );
+      setMessage("Selected history deleted successfully.");
+      setSelectedHistoryIds([]);
+      setOpenHistoryId(null);
+      await loadParticipations();
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsDeletingHistory(false);
+    }
+  }
 
   function renderParticipationCard(participation) {
     const commute = participation.commute;
@@ -205,6 +273,131 @@ export default function JoinedCommutesPage() {
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
             {items.map((participation) => renderParticipationCard(participation))}
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  function renderHistorySection() {
+    return (
+      <section className="mt-6">
+        <div className="mb-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-950">History</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Closed, rejected, and cancelled participation records.
+            </p>
+          </div>
+
+          {historyParticipations.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={handleSelectAllHistory}
+                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white"
+              >
+                {isAllHistorySelected ? "Clear selection" : "Select all"}
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteSelectedHistory}
+                disabled={selectedHistoryIds.length === 0 || isDeletingHistory}
+                className="rounded-md border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+              >
+                {isDeletingHistory
+                  ? "Deleting..."
+                  : `Delete selected (${selectedHistoryIds.length})`}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {historyParticipations.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+            Nothing here yet.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {historyParticipations.map((participation) => {
+              const commute = participation.commute;
+              const isOpen = openHistoryId === participation.id;
+              const isSelected = selectedHistoryIds.includes(participation.id);
+
+              return (
+                <article
+                  key={participation.id}
+                  className="rounded-lg border border-slate-200 bg-white shadow-sm"
+                >
+                  <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleHistorySelection(participation.id)}
+                        className="mt-1 h-4 w-4"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenHistoryId(isOpen ? null : participation.id)
+                        }
+                        className="text-left"
+                      >
+                        <p className="font-semibold text-slate-950">
+                          {commute.fromLocation} to {commute.toLocation}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {formatDateTime(commute.departureTime)}
+                        </p>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                        {commute.status === "CLOSED"
+                          ? "CLOSED"
+                          : participation.status}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenHistoryId(isOpen ? null : participation.id)
+                        }
+                        className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700"
+                      >
+                        {isOpen ? "Hide" : "Details"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {isOpen && (
+                    <div className="border-t border-slate-100 p-4">
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        <div className="rounded-md bg-slate-50 p-3">
+                          <p className="text-xs text-slate-500">Transport</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                            {commute.transportType}
+                          </p>
+                        </div>
+                        <div className="rounded-md bg-slate-50 p-3">
+                          <p className="text-xs text-slate-500">Cost/person</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                            Tk {commute.costPerPerson}
+                          </p>
+                        </div>
+                        <div className="rounded-md bg-slate-50 p-3">
+                          <p className="text-xs text-slate-500">Requested</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                            {formatDateTime(participation.joinedAt)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
@@ -340,11 +533,7 @@ export default function JoinedCommutesPage() {
               "Requests still waiting for the creator decision.",
               pendingParticipations,
             )}
-            {renderParticipationSection(
-              "History",
-              "Rejected and cancelled participation records.",
-              historyParticipations,
-            )}
+            {renderHistorySection()}
           </>
         )}
       </section>

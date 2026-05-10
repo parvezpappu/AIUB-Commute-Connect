@@ -9,8 +9,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { ResendVerificationOtpDto } from './dto/resend-verification-otp.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { PendingRegistration } from './entities/pending-registration.entity';
 import { MailService } from './mail.service';
@@ -210,5 +213,93 @@ export class AuthService {
 
   private generateOtp() {
     return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  async changePassword(userId: number, changePasswordDto: ChangePasswordDto) {
+    if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
+      throw new BadRequestException('New password and confirmation do not match');
+    }
+
+    const user = await this.userService.findById(userId, true);
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isCurrentPasswordMatched = await bcrypt.compare(
+      changePasswordDto.currentPassword,
+      user.password,
+    );
+
+    if (!isCurrentPasswordMatched) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    user.password = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    await this.userService.save(user);
+
+    return {
+      message: 'Password changed successfully. Please login again.',
+    };
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const user = await this.userService.findByEmail(forgotPasswordDto.email);
+
+    if (!user) {
+      throw new BadRequestException('No account found with this email');
+    }
+
+    if (!user.isVerified) {
+      throw new BadRequestException(
+        'Please verify your email before resetting password',
+      );
+    }
+
+    const otp = this.generateOtp();
+    user.passwordResetOtp = await bcrypt.hash(otp, 10);
+    user.passwordResetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    await this.userService.save(user);
+    await this.mailService.sendPasswordResetOtp(user.email, user.fullName, otp);
+
+    return {
+      message: 'Password reset OTP has been sent',
+    };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    if (resetPasswordDto.newPassword !== resetPasswordDto.confirmPassword) {
+      throw new BadRequestException('New password and confirmation do not match');
+    }
+
+    const user = await this.userService.findByEmailForPasswordReset(
+      resetPasswordDto.email,
+    );
+
+    if (!user || !user.passwordResetOtp || !user.passwordResetOtpExpiresAt) {
+      throw new BadRequestException('Invalid email or OTP');
+    }
+
+    if (user.passwordResetOtpExpiresAt < new Date()) {
+      throw new BadRequestException('OTP expired. Please request a new OTP');
+    }
+
+    const isOtpMatched = await bcrypt.compare(
+      resetPasswordDto.otp,
+      user.passwordResetOtp,
+    );
+
+    if (!isOtpMatched) {
+      throw new BadRequestException('Invalid email or OTP');
+    }
+
+    user.password = await bcrypt.hash(resetPasswordDto.newPassword, 10);
+    user.passwordResetOtp = null;
+    user.passwordResetOtpExpiresAt = null;
+    await this.userService.save(user);
+
+    return {
+      message: 'Password reset successfully. You can now login.',
+    };
   }
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getCurrentUser, logoutUser } from "../lib/api";
+import { getCurrentUser, getMyCommutes, logoutUser } from "../lib/api";
 import NotificationBell from "./NotificationBell";
 
 const studentLinks = [
@@ -24,12 +24,18 @@ export default function AuthenticatedNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [myPostCount, setMyPostCount] = useState(0);
 
   useEffect(() => {
     async function loadUser() {
       try {
         const data = await getCurrentUser();
         setUser(data);
+
+        if (data.role === "STUDENT") {
+          const myCommutes = await getMyCommutes();
+          setMyPostCount(myCommutes.length);
+        }
       } catch {
         setUser(null);
       }
@@ -76,7 +82,9 @@ export default function AuthenticatedNav() {
                 pathname === link.href ? "bg-white/10 text-white" : "text-slate-200"
               }`}
             >
-              {link.label}
+              {link.href === "/commutes/my"
+                ? `My posts (${myPostCount})`
+                : link.label}
             </Link>
           ))}
           <NotificationBell />

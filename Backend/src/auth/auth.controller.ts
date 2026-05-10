@@ -10,9 +10,12 @@ import {
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { ResendVerificationOtpDto } from './dto/resend-verification-otp.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -59,6 +62,16 @@ export class AuthController {
     return this.authService.resendVerificationOtp(resendVerificationOtpDto);
   }
 
+  @Post('forgot-password')
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
   @Post('logout')
   logoutUser(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('accessToken', {
@@ -70,6 +83,28 @@ export class AuthController {
     return {
       message: 'Logout successful',
     };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Post('change-password')
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Req() req,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.changePassword(
+      req.user.id,
+      changePasswordDto,
+    );
+
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+    });
+
+    return result;
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
