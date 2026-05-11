@@ -253,7 +253,7 @@ export default function ProfilePage() {
               <p className="text-xs font-medium uppercase text-slate-500">
                 Email
               </p>
-              <p className="mt-1 text-slate-900">{user.email}</p>
+             
             </div>
 
           </div>
