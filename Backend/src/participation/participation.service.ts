@@ -10,6 +10,7 @@ import { Commute, CommuteStatus } from '../commute/entities/commute.entity';
 import { User, UserRole } from '../user/entities/user.entity';
 import { NotificationType } from '../notification/entities/notification.entity';
 import { NotificationService } from '../notification/notification.service';
+import { UpdateLocationDto } from './dto/update-location.dto';
 import {
   Participation,
   ParticipationStatus,
@@ -214,6 +215,32 @@ export class ParticipationService {
         updatedAt: 'ASC',
       },
     });
+  }
+
+  async updateMyCommuteLocation(
+    commuteId: number,
+    user: User,
+    updateLocationDto: UpdateLocationDto,
+  ) {
+    const participation = await this.participationRepository.findOne({
+      where: {
+        user: { id: user.id },
+        commute: { id: commuteId },
+        status: ParticipationStatus.ACCEPTED,
+      },
+    });
+
+    if (!participation) {
+      throw new ForbiddenException(
+        'Only accepted members can share live location for this commute',
+      );
+    }
+
+    participation.currentLatitude = updateLocationDto.latitude;
+    participation.currentLongitude = updateLocationDto.longitude;
+    participation.locationUpdatedAt = new Date();
+
+    return this.participationRepository.save(participation);
   }
 
   async leaveCommute(commuteId: number, user: User) {

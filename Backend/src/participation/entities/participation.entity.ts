@@ -42,6 +42,15 @@ export class Participation {
   })
   status: ParticipationStatus;
 
+  @Column({ nullable: true, type: 'double precision' })
+  currentLatitude: number;
+
+  @Column({ nullable: true, type: 'double precision' })
+  currentLongitude: number;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  locationUpdatedAt: Date;
+
   @CreateDateColumn()
   joinedAt: Date;
 

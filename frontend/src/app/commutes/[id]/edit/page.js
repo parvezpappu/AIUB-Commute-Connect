@@ -1,15 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import AuthenticatedNav from "../../components/AuthenticatedNav";
-import MapPicker from "../../components/MapPicker";
-import { createCommute, getCurrentUser } from "../../lib/api";
-import { useRequireStudent } from "../../lib/auth";
+import AuthenticatedNav from "../../../components/AuthenticatedNav";
+import MapPicker from "../../../components/MapPicker";
+import { getCommute, updateCommute } from "../../../lib/api";
+import { useRequireStudent } from "../../../lib/auth";
 import {
   hasValidationErrors,
   validateCreateCommuteForm,
-} from "../../lib/validation";
+} from "../../../lib/validation";
 
 const transportTypes = [
   { value: "UBER", label: "Uber" },
@@ -20,45 +21,51 @@ const transportTypes = [
   { value: "WALKING", label: "Walking" },
 ];
 
-export default function CreateCommutePage() {
+function toDateTimeLocal(value) {
+  const date = new Date(value);
+  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return offsetDate.toISOString().slice(0, 16);
+}
+
+export default function EditCommutePage() {
+  const params = useParams();
   const router = useRouter();
+  const commuteId = params.id;
   const isCheckingAuth = useRequireStudent();
-  const [currentUser, setCurrentUser] = useState(null);
-  const [formData, setFormData] = useState({
-    transportType: "UBER",
-    fromLocation: "",
-    toLocation: "",
-    meetingLocation: "",
-    meetingAddress: "",
-    meetingLatitude: null,
-    meetingLongitude: null,
-    departureTime: "",
-    seats: "1",
-    costPerPerson: "0",
-  });
+  const [formData, setFormData] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
 
   useEffect(() => {
-    async function loadCurrentUser() {
+    async function loadCommute() {
       try {
-        const data = await getCurrentUser();
-        setCurrentUser(data);
-        setFormData((currentFormData) => ({
-          ...currentFormData,
-          fromLocation:
-            currentFormData.fromLocation || data.preferredFromLocation || "",
-          toLocation: currentFormData.toLocation || data.preferredToLocation || "",
-        }));
-      } catch {
-        setCurrentUser(null);
+        const commute = await getCommute(commuteId);
+        setFormData({
+          transportType: commute.transportType || "UBER",
+          fromLocation: commute.fromLocation || "",
+          toLocation: commute.toLocation || "",
+          meetingLocation: commute.meetingLocation || "",
+          meetingAddress: commute.meetingAddress || "",
+          meetingLatitude: commute.meetingLatitude ?? null,
+          meetingLongitude: commute.meetingLongitude ?? null,
+          departureTime: commute.departureTime
+            ? toDateTimeLocal(commute.departureTime)
+            : "",
+          seats: String(commute.seats ?? 1),
+          costPerPerson: String(commute.costPerPerson ?? 0),
+        });
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    loadCurrentUser();
-  }, []);
+    loadCommute();
+  }, [commuteId]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -113,11 +120,6 @@ export default function CreateCommutePage() {
     event.preventDefault();
     setError("");
 
-    if (!currentUser?.isVerified) {
-      setError("Please verify your email before creating a commute.");
-      return;
-    }
-
     const validationErrors = validateCreateCommuteForm(formData);
     setFieldErrors(validationErrors);
 
@@ -125,10 +127,10 @@ export default function CreateCommutePage() {
       return;
     }
 
-    setIsLoading(true);
+    setIsSaving(true);
 
     try {
-      await createCommute({
+      await updateCommute(commuteId, {
         transportType: formData.transportType,
         fromLocation: formData.fromLocation.trim(),
         toLocation: formData.toLocation.trim(),
@@ -141,18 +143,33 @@ export default function CreateCommutePage() {
         costPerPerson: Number(formData.costPerPerson),
       });
 
-      router.push("/commutes");
+      router.push("/commutes/my");
     } catch (error) {
       setError(error.message);
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   }
 
-  if (isCheckingAuth) {
+  if (isCheckingAuth || isLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-        <p className="text-slate-600">Checking session...</p>
+        <p className="text-slate-600">
+          {isCheckingAuth ? "Checking session..." : "Loading commute post..."}
+        </p>
+      </main>
+    );
+  }
+
+  if (!formData) {
+    return (
+      <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
+        <AuthenticatedNav />
+        <section className="mx-auto max-w-xl px-4 py-8">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+            {error || "Commute post could not be loaded."}
+          </div>
+        </section>
       </main>
     );
   }
@@ -163,13 +180,21 @@ export default function CreateCommutePage() {
 
       <section className="mx-auto max-w-3xl px-4 py-8">
         <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <p className="w-fit rounded-full bg-[#003b73]/5 px-3 py-1 text-sm font-medium text-[#003b73]">
-              Create commute
-            </p>
-            <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-950">
-              Publish a commute post
-            </h1>
+          <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+            <div>
+              <p className="w-fit rounded-full bg-[#003b73]/5 px-3 py-1 text-sm font-medium text-[#003b73]">
+                Edit commute
+              </p>
+              <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-950">
+                Update commute post
+              </h1>
+            </div>
+            <Link
+              href="/commutes/my"
+              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+            >
+              Back to my posts
+            </Link>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -212,7 +237,6 @@ export default function CreateCommutePage() {
                   value={formData.fromLocation}
                   onChange={handleChange}
                   className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
-                  placeholder="Kuril Bishwa Road"
                   required
                 />
                 {fieldErrors.fromLocation && (
@@ -232,7 +256,6 @@ export default function CreateCommutePage() {
                   value={formData.toLocation}
                   onChange={handleChange}
                   className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
-                  placeholder="AIUB Campus"
                   required
                 />
                 {fieldErrors.toLocation && (
@@ -253,13 +276,13 @@ export default function CreateCommutePage() {
                 value={formData.meetingLocation}
                 onChange={handleChange}
                 className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
-                placeholder="Example: AIUB main gate or Kuril foot overbridge"
                 required
               />
-              <p className="mt-1 text-sm text-slate-500">
-                Write a short meeting title people should follow. The exact map
-                address is saved from the selected point below.
-              </p>
+              {formData.meetingAddress && (
+                <p className="mt-1 text-sm text-slate-500">
+                  Exact map address: {formData.meetingAddress}
+                </p>
+              )}
               {fieldErrors.meetingLocation && (
                 <p className="mt-1 text-sm text-red-600">
                   {fieldErrors.meetingLocation}
@@ -273,11 +296,7 @@ export default function CreateCommutePage() {
                 onClick={() => setIsMapOpen((current) => !current)}
                 className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
-                {isMapOpen
-                  ? "Hide map"
-                  : formData.meetingLatitude && formData.meetingLongitude
-                    ? "Change exact map location"
-                    : "Choose exact map location"}
+                {isMapOpen ? "Hide map" : "Change exact map location"}
               </button>
 
               {isMapOpen && (
@@ -290,14 +309,14 @@ export default function CreateCommutePage() {
                     onChange={handleMeetingPointChange}
                     onUseDetectedAddress={handleUseDetectedAddress}
                   />
+                  {(fieldErrors.meetingLatitude ||
+                    fieldErrors.meetingLongitude) && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {fieldErrors.meetingLatitude ||
+                        fieldErrors.meetingLongitude}
+                    </p>
+                  )}
                 </div>
-              )}
-              {(fieldErrors.meetingLatitude ||
-                fieldErrors.meetingLongitude) && (
-                <p className="mt-1 text-sm text-red-600">
-                  {fieldErrors.meetingLatitude ||
-                    fieldErrors.meetingLongitude}
-                </p>
               )}
             </div>
 
@@ -369,26 +388,12 @@ export default function CreateCommutePage() {
               </div>
             )}
 
-            {currentUser && !currentUser.isVerified && (
-              <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Verify your email before publishing commute posts.
-                <a
-                  href={`/verify-email?email=${encodeURIComponent(
-                    currentUser.email,
-                  )}`}
-                  className="ml-1 font-semibold text-[#003b73]"
-                >
-                  Verify now
-                </a>
-              </div>
-            )}
-
             <button
               type="submit"
-              disabled={isLoading || (currentUser && !currentUser.isVerified)}
+              disabled={isSaving}
               className="w-full rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#002f5c] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
-              {isLoading ? "Creating commute..." : "Publish commute"}
+              {isSaving ? "Saving changes..." : "Save changes"}
             </button>
           </form>
         </section>

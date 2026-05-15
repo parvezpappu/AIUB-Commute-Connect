@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { CommuteService } from './commute.service';
 import { CreateCommuteDto } from './dto/create-commute.dto';
+import { UpdateCreatorLocationDto } from './dto/update-creator-location.dto';
+import { UpdateCommuteDto } from './dto/update-commute.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -36,6 +38,32 @@ export class CommuteController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.commuteService.findOne(+id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateCommuteDto: UpdateCommuteDto,
+    @Req() req,
+  ) {
+    return this.commuteService.update(+id, updateCommuteDto, req.user);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Patch(':id/creator-location')
+  updateCreatorLocation(
+    @Param('id') id: string,
+    @Body() updateCreatorLocationDto: UpdateCreatorLocationDto,
+    @Req() req,
+  ) {
+    return this.commuteService.updateCreatorLocation(
+      +id,
+      updateCreatorLocationDto,
+      req.user,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

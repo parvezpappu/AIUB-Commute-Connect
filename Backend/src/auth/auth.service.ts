@@ -69,6 +69,10 @@ export class AuthService {
     pendingRegistration.aiubId = createAuthDto.aiubId;
     pendingRegistration.email = createAuthDto.email;
     pendingRegistration.password = hashedPassword;
+    pendingRegistration.preferredFromLocation =
+      createAuthDto.preferredFromLocation || null;
+    pendingRegistration.preferredToLocation =
+      createAuthDto.preferredToLocation || null;
     pendingRegistration.emailVerificationOtp = hashedOtp;
     pendingRegistration.emailVerificationOtpExpiresAt = otpExpiresAt;
 
@@ -163,6 +167,8 @@ export class AuthService {
       aiubId: pendingRegistration.aiubId,
       email: pendingRegistration.email,
       password: pendingRegistration.password,
+      preferredFromLocation: pendingRegistration.preferredFromLocation,
+      preferredToLocation: pendingRegistration.preferredToLocation,
     });
 
     await this.pendingRegistrationRepository.remove(pendingRegistration);

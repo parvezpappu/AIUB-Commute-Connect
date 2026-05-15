@@ -136,6 +136,27 @@ export async function createCommute(commuteData) {
   }
 }
 
+export async function updateCommute(commuteId, commuteData) {
+  try {
+    const response = await api.patch(`/commutes/${commuteId}`, commuteData);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to update commute");
+  }
+}
+
+export async function updateCreatorCommuteLocation(commuteId, locationData) {
+  try {
+    const response = await api.patch(
+      `/commutes/${commuteId}/creator-location`,
+      locationData,
+    );
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to update creator live location");
+  }
+}
+
 export async function joinCommute(commuteId) {
   try {
     const response = await api.post(`/commutes/${commuteId}/join`);
@@ -217,6 +238,18 @@ export async function getCommuteParticipants(commuteId) {
   }
 }
 
+export async function updateMyCommuteLocation(commuteId, locationData) {
+  try {
+    const response = await api.patch(
+      `/commutes/${commuteId}/location`,
+      locationData,
+    );
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to update live location");
+  }
+}
+
 export async function updateJoinRequest(commuteId, userId, status) {
   try {
     const response = await api.patch(`/commutes/${commuteId}/request/${userId}`, {
@@ -273,6 +306,18 @@ export async function clearProfilePicture() {
     return response.data;
   } catch (error) {
     throw createApiError(error, "Failed to clear profile picture");
+  }
+}
+
+export async function updateRoutePreference(preferenceData) {
+  try {
+    const response = await api.patch(
+      "/users/me/route-preference",
+      preferenceData,
+    );
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to update route preference");
   }
 }
 

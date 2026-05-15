@@ -26,6 +26,10 @@
         .min(1, "Password is required")
         .min(6, "Password must be at least 6 characters")
         .max(20, "Password must not be more than 20 characters"),
+
+    preferredFromLocation: z.string().trim().optional(),
+
+    preferredToLocation: z.string().trim().optional(),
     });
 
     const loginSchema = z.object({

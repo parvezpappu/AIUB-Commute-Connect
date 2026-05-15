@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -6,6 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCommuteDto } from './dto/create-commute.dto';
+import { UpdateCreatorLocationDto } from './dto/update-creator-location.dto';
+import { UpdateCommuteDto } from './dto/update-commute.dto';
 import { Commute, CommuteStatus } from './entities/commute.entity';
 import { User, UserRole } from '../user/entities/user.entity';
 import {
@@ -73,12 +76,64 @@ export class CommuteService {
     return this.attachSeatInfo(commute);
   }
 
+  async update(id: number, updateCommuteDto: UpdateCommuteDto, user: User) {
+    const commute = await this.findCommuteEntity(id);
+
+    this.ensureCanManage(commute, user, 'edit');
+
+    if (commute.status !== CommuteStatus.OPEN) {
+      throw new BadRequestException('Only open commute posts can be edited');
+    }
+
+    const acceptedSeats = await this.countAcceptedSeats(commute.id);
+
+    if (
+      updateCommuteDto.seats !== undefined &&
+      updateCommuteDto.seats < acceptedSeats
+    ) {
+      throw new BadRequestException(
+        'Seats cannot be less than accepted members',
+      );
+    }
+
+    Object.assign(commute, {
+      ...updateCommuteDto,
+      departureTime: updateCommuteDto.departureTime
+        ? new Date(updateCommuteDto.departureTime)
+        : commute.departureTime,
+    });
+
+    const savedCommute = await this.commuteRepository.save(commute);
+    return this.attachSeatInfo(savedCommute);
+  }
+
   async close(id: number, user: User) {
     const commute = await this.findCommuteEntity(id);
 
     this.ensureCanManage(commute, user, 'close');
 
     commute.status = CommuteStatus.CLOSED;
+
+    const savedCommute = await this.commuteRepository.save(commute);
+    return this.attachSeatInfo(savedCommute);
+  }
+
+  async updateCreatorLocation(
+    id: number,
+    updateCreatorLocationDto: UpdateCreatorLocationDto,
+    user: User,
+  ) {
+    const commute = await this.findCommuteEntity(id);
+
+    if (commute.creator.id !== user.id) {
+      throw new ForbiddenException(
+        'Only the commute creator can share creator location',
+      );
+    }
+
+    commute.creatorCurrentLatitude = updateCreatorLocationDto.latitude;
+    commute.creatorCurrentLongitude = updateCreatorLocationDto.longitude;
+    commute.creatorLocationUpdatedAt = new Date();
 
     const savedCommute = await this.commuteRepository.save(commute);
     return this.attachSeatInfo(savedCommute);
@@ -120,17 +175,21 @@ export class CommuteService {
   }
 
   private async attachSeatInfo(commute: Commute) {
-    const acceptedSeats = await this.participationRepository.count({
-      where: {
-        commute: { id: commute.id },
-        status: ParticipationStatus.ACCEPTED,
-      },
-    });
+    const acceptedSeats = await this.countAcceptedSeats(commute.id);
 
     return {
       ...commute,
       acceptedSeats,
       availableSeats: commute.seats - acceptedSeats,
     };
+  }
+
+  private countAcceptedSeats(commuteId: number) {
+    return this.participationRepository.count({
+      where: {
+        commute: { id: commuteId },
+        status: ParticipationStatus.ACCEPTED,
+      },
+    });
   }
 }

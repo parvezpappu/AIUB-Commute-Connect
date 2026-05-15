@@ -68,6 +68,15 @@ export class Commute {
   })
   status: CommuteStatus;
 
+  @Column({ nullable: true, type: 'double precision' })
+  creatorCurrentLatitude: number;
+
+  @Column({ nullable: true, type: 'double precision' })
+  creatorCurrentLongitude: number;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  creatorLocationUpdatedAt: Date;
+
   @ManyToOne(() => User, (user) => user.commutes, {
     eager: true,
     onDelete: 'CASCADE',

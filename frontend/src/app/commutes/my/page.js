@@ -221,6 +221,24 @@ export default function MyCommutesPage() {
                       </div>
 
                       <div className="mt-4 flex flex-wrap gap-2">
+                        <Link
+                          href={`/commutes/${commute.id}/edit`}
+                          className={`rounded-md border px-4 py-2 text-sm font-semibold ${
+                            commute.status === "OPEN"
+                              ? "border-slate-300 text-slate-700"
+                              : "pointer-events-none border-slate-200 text-slate-400"
+                          }`}
+                        >
+                          Edit post
+                        </Link>
+
+                        <Link
+                          href={`/commutes/${commute.id}/members`}
+                          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+                        >
+                          View members & map
+                        </Link>
+
                         <button
                           type="button"
                           onClick={() => handleCommuteAction(commute.id, "close")}

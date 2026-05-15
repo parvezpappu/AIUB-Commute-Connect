@@ -35,6 +35,29 @@ body {
   box-shadow: 0 8px 20px rgb(15 23 42 / 0.28);
 }
 
+.acc-map-marker-meeting span {
+  background: #003b73;
+}
+
+.acc-map-marker-member span {
+  background: #059669;
+}
+
+.acc-map-marker-creator span {
+  background: #f97316;
+}
+
+.acc-map-tooltip {
+  border: 1px solid rgb(15 23 42 / 0.12);
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 8px 20px rgb(15 23 42 / 0.16);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
 
 @keyframes fade-up {
   from {

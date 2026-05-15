@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Delete,
   Get,
@@ -19,6 +20,7 @@ import { extname, join } from 'path';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { UpdateRoutePreferenceDto } from './dto/update-route-preference.dto';
 import { UserRole } from './entities/user.entity';
 import { UserService } from './user.service';
 
@@ -41,6 +43,19 @@ export class UserController {
   @Get()
   findAll() {
     return this.userService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Patch('me/route-preference')
+  updateRoutePreference(
+    @Body() updateRoutePreferenceDto: UpdateRoutePreferenceDto,
+    @Req() req,
+  ) {
+    return this.userService.updateRoutePreference(
+      req.user.id,
+      updateRoutePreferenceDto,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

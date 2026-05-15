@@ -1,5 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateAuthDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
@@ -26,4 +33,20 @@ export class CreateAuthDto {
   @MinLength(6, { message: 'Password must be at least 6 characters' })
   @MaxLength(20, { message: 'Password cannot be longer than 20 characters' })
   password: string;
+
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsOptional()
+  @IsString({ message: 'Preferred from location must be text' })
+  @MaxLength(120, {
+    message: 'Preferred from location cannot be longer than 120 characters',
+  })
+  preferredFromLocation?: string;
+
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsOptional()
+  @IsString({ message: 'Preferred to location must be text' })
+  @MaxLength(120, {
+    message: 'Preferred to location cannot be longer than 120 characters',
+  })
+  preferredToLocation?: string;
 }

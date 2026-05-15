@@ -16,6 +16,8 @@ export default function RegisterPage() {
     aiubId: "",
     email: "",
     password: "",
+    preferredFromLocation: "",
+    preferredToLocation: "",
   });
 
   const [fieldErrors, setFieldErrors] = useState({});
@@ -56,6 +58,8 @@ export default function RegisterPage() {
         aiubId: formData.aiubId.trim(),
         email: formData.email.trim(),
         password: formData.password,
+        preferredFromLocation: formData.preferredFromLocation.trim(),
+        preferredToLocation: formData.preferredToLocation.trim(),
       });
 
       router.push(`/verify-email?email=${encodeURIComponent(formData.email.trim())}`);
@@ -182,6 +186,53 @@ export default function RegisterPage() {
                 {fieldErrors.password}
               </p>
             )}
+          </div>
+
+          <div className="rounded-md border border-slate-200 p-4">
+            <p className="text-sm font-semibold text-slate-900">
+              Daily route preference
+            </p>
+            <p className="mt-1 text-sm text-slate-600">
+              Optional. These will auto-fill when you create a commute.
+            </p>
+
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="preferredFromLocation"
+                  className="mb-1 block text-sm font-medium text-slate-700"
+                >
+                  Preferred from
+                </label>
+                <input
+                  id="preferredFromLocation"
+                  type="text"
+                  name="preferredFromLocation"
+                  value={formData.preferredFromLocation}
+                  onChange={handleChange}
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900"
+                  placeholder="Gazipur"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="preferredToLocation"
+                  className="mb-1 block text-sm font-medium text-slate-700"
+                >
+                  Preferred to
+                </label>
+                <input
+                  id="preferredToLocation"
+                  type="text"
+                  name="preferredToLocation"
+                  value={formData.preferredToLocation}
+                  onChange={handleChange}
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900"
+                  placeholder="AIUB Campus"
+                />
+              </div>
+            </div>
           </div>
 
           {error && (

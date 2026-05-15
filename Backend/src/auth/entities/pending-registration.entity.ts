@@ -23,6 +23,12 @@ export class PendingRegistration {
   @Column()
   password: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  preferredFromLocation: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  preferredToLocation: string | null;
+
   @Column({ type: 'varchar', select: false })
   emailVerificationOtp: string;
 

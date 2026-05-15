@@ -8,6 +8,7 @@ import {
   changePassword,
   clearProfilePicture,
   getCurrentUser,
+  updateRoutePreference,
   uploadProfilePicture,
 } from "../lib/api";
 import { useRequireAuth } from "../lib/auth";
@@ -33,6 +34,10 @@ export default function ProfilePage() {
     newPassword: "",
     confirmPassword: "",
   });
+  const [preferenceForm, setPreferenceForm] = useState({
+    preferredFromLocation: "",
+    preferredToLocation: "",
+  });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -41,13 +46,19 @@ export default function ProfilePage() {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isClearingPicture, setIsClearingPicture] = useState(false);
+  const [isSavingPreference, setIsSavingPreference] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isPreferenceOpen, setIsPreferenceOpen] = useState(false);
 
   useEffect(() => {
     async function loadProfile() {
       try {
         const data = await getCurrentUser();
         setUser(data);
+        setPreferenceForm({
+          preferredFromLocation: data.preferredFromLocation || "",
+          preferredToLocation: data.preferredToLocation || "",
+        });
       } catch (error) {
         setError(error.message);
       } finally {
@@ -73,6 +84,35 @@ export default function ProfilePage() {
       ...passwordForm,
       [name]: value,
     });
+  }
+
+  function handlePreferenceChange(event) {
+    const { name, value } = event.target;
+
+    setPreferenceForm({
+      ...preferenceForm,
+      [name]: value,
+    });
+  }
+
+  async function handleRoutePreferenceSubmit(event) {
+    event.preventDefault();
+    setMessage("");
+    setError("");
+    setIsSavingPreference(true);
+
+    try {
+      const updatedUser = await updateRoutePreference({
+        preferredFromLocation: preferenceForm.preferredFromLocation.trim(),
+        preferredToLocation: preferenceForm.preferredToLocation.trim(),
+      });
+      setUser(updatedUser);
+      setMessage("Route preference updated.");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsSavingPreference(false);
+    }
   }
 
   async function handleProfilePictureChange(event) {
@@ -256,7 +296,85 @@ export default function ProfilePage() {
               <p className="mt-1 text-slate-900">{user.email}</p>
             </div>
 
+            <div className="rounded-md border border-slate-200 p-4">
+              <p className="text-xs font-medium uppercase text-slate-500">
+                Preferred route
+              </p>
+              <p className="mt-1 text-slate-900">
+                {user.preferredFromLocation || "Not set"} to{" "}
+                {user.preferredToLocation || "Not set"}
+              </p>
+            </div>
+
           </div>
+
+          <section className="mt-8 rounded-lg border border-slate-200 p-5">
+            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Route preference
+                </h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Save your regular route for commute post autofill.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setIsPreferenceOpen((currentValue) => !currentValue)
+                }
+                className="w-fit rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                {isPreferenceOpen ? "Close" : "Edit preference"}
+              </button>
+            </div>
+
+            {isPreferenceOpen && (
+              <form
+                onSubmit={handleRoutePreferenceSubmit}
+                className="mt-5 space-y-4"
+              >
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700">
+                      Preferred from
+                    </label>
+                    <input
+                      type="text"
+                      name="preferredFromLocation"
+                      value={preferenceForm.preferredFromLocation}
+                      onChange={handlePreferenceChange}
+                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-[#003b73]"
+                      placeholder="Gazipur"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700">
+                      Preferred to
+                    </label>
+                    <input
+                      type="text"
+                      name="preferredToLocation"
+                      value={preferenceForm.preferredToLocation}
+                      onChange={handlePreferenceChange}
+                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-[#003b73]"
+                      placeholder="AIUB Campus"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSavingPreference}
+                  className="rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+                >
+                  {isSavingPreference ? "Saving..." : "Save preference"}
+                </button>
+              </form>
+            )}
+          </section>
 
           <section className="mt-8 rounded-lg border border-slate-200 p-5">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">

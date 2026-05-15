@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
+import { UpdateRoutePreferenceDto } from './dto/update-route-preference.dto';
 import { User, UserRole } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,6 +51,8 @@ export class UserService {
     aiubId: string;
     email: string;
     password: string;
+    preferredFromLocation?: string | null;
+    preferredToLocation?: string | null;
   }) {
     const user = this.userRepository.create({
       ...userData,
@@ -159,6 +162,26 @@ export class UserService {
   }
 
   user.profilePictureUrl = null;
+  const savedUser = await this.userRepository.save(user);
+  const { password, ...result } = savedUser;
+  return result;
+}
+
+ async updateRoutePreference(
+  id: number,
+  updateRoutePreferenceDto: UpdateRoutePreferenceDto,
+) {
+  const user = await this.findById(id);
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  user.preferredFromLocation =
+    updateRoutePreferenceDto.preferredFromLocation?.trim() || null;
+  user.preferredToLocation =
+    updateRoutePreferenceDto.preferredToLocation?.trim() || null;
+
   const savedUser = await this.userRepository.save(user);
   const { password, ...result } = savedUser;
   return result;

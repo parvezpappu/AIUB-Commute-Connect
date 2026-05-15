@@ -44,6 +44,12 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   profilePictureUrl: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  preferredFromLocation: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  preferredToLocation: string | null;
+
   @Column({ type: 'varchar', nullable: true, select: false })
   emailVerificationOtp: string | null;
 

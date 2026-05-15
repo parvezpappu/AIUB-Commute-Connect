@@ -3,6 +3,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from '../user/entities/user.entity';
+import { UpdateLocationDto } from './dto/update-location.dto';
 import { UpdateParticipationDto } from './dto/update-participation.dto';
 import { ParticipationService } from './participation.service';
 
@@ -29,6 +30,21 @@ export class ParticipationController {
   @Get('commutes/:id/participants')
   findAcceptedParticipants(@Param('id') id: string, @Req() req) {
     return this.participationService.findAcceptedParticipants(+id, req.user);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT)
+  @Patch('commutes/:id/location')
+  updateMyCommuteLocation(
+    @Param('id') id: string,
+    @Body() updateLocationDto: UpdateLocationDto,
+    @Req() req,
+  ) {
+    return this.participationService.updateMyCommuteLocation(
+      +id,
+      req.user,
+      updateLocationDto,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
