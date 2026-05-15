@@ -15,6 +15,7 @@ import {
   Participation,
   ParticipationStatus,
 } from '../participation/entities/participation.entity';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class CommuteService {
@@ -23,6 +24,7 @@ export class CommuteService {
     private readonly commuteRepository: Repository<Commute>,
     @InjectRepository(Participation)
     private readonly participationRepository: Repository<Participation>,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async create(createCommuteDto: CreateCommuteDto, creator: User) {
@@ -32,9 +34,14 @@ export class CommuteService {
       );
     }
 
+    const departureTime = new Date(createCommuteDto.departureTime);
+    const expiresAt = new Date(createCommuteDto.expiresAt);
+    this.ensureValidTimes(departureTime, expiresAt);
+
     const commute = this.commuteRepository.create({
       ...createCommuteDto,
-      departureTime: new Date(createCommuteDto.departureTime),
+      departureTime,
+      expiresAt,
       creator,
       status: CommuteStatus.OPEN,
     });
@@ -52,7 +59,14 @@ export class CommuteService {
       },
     });
 
-    return Promise.all(commutes.map((commute) => this.attachSeatInfo(commute)));
+    const now = new Date();
+    const visibleCommutes = commutes.filter(
+      (commute) => !commute.expiresAt || commute.expiresAt > now,
+    );
+
+    return Promise.all(
+      visibleCommutes.map((commute) => this.attachSeatInfo(commute)),
+    );
   }
 
   async findMyCommutes(userId: number) {
@@ -96,11 +110,19 @@ export class CommuteService {
       );
     }
 
+    const departureTime = updateCommuteDto.departureTime
+      ? new Date(updateCommuteDto.departureTime)
+      : commute.departureTime;
+    const expiresAt = updateCommuteDto.expiresAt
+      ? new Date(updateCommuteDto.expiresAt)
+      : commute.expiresAt;
+
+    this.ensureValidTimes(departureTime, expiresAt);
+
     Object.assign(commute, {
       ...updateCommuteDto,
-      departureTime: updateCommuteDto.departureTime
-        ? new Date(updateCommuteDto.departureTime)
-        : commute.departureTime,
+      departureTime,
+      expiresAt,
     });
 
     const savedCommute = await this.commuteRepository.save(commute);
@@ -115,6 +137,38 @@ export class CommuteService {
     commute.status = CommuteStatus.CLOSED;
 
     const savedCommute = await this.commuteRepository.save(commute);
+    return this.attachSeatInfo(savedCommute);
+  }
+
+  async complete(id: number, user: User) {
+    const commute = await this.findCommuteEntity(id);
+
+    this.ensureCanManage(commute, user, 'complete');
+
+    if (commute.status === CommuteStatus.COMPLETED) {
+      return this.attachSeatInfo(commute);
+    }
+
+    commute.status = CommuteStatus.COMPLETED;
+
+    const savedCommute = await this.commuteRepository.save(commute);
+
+    const acceptedParticipants = await this.participationRepository.find({
+      where: {
+        commute: { id },
+        status: ParticipationStatus.ACCEPTED,
+      },
+    });
+
+    await Promise.all(
+      acceptedParticipants.map((participant) =>
+        this.notificationService.createCommuteCompletedNotification(
+          participant.user,
+          savedCommute,
+        ),
+      ),
+    );
+
     return this.attachSeatInfo(savedCommute);
   }
 
@@ -191,5 +245,21 @@ export class CommuteService {
         status: ParticipationStatus.ACCEPTED,
       },
     });
+  }
+
+  private ensureValidTimes(departureTime: Date, expiresAt: Date | null) {
+    if (Number.isNaN(departureTime.getTime())) {
+      throw new BadRequestException('Departure time must be valid');
+    }
+
+    if (!expiresAt || Number.isNaN(expiresAt.getTime())) {
+      throw new BadRequestException('Request close time must be valid');
+    }
+
+    if (expiresAt < departureTime) {
+      throw new BadRequestException(
+        'Request close time must be after departure time',
+      );
+    }
   }
 }

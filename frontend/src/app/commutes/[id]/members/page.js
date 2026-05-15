@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LiveCommuteMap from "../../../components/LiveCommuteMap";
+import UserRatingBadge from "../../../components/UserRatingBadge";
 import {
   getCommute,
   getCommuteParticipants,
@@ -382,9 +383,12 @@ export default function CommuteMembersPage() {
           </div>
 
           <div className="p-5">
-            <p className="font-semibold text-slate-900">
-              {commute.creator?.fullName}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="font-semibold text-slate-900">
+                {commute.creator?.fullName}
+              </p>
+              <UserRatingBadge userId={commute.creator?.id} />
+            </div>
             <p className="text-sm text-slate-500">
               {commute.creator?.aiubId} - {commute.creator?.email}
             </p>
@@ -426,9 +430,12 @@ export default function CommuteMembersPage() {
                   className="flex flex-col justify-between gap-3 p-5 sm:flex-row sm:items-center"
                 >
                   <div>
-                    <p className="font-semibold text-slate-900">
-                      {participant.user.fullName}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold text-slate-900">
+                        {participant.user.fullName}
+                      </p>
+                      <UserRatingBadge userId={participant.user?.id} />
+                    </div>
                     <p className="text-sm text-slate-500">
                       {participant.user.aiubId} - {participant.user.email}
                     </p>

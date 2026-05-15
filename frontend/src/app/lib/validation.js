@@ -89,6 +89,14 @@
         return !Number.isNaN(departureDate.getTime()) && departureDate > new Date();
         }, "Departure time must be in the future"),
 
+    expiresAt: z
+        .string()
+        .min(1, "Request close time is required")
+        .refine((value) => {
+        const closeDate = new Date(value);
+        return !Number.isNaN(closeDate.getTime()) && closeDate > new Date();
+        }, "Request close time must be in the future"),
+
     seats: z
         .string()
         .min(1, "Seats are required")
@@ -101,7 +109,13 @@
         .min(1, "Cost is required")
         .refine((value) => Number.isInteger(Number(value)), "Cost must be a whole number")
         .refine((value) => Number(value) >= 0, "Cost must be 0 or more"),
-    });
+    }).refine(
+    (data) => new Date(data.expiresAt) >= new Date(data.departureTime),
+    {
+        path: ["expiresAt"],
+        message: "Request close time must be after departure time",
+    },
+    );
 
     function formatZodErrors(result) {
     const errors = {};

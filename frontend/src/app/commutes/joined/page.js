@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
+import MeetingPointTooltip from "../../components/MeetingPointTooltip";
+import UserRatingBadge from "../../components/UserRatingBadge";
 import {
   deleteParticipationHistory,
   getMyParticipations,
@@ -27,6 +29,7 @@ function formatDateTime(value) {
 export default function JoinedCommutesPage() {
   const isCheckingAuth = useRequireStudent();
   const [participations, setParticipations] = useState([]);
+  const [now, setNow] = useState(() => Date.now());
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -52,6 +55,40 @@ export default function JoinedCommutesPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadParticipations();
   }, []);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  function getCountdown(value) {
+    const target = new Date(value).getTime();
+
+    if (!value || Number.isNaN(target)) {
+      return "No close time set";
+    }
+
+    const diff = target - now;
+
+    if (diff <= 0) {
+      return "Request window closed";
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (days > 0) {
+      return `${days}d ${hours}h ${minutes}m ${seconds}s left`;
+    }
+
+    return `${hours}h ${minutes}m ${seconds}s left`;
+  }
 
   async function handleLeave(commuteId) {
     const confirmed = window.confirm(
@@ -97,7 +134,9 @@ export default function JoinedCommutesPage() {
   const acceptedParticipations = useMemo(() => {
     return participations.filter(
       (item) =>
-        item.status === "ACCEPTED" && item.commute.status !== "CLOSED",
+        item.status === "ACCEPTED" &&
+        item.commute.status !== "CLOSED" &&
+        item.commute.status !== "COMPLETED",
     );
   }, [participations]);
 
@@ -110,7 +149,8 @@ export default function JoinedCommutesPage() {
       (item) =>
         item.status === "REJECTED" ||
         item.status === "CANCELLED" ||
-        item.commute.status === "CLOSED",
+        item.commute.status === "CLOSED" ||
+        item.commute.status === "COMPLETED",
     );
   }, [participations]);
 
@@ -173,13 +213,14 @@ export default function JoinedCommutesPage() {
     const commute = participation.commute;
     const statusClass =
       statusStyles[participation.status] || statusStyles.CANCELLED;
+    const isAccepted = participation.status === "ACCEPTED";
 
     return (
       <article
         key={participation.id}
         className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
       >
-        <div className="p-5">
+        <div className="p-4">
           <div className="flex items-start justify-between gap-4">
             <span className="rounded-full bg-[#003b73]/10 px-3 py-1 text-xs font-semibold text-[#003b73]">
               {commute.transportType}
@@ -191,15 +232,59 @@ export default function JoinedCommutesPage() {
             </span>
           </div>
 
-          <h2 className="mt-4 text-xl font-semibold text-slate-950">
+          <h2 className="mt-3 text-lg font-semibold text-slate-950">
             {commute.fromLocation} to {commute.toLocation}
           </h2>
 
+          {isAccepted ? (
+            <div className="mt-3 space-y-2">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-md bg-slate-50 p-2.5">
+                  <p className="text-xs text-slate-500">From</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                    {commute.fromLocation}
+                  </p>
+                </div>
+                <div className="rounded-md bg-slate-50 p-2.5">
+                  <p className="text-xs text-slate-500">Destination</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                    {commute.toLocation}
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-md bg-slate-50 p-2.5">
+                <p className="text-xs text-slate-500">Meeting point</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">
+                  <MeetingPointTooltip
+                    label={commute.meetingLocation}
+                    tooltip={commute.meetingAddress || commute.meetingLocation}
+                  />
+                </p>
+              </div>
+
+              <div className="rounded-md bg-[#003b73]/5 p-2.5">
+                <p className="text-xs font-medium uppercase text-[#003b73]">
+                  Countdown
+                </p>
+                <p className="mt-1 text-base font-semibold text-slate-950">
+                  {getCountdown(commute.expiresAt || commute.departureTime)}
+                </p>
+              </div>
+            </div>
+          ) : (
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-md bg-slate-50 p-3 sm:col-span-2">
               <p className="text-xs text-slate-500">Meeting point</p>
               <p className="mt-1 text-sm font-semibold text-slate-900">
-                {commute.meetingLocation || "Not specified"}
+                <MeetingPointTooltip
+                  label={commute.meetingLocation}
+                  tooltip={
+                    participation.status === "ACCEPTED"
+                      ? commute.meetingAddress || commute.meetingLocation
+                      : commute.meetingLocation
+                  }
+                />
               </p>
               {participation.status === "ACCEPTED" &&
                 commute.meetingAddress && (
@@ -233,21 +318,23 @@ export default function JoinedCommutesPage() {
               </p>
             </div>
           </div>
+          )}
 
-          <div className="mt-4 rounded-md border border-slate-200 p-3">
+          <div className="mt-3 rounded-md border border-slate-200 p-2.5">
             <p className="text-xs font-medium uppercase text-slate-500">
               Creator
             </p>
             <p className="mt-1 text-sm font-semibold text-slate-900">
               {commute.creator?.fullName}
             </p>
+            <UserRatingBadge userId={commute.creator?.id} className="mt-2" />
             <p className="text-xs text-slate-500">{commute.creator?.aiubId}</p>
           </div>
 
           {participation.status === "ACCEPTED" && (
             <Link
               href={`/commutes/${commute.id}/members`}
-              className="mt-4 block rounded-md bg-[#003b73] px-4 py-3 text-center text-sm font-semibold text-white"
+              className="mt-3 block rounded-md bg-[#003b73] px-4 py-2.5 text-center text-sm font-semibold text-white"
             >
               View commute members
             </Link>
@@ -258,7 +345,7 @@ export default function JoinedCommutesPage() {
               type="button"
               onClick={() => handleLeave(commute.id)}
               disabled={leavingId === commute.id}
-              className="mt-4 w-full rounded-md border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+              className="mt-3 w-full rounded-md border border-rose-200 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
             >
               {leavingId === commute.id
                 ? "Cancelling..."
@@ -391,7 +478,13 @@ export default function JoinedCommutesPage() {
                             Meeting point
                           </p>
                           <p className="mt-1 text-sm font-semibold text-slate-900">
-                            {commute.meetingLocation || "Not specified"}
+                            <MeetingPointTooltip
+                              label={commute.meetingLocation}
+                              tooltip={
+                                commute.meetingAddress ||
+                                commute.meetingLocation
+                              }
+                            />
                           </p>
                           {participation.status === "ACCEPTED" &&
                             commute.meetingAddress && (

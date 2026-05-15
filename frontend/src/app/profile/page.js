@@ -8,6 +8,7 @@ import {
   changePassword,
   clearProfilePicture,
   getCurrentUser,
+  getUserRatingSummary,
   updateRoutePreference,
   uploadProfilePicture,
 } from "../lib/api";
@@ -29,6 +30,7 @@ export default function ProfilePage() {
   const isCheckingAuth = useRequireAuth();
 
   const [user, setUser] = useState(null);
+  const [ratingSummary, setRatingSummary] = useState(null);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -54,7 +56,9 @@ export default function ProfilePage() {
     async function loadProfile() {
       try {
         const data = await getCurrentUser();
+        const summary = await getUserRatingSummary(data.id);
         setUser(data);
+        setRatingSummary(summary);
         setPreferenceForm({
           preferredFromLocation: data.preferredFromLocation || "",
           preferredToLocation: data.preferredToLocation || "",
@@ -303,6 +307,17 @@ export default function ProfilePage() {
               <p className="mt-1 text-slate-900">
                 {user.preferredFromLocation || "Not set"} to{" "}
                 {user.preferredToLocation || "Not set"}
+              </p>
+            </div>
+
+            <div className="rounded-md border border-slate-200 p-4">
+              <p className="text-xs font-medium uppercase text-slate-500">
+                Community rating
+              </p>
+              <p className="mt-1 text-slate-900">
+                {ratingSummary?.ratingCount
+                  ? `${ratingSummary.averageRating}/5 from ${ratingSummary.ratingCount} rating`
+                  : "No ratings yet"}
               </p>
             </div>
 

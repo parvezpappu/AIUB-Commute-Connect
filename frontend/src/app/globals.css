@@ -58,6 +58,51 @@ body {
   padding: 4px 8px;
 }
 
+.acc-tooltip-wrap {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  cursor: default;
+}
+
+.acc-tooltip-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acc-tooltip-panel {
+  pointer-events: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  width: max-content;
+  max-width: min(320px, 80vw);
+  transform: translateY(4px);
+  border: 1px solid rgb(15 23 42 / 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgb(15 23 42 / 0.18);
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  opacity: 0;
+  padding: 8px 10px;
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+  white-space: normal;
+}
+
+.acc-tooltip-wrap:hover .acc-tooltip-panel,
+.acc-tooltip-wrap:focus-within .acc-tooltip-panel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 
 @keyframes fade-up {
   from {

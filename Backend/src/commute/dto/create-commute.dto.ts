@@ -52,6 +52,9 @@ export class CreateCommuteDto {
   @IsISO8601({}, { message: 'Departure time must be a valid date and time' })
   departureTime: string;
 
+  @IsISO8601({}, { message: 'Request close time must be a valid date and time' })
+  expiresAt: string;
+
   @Type(() => Number)
   @IsInt({ message: 'Seats must be a whole number' })
   @Min(1, { message: 'Seats must be at least 1' })

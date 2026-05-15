@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AuthenticatedNav from "../components/AuthenticatedNav";
+import MeetingPointTooltip from "../components/MeetingPointTooltip";
+import UserRatingBadge from "../components/UserRatingBadge";
 import {
   getCommutes,
   getCurrentUser,
@@ -55,22 +57,20 @@ function getTimeLeft(value) {
   const diff = new Date(value).getTime() - Date.now();
 
   if (diff <= 0) {
-    return "Departing soon";
+    return "Closed";
   }
 
-  const minutes = Math.round(diff / 60000);
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
 
-  if (minutes < 60) {
-    return `${minutes} min left`;
+  if (days > 0) {
+    return `${days}d ${hours}h ${minutes}m ${seconds}s left`;
   }
 
-  const hours = Math.round(minutes / 60);
-
-  if (hours < 24) {
-    return `${hours} hr left`;
-  }
-
-  return `${Math.round(hours / 24)} days left`;
+  return `${hours}h ${minutes}m ${seconds}s left`;
 }
 
 function getJoinButtonLabel(participationStatus, noSeatsLeft, isJoining) {
@@ -96,6 +96,7 @@ function getJoinButtonLabel(participationStatus, noSeatsLeft, isJoining) {
 export default function CommutesPage() {
   const isCheckingAuth = useRequireAuth();
   const [commutes, setCommutes] = useState([]);
+  const [, setNow] = useState(() => Date.now());
   const [currentUser, setCurrentUser] = useState(null);
   const [participationStatusByCommute, setParticipationStatusByCommute] =
     useState({});
@@ -129,6 +130,14 @@ export default function CommutesPage() {
     }
 
     loadCommutes();
+  }, []);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
   }, []);
 
   const browseCommutes = useMemo(() => {
@@ -306,7 +315,7 @@ export default function CommutesPage() {
                 >
                   <div className={`h-2 bg-gradient-to-r ${theme.accent}`} />
 
-                  <div className="p-5">
+                  <div className="p-4">
                     <div className="flex items-start justify-between gap-4">
                       <span
                         className={`rounded-full border px-3 py-1 text-xs font-semibold ${theme.color}`}
@@ -318,12 +327,12 @@ export default function CommutesPage() {
                       </span>
                     </div>
 
-                    <div className="mt-5 space-y-4">
+                    <div className="mt-4 space-y-3">
                       <div>
                         <p className="text-xs font-medium uppercase text-slate-500">
                           From
                         </p>
-                        <p className="mt-1 text-lg font-semibold text-slate-950">
+                        <p className="mt-1 text-base font-semibold text-slate-950">
                           {commute.fromLocation}
                         </p>
                       </div>
@@ -334,41 +343,46 @@ export default function CommutesPage() {
                         <p className="text-xs font-medium uppercase text-slate-500">
                           To
                         </p>
-                        <p className="mt-1 text-lg font-semibold text-slate-950">
+                        <p className="mt-1 text-base font-semibold text-slate-950">
                           {commute.toLocation}
                         </p>
                       </div>
 
-                      <div className="rounded-md border border-slate-200 p-3">
+                      <div className="rounded-md border border-slate-200 p-2.5">
                         <p className="text-xs font-medium uppercase text-slate-500">
                           Meeting point
                         </p>
                         <p className="mt-1 text-sm font-semibold text-slate-900">
-                          {commute.meetingLocation || "Not specified"}
+                          <MeetingPointTooltip
+                            label={commute.meetingLocation}
+                            tooltip={commute.meetingLocation}
+                          />
                         </p>
                       </div>
                     </div>
 
-                    <div className="mt-5 grid grid-cols-2 gap-3">
-                      <div className="rounded-md bg-slate-50 p-3">
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <div className="rounded-md bg-slate-50 p-2.5">
                         <p className="text-xs text-slate-500">Departure</p>
                         <p className="mt-1 text-sm font-semibold text-slate-900">
                           {formatDateTime(commute.departureTime)}
                         </p>
                       </div>
-                      <div className="rounded-md bg-slate-50 p-3">
-                        <p className="text-xs text-slate-500">Time left</p>
+                      <div className="rounded-md bg-[#003b73]/5 p-2.5">
+                        <p className="text-xs text-slate-500">
+                          Request closes
+                        </p>
                         <p className="mt-1 text-sm font-semibold text-slate-900">
-                          {getTimeLeft(commute.departureTime)}
+                          {getTimeLeft(commute.expiresAt || commute.departureTime)}
                         </p>
                       </div>
-                      <div className="rounded-md bg-slate-50 p-3">
+                      <div className="rounded-md bg-slate-50 p-2.5">
                         <p className="text-xs text-slate-500">Seats left</p>
                         <p className="mt-1 text-sm font-semibold text-slate-900">
                           {commute.availableSeats ?? commute.seats}
                         </p>
                       </div>
-                      <div className="rounded-md bg-slate-50 p-3">
+                      <div className="rounded-md bg-slate-50 p-2.5">
                         <p className="text-xs text-slate-500">Cost/person</p>
                         <p className="mt-1 text-sm font-semibold text-slate-900">
                           Tk {commute.costPerPerson}
@@ -376,13 +390,17 @@ export default function CommutesPage() {
                       </div>
                     </div>
 
-                    <div className="mt-5 rounded-md border border-slate-200 p-3">
+                    <div className="mt-4 rounded-md border border-slate-200 p-2.5">
                       <p className="text-xs font-medium uppercase text-slate-500">
                         Created by
                       </p>
                       <p className="mt-1 text-sm font-semibold text-slate-900">
                         {commute.creator?.fullName}
                       </p>
+                      <UserRatingBadge
+                        userId={commute.creator?.id}
+                        className="mt-2"
+                      />
                       <p className="text-xs text-slate-500">
                         {commute.creator?.aiubId}
                       </p>

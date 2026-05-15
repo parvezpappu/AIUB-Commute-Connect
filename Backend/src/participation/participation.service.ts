@@ -47,6 +47,10 @@ export class ParticipationService {
       throw new BadRequestException('This commute is not open for joining');
     }
 
+    if (commute.expiresAt && commute.expiresAt <= new Date()) {
+      throw new BadRequestException('This commute is closed for new requests');
+    }
+
     if (commute.creator.id === user.id) {
       throw new BadRequestException('You cannot join your own commute');
     }
@@ -315,7 +319,8 @@ export class ParticipationService {
     const isHistory =
       participation.status === ParticipationStatus.REJECTED ||
       participation.status === ParticipationStatus.CANCELLED ||
-      participation.commute.status === CommuteStatus.CLOSED;
+      participation.commute.status === CommuteStatus.CLOSED ||
+      participation.commute.status === CommuteStatus.COMPLETED;
 
     if (!isHistory) {
       throw new BadRequestException(

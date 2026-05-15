@@ -33,6 +33,7 @@ export default function CreateCommutePage() {
     meetingLatitude: null,
     meetingLongitude: null,
     departureTime: "",
+    expiresAt: "",
     seats: "1",
     costPerPerson: "0",
   });
@@ -137,6 +138,7 @@ export default function CreateCommutePage() {
         meetingLatitude: formData.meetingLatitude,
         meetingLongitude: formData.meetingLongitude,
         departureTime: new Date(formData.departureTime).toISOString(),
+        expiresAt: new Date(formData.expiresAt).toISOString(),
         seats: Number(formData.seats),
         costPerPerson: Number(formData.costPerPerson),
       });
@@ -301,7 +303,7 @@ export default function CreateCommutePage() {
               )}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
                   Departure time
@@ -321,6 +323,27 @@ export default function CreateCommutePage() {
                 )}
               </div>
 
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  Request closes at
+                </label>
+                <input
+                  type="datetime-local"
+                  name="expiresAt"
+                  value={formData.expiresAt}
+                  onChange={handleChange}
+                  className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                  required
+                />
+                {fieldErrors.expiresAt && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {fieldErrors.expiresAt}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
                   Seats

@@ -45,6 +45,18 @@ export class NotificationService {
     return this.notificationRepository.save(notification);
   }
 
+  async createCommuteCompletedNotification(user: User, commute: Commute) {
+    const notification = this.notificationRepository.create({
+      user,
+      commute,
+      type: NotificationType.COMMUTE_COMPLETED,
+      message: `${commute.fromLocation} to ${commute.toLocation} is complete. Please rate your group.`,
+      isRead: false,
+    });
+
+    return this.notificationRepository.save(notification);
+  }
+
   findMyNotifications(userId: number) {
     return this.notificationRepository.find({
       where: {

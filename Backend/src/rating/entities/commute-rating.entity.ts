@@ -8,23 +8,15 @@ import {
 import { Commute } from '../../commute/entities/commute.entity';
 import { User } from '../../user/entities/user.entity';
 
-export enum NotificationType {
-  JOIN_REQUEST = 'JOIN_REQUEST',
-  REQUEST_ACCEPTED = 'REQUEST_ACCEPTED',
-  REQUEST_REJECTED = 'REQUEST_REJECTED',
-  COMMUTE_COMPLETED = 'COMMUTE_COMPLETED',
+export enum RatingType {
+  USER = 'USER',
+  TRIP = 'TRIP',
 }
 
-@Entity('notifications')
-export class Notification {
+@Entity('commute_ratings')
+export class CommuteRating {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => User, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
-  user: User;
 
   @ManyToOne(() => Commute, {
     eager: true,
@@ -32,17 +24,27 @@ export class Notification {
   })
   commute: Commute;
 
+  @ManyToOne(() => User, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  rater: User;
+
+  @ManyToOne(() => User, {
+    eager: true,
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  ratedUser: User | null;
+
   @Column({
     type: 'enum',
-    enum: NotificationType,
+    enum: RatingType,
   })
-  type: NotificationType;
+  type: RatingType;
 
   @Column()
-  message: string;
-
-  @Column({ default: false })
-  isRead: boolean;
+  rating: number;
 
   @CreateDateColumn()
   createdAt: Date;

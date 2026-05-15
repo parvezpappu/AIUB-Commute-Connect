@@ -13,6 +13,10 @@ function getNotificationHref(notification) {
     return `/commutes/${notification.commute.id}/members`;
   }
 
+  if (notification.type === "COMMUTE_COMPLETED") {
+    return `/commutes/${notification.commute.id}/rate`;
+  }
+
   return "/commutes/joined";
 }
 
@@ -30,6 +34,10 @@ function getNotificationTitle(type) {
 
   if (type === "REQUEST_ACCEPTED") {
     return "Request accepted";
+  }
+
+  if (type === "COMMUTE_COMPLETED") {
+    return "Rate completed ride";
   }
 
   return "Request rejected";
@@ -136,7 +144,8 @@ export default function NotificationBell() {
                       {formatNotificationTime(notification.createdAt)}
                     </p>
                     {(notification.type === "JOIN_REQUEST" ||
-                      notification.type === "REQUEST_ACCEPTED") && (
+                      notification.type === "REQUEST_ACCEPTED" ||
+                      notification.type === "COMMUTE_COMPLETED") && (
                       <span className="rounded-md bg-[#003b73] px-3 py-1 text-xs font-semibold text-white">
                         View
                       </span>

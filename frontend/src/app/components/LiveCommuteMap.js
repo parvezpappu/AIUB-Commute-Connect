@@ -61,7 +61,13 @@ export default function LiveCommuteMap({
         }),
       })
         .addTo(markerLayerRef.current)
-        .bindPopup(mapData.meetingLabel || "Meeting point");
+        .bindPopup(mapData.meetingLabel || "Meeting point")
+        .bindTooltip(mapData.meetingLabel || "Meeting point", {
+          permanent: true,
+          direction: "top",
+          offset: [0, -16],
+          className: "acc-map-tooltip",
+        });
 
       if (mapData.creatorLocation?.latitude && mapData.creatorLocation?.longitude) {
         const creatorPosition = [

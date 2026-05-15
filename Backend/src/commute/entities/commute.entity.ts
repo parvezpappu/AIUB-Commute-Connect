@@ -21,6 +21,7 @@ export enum CommuteStatus {
   OPEN = 'OPEN',
   CLOSED = 'CLOSED',
   CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
 }
 
 @Entity('commutes')
@@ -54,6 +55,9 @@ export class Commute {
 
   @Column()
   departureTime: Date;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  expiresAt: Date;
 
   @Column()
   seats: number;

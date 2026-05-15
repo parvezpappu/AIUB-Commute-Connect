@@ -68,6 +68,13 @@ export class CommuteController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Patch(':id/complete')
+  complete(@Param('id') id: string, @Req() req) {
+    return this.commuteService.complete(+id, req.user);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
   @Patch(':id/close')
   close(@Param('id') id: string, @Req() req) {
     return this.commuteService.close(+id, req.user);
