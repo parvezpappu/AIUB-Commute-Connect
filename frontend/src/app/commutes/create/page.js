@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
+import MapPicker from "../../components/MapPicker";
 import { createCommute, getCurrentUser } from "../../lib/api";
 import { useRequireStudent } from "../../lib/auth";
 import {
@@ -11,8 +12,10 @@ import {
 } from "../../lib/validation";
 
 const transportTypes = [
-  { value: "CNG", label: "CNG" },
+  { value: "UBER", label: "Uber" },
+  { value: "BUS", label: "Bus" },
   { value: "BIKE", label: "Bike" },
+  { value: "CNG", label: "CNG" },
   { value: "RICKSHAW", label: "Rickshaw" },
   { value: "WALKING", label: "Walking" },
 ];
@@ -22,9 +25,13 @@ export default function CreateCommutePage() {
   const isCheckingAuth = useRequireStudent();
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
-    transportType: "CNG",
+    transportType: "UBER",
     fromLocation: "",
     toLocation: "",
+    meetingLocation: "",
+    meetingAddress: "",
+    meetingLatitude: null,
+    meetingLongitude: null,
     departureTime: "",
     seats: "1",
     costPerPerson: "0",
@@ -60,6 +67,41 @@ export default function CreateCommutePage() {
     });
   }
 
+  function handleMeetingPointChange(point) {
+    const shouldAutofillMeetingName =
+      !formData.meetingLocation.trim() && point.locationName;
+
+    setFormData({
+      ...formData,
+      meetingLatitude: point.latitude,
+      meetingLongitude: point.longitude,
+      meetingAddress: point.locationName || "",
+      meetingLocation: shouldAutofillMeetingName
+        ? point.locationName
+        : formData.meetingLocation,
+    });
+
+    setFieldErrors({
+      ...fieldErrors,
+      meetingLocation: "",
+      meetingAddress: "",
+      meetingLatitude: "",
+      meetingLongitude: "",
+    });
+  }
+
+  function handleUseDetectedAddress(address) {
+    setFormData({
+      ...formData,
+      meetingLocation: address,
+    });
+
+    setFieldErrors({
+      ...fieldErrors,
+      meetingLocation: "",
+    });
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
@@ -83,6 +125,10 @@ export default function CreateCommutePage() {
         transportType: formData.transportType,
         fromLocation: formData.fromLocation.trim(),
         toLocation: formData.toLocation.trim(),
+        meetingLocation: formData.meetingLocation.trim(),
+        meetingAddress: formData.meetingAddress.trim(),
+        meetingLatitude: formData.meetingLatitude,
+        meetingLongitude: formData.meetingLongitude,
         departureTime: new Date(formData.departureTime).toISOString(),
         seats: Number(formData.seats),
         costPerPerson: Number(formData.costPerPerson),
@@ -108,48 +154,23 @@ export default function CreateCommutePage() {
     <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
       <AuthenticatedNav />
 
-      <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[0.75fr_1.25fr]">
-        <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="w-fit rounded-full bg-[#003b73]/5 px-3 py-1 text-sm font-medium text-[#003b73]">
-            Create commute
-          </p>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950">
-            Share your route with nearby AIUB students.
-          </h1>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            Add accurate route, departure time, seats, and cost. Students will
-            send join requests, and you can accept them from the commute request
-            panel later.
-          </p>
-
-          <div className="mt-6 space-y-3">
-            <div className="rounded-md bg-slate-50 p-4">
-              <p className="text-sm font-semibold text-slate-900">
-                Keep it precise
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                Use recognizable pickup points like Kuril, Bashundhara gate, or
-                campus entrance.
-              </p>
-            </div>
-            <div className="rounded-md bg-slate-50 p-4">
-              <p className="text-sm font-semibold text-slate-900">
-                Seats close automatically
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                Once accepted requests fill all seats, the commute is closed.
-              </p>
-            </div>
-          </div>
-        </aside>
-
+      <section className="mx-auto max-w-3xl px-4 py-8">
         <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6">
+            <p className="w-fit rounded-full bg-[#003b73]/5 px-3 py-1 text-sm font-medium text-[#003b73]">
+              Create commute
+            </p>
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-950">
+              Publish a commute post
+            </h1>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Transport type
               </label>
-              <div className="grid gap-3 sm:grid-cols-4">
+              <div className="grid gap-3 sm:grid-cols-3">
                 {transportTypes.map((type) => (
                   <label
                     key={type.value}
@@ -213,6 +234,51 @@ export default function CreateCommutePage() {
                   </p>
                 )}
               </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Meeting location
+              </label>
+              <input
+                type="text"
+                name="meetingLocation"
+                value={formData.meetingLocation}
+                onChange={handleChange}
+                className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                placeholder="Example: AIUB main gate or Kuril foot overbridge"
+                required
+              />
+              <p className="mt-1 text-sm text-slate-500">
+                Write a short meeting title people should follow. The exact map
+                address is saved from the selected point below.
+              </p>
+              {fieldErrors.meetingLocation && (
+                <p className="mt-1 text-sm text-red-600">
+                  {fieldErrors.meetingLocation}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Meeting point on map
+              </label>
+              <MapPicker
+                value={{
+                  latitude: formData.meetingLatitude,
+                  longitude: formData.meetingLongitude,
+                }}
+                onChange={handleMeetingPointChange}
+                onUseDetectedAddress={handleUseDetectedAddress}
+              />
+              {(fieldErrors.meetingLatitude ||
+                fieldErrors.meetingLongitude) && (
+                <p className="mt-1 text-sm text-red-600">
+                  {fieldErrors.meetingLatitude ||
+                    fieldErrors.meetingLongitude}
+                </p>
+              )}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">

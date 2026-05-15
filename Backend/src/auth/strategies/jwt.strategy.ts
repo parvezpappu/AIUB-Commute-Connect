@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -26,10 +27,16 @@ function extractTokenFromCookie(request: Request): string | null {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([extractTokenFromCookie]),
-      secretOrKey: 'aiub_commute_connect_secret',
+      secretOrKey: configService.get<string>(
+        'JWT_SECRET',
+        'aiub_commute_connect_secret',
+      ),
     });
   }
 

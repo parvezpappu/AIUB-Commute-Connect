@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import MapPreview from "../../../components/MapPreview";
 import { getCommute, getCommuteParticipants } from "../../../lib/api";
 import { useRequireAuth } from "../../../lib/auth";
 
@@ -98,6 +99,19 @@ export default function CommuteMembersPage() {
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-4">
+            <div className="rounded-md bg-slate-50 p-4 sm:col-span-4">
+              <p className="text-xs font-medium uppercase text-slate-500">
+                Meeting point
+              </p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">
+                {commute.meetingLocation || "Not specified"}
+              </p>
+              {commute.meetingAddress && (
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  {commute.meetingAddress}
+                </p>
+              )}
+            </div>
             <div className="rounded-md bg-slate-50 p-4">
               <p className="text-xs font-medium uppercase text-slate-500">
                 Status
@@ -130,6 +144,14 @@ export default function CommuteMembersPage() {
                 Tk {commute.costPerPerson}
               </p>
             </div>
+          </div>
+
+          <div className="mt-4">
+            <MapPreview
+              latitude={commute.meetingLatitude}
+              longitude={commute.meetingLongitude}
+              label={commute.meetingLocation}
+            />
           </div>
         </div>
 

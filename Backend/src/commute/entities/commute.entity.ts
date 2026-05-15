@@ -9,6 +9,8 @@ import {
 import { User } from '../../user/entities/user.entity';
 
 export enum TransportType {
+  UBER = 'UBER',
+  BUS = 'BUS',
   BIKE = 'BIKE',
   CNG = 'CNG',
   RICKSHAW = 'RICKSHAW',
@@ -37,6 +39,18 @@ export class Commute {
 
   @Column()
   toLocation: string;
+
+  @Column({ nullable: true })
+  meetingLocation: string;
+
+  @Column({ nullable: true })
+  meetingAddress: string;
+
+  @Column({ nullable: true, type: 'double precision' })
+  meetingLatitude: number;
+
+  @Column({ nullable: true, type: 'double precision' })
+  meetingLongitude: number;
 
   @Column()
   departureTime: Date;

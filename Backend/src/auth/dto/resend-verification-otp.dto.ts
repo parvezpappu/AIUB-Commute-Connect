@@ -1,6 +1,10 @@
+import { Transform } from 'class-transformer';
 import { IsEmail } from 'class-validator';
 
 export class ResendVerificationOtpDto {
-  @IsEmail()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
+  @IsEmail({}, { message: 'Enter a valid email address' })
   email: string;
 }

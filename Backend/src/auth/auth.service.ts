@@ -88,7 +88,7 @@ export class AuthService {
     const user = await this.userService.findByAiubId(loginAuthDto.aiubId,true);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid AIUB ID or password');
+      throw new UnauthorizedException('Invalid university ID or password');
     }
 
     const isPasswordMatched = await bcrypt.compare(
@@ -97,7 +97,7 @@ export class AuthService {
     );
 
     if (!isPasswordMatched) {
-      throw new UnauthorizedException('Invalid AIUB ID or password');
+      throw new UnauthorizedException('Invalid university ID or password');
     }
 
     if (!user.isVerified) {

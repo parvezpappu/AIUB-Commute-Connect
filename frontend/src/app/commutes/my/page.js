@@ -206,6 +206,20 @@ export default function MyCommutesPage() {
                         {formatDateTime(commute.departureTime)}
                       </p>
 
+                      <div className="mt-4 rounded-md border border-slate-200 p-3">
+                        <p className="text-xs font-medium uppercase text-slate-500">
+                          Meeting point
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-slate-900">
+                          {commute.meetingLocation || "Not specified"}
+                        </p>
+                        {commute.meetingAddress && (
+                          <p className="mt-1 text-xs leading-5 text-slate-500">
+                            {commute.meetingAddress}
+                          </p>
+                        )}
+                      </div>
+
                       <div className="mt-4 flex flex-wrap gap-2">
                         <button
                           type="button"

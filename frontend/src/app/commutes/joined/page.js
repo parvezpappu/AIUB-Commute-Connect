@@ -196,6 +196,18 @@ export default function JoinedCommutesPage() {
           </h2>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-md bg-slate-50 p-3 sm:col-span-2">
+              <p className="text-xs text-slate-500">Meeting point</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">
+                {commute.meetingLocation || "Not specified"}
+              </p>
+              {participation.status === "ACCEPTED" &&
+                commute.meetingAddress && (
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  {commute.meetingAddress}
+                </p>
+              )}
+            </div>
             <div className="rounded-md bg-slate-50 p-3">
               <p className="text-xs text-slate-500">Departure</p>
               <p className="mt-1 text-sm font-semibold text-slate-900">
@@ -374,6 +386,20 @@ export default function JoinedCommutesPage() {
                   {isOpen && (
                     <div className="border-t border-slate-100 p-4">
                       <div className="grid gap-3 sm:grid-cols-3">
+                        <div className="rounded-md bg-slate-50 p-3">
+                          <p className="text-xs text-slate-500">
+                            Meeting point
+                          </p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                            {commute.meetingLocation || "Not specified"}
+                          </p>
+                          {participation.status === "ACCEPTED" &&
+                            commute.meetingAddress && (
+                            <p className="mt-1 text-xs leading-5 text-slate-500">
+                              {commute.meetingAddress}
+                            </p>
+                          )}
+                        </div>
                         <div className="rounded-md bg-slate-50 p-3">
                           <p className="text-xs text-slate-500">Transport</p>
                           <p className="mt-1 text-sm font-semibold text-slate-900">

@@ -39,7 +39,7 @@
     });
 
     const createCommuteSchema = z.object({
-    transportType: z.enum(["BIKE", "CNG", "RICKSHAW", "WALKING"], {
+    transportType: z.enum(["UBER", "BUS", "BIKE", "CNG", "RICKSHAW", "WALKING"], {
         message: "Select a valid transport type",
     }),
 
@@ -54,6 +54,28 @@
         .trim()
         .min(1, "To location is required")
         .min(2, "To location must be at least 2 characters"),
+
+    meetingLocation: z
+        .string()
+        .trim()
+        .min(1, "Meeting location is required")
+        .min(2, "Meeting location must be at least 2 characters"),
+
+    meetingAddress: z.string().trim().optional(),
+
+    meetingLatitude: z
+        .number({
+        message: "Select the meeting point on the map",
+        })
+        .min(-90, "Meeting latitude must be valid")
+        .max(90, "Meeting latitude must be valid"),
+
+    meetingLongitude: z
+        .number({
+        message: "Select the meeting point on the map",
+        })
+        .min(-180, "Meeting longitude must be valid")
+        .max(180, "Meeting longitude must be valid"),
 
     departureTime: z
         .string()

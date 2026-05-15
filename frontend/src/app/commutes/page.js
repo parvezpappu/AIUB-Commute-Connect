@@ -12,6 +12,16 @@ import {
 import { useRequireAuth } from "../lib/auth";
 
 const transportTheme = {
+  UBER: {
+    label: "Uber",
+    color: "bg-violet-50 text-violet-700 border-violet-200",
+    accent: "from-violet-500 to-indigo-600",
+  },
+  BUS: {
+    label: "Bus",
+    color: "bg-cyan-50 text-cyan-700 border-cyan-200",
+    accent: "from-cyan-500 to-blue-600",
+  },
   BIKE: {
     label: "Bike",
     color: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -275,7 +285,11 @@ export default function CommutesPage() {
         ) : (
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {browseCommutes.map((commute) => {
-              const theme = transportTheme[commute.transportType];
+              const theme = transportTheme[commute.transportType] || {
+                label: commute.transportType,
+                color: "bg-slate-50 text-slate-700 border-slate-200",
+                accent: "from-slate-400 to-slate-600",
+              };
               const noSeatsLeft = (commute.availableSeats ?? commute.seats) <= 0;
               const participationStatus =
                 participationStatusByCommute[commute.id];
@@ -322,6 +336,15 @@ export default function CommutesPage() {
                         </p>
                         <p className="mt-1 text-lg font-semibold text-slate-950">
                           {commute.toLocation}
+                        </p>
+                      </div>
+
+                      <div className="rounded-md border border-slate-200 p-3">
+                        <p className="text-xs font-medium uppercase text-slate-500">
+                          Meeting point
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-slate-900">
+                          {commute.meetingLocation || "Not specified"}
                         </p>
                       </div>
                     </div>
