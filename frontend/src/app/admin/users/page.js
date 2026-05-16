@@ -120,6 +120,7 @@ export default function AdminUsersPage() {
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">University ID</th>
                   <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Gender</th>
                   <th className="px-4 py-3">Rating</th>
                   <th className="px-4 py-3">Role</th>
                   <th className="px-4 py-3">Verified</th>
@@ -136,6 +137,13 @@ export default function AdminUsersPage() {
                     <td className="px-4 py-3">{user.fullName}</td>
                     <td className="px-4 py-3">{user.aiubId}</td>
                     <td className="px-4 py-3">{user.email}</td>
+                    <td className="px-4 py-3">
+                      {user.gender === "MALE"
+                        ? "Male"
+                        : user.gender === "FEMALE"
+                          ? "Female"
+                          : "Not set"}
+                    </td>
                     <td className="px-4 py-3">
                       <UserRatingBadge userId={user.id} />
                     </td>

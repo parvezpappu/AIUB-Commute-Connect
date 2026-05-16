@@ -68,6 +68,7 @@ export class AuthService {
     pendingRegistration.fullName = createAuthDto.fullName;
     pendingRegistration.aiubId = createAuthDto.aiubId;
     pendingRegistration.email = createAuthDto.email;
+    pendingRegistration.gender = createAuthDto.gender;
     pendingRegistration.password = hashedPassword;
     pendingRegistration.preferredFromLocation =
       createAuthDto.preferredFromLocation || null;
@@ -166,6 +167,7 @@ export class AuthService {
       fullName: pendingRegistration.fullName,
       aiubId: pendingRegistration.aiubId,
       email: pendingRegistration.email,
+      gender: pendingRegistration.gender,
       password: pendingRegistration.password,
       preferredFromLocation: pendingRegistration.preferredFromLocation,
       preferredToLocation: pendingRegistration.preferredToLocation,

@@ -24,6 +24,12 @@ export enum CommuteStatus {
   COMPLETED = 'COMPLETED',
 }
 
+export enum ParticipantGenderPreference {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  BOTH = 'BOTH',
+}
+
 @Entity('commutes')
 export class Commute {
   @PrimaryGeneratedColumn()
@@ -64,6 +70,13 @@ export class Commute {
 
   @Column()
   costPerPerson: number;
+
+  @Column({
+    type: 'enum',
+    enum: ParticipantGenderPreference,
+    default: ParticipantGenderPreference.BOTH,
+  })
+  participantGenderPreference: ParticipantGenderPreference;
 
   @Column({
     type: 'enum',

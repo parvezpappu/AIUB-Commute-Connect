@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserGender } from '../../user/entities/user.entity';
 
 @Entity('pending_registrations')
 export class PendingRegistration {
@@ -19,6 +20,13 @@ export class PendingRegistration {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserGender,
+    nullable: true,
+  })
+  gender: UserGender | null;
 
   @Column()
   password: string;

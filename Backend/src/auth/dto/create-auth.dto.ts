@@ -1,12 +1,14 @@
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
+  IsEnum,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { UserGender } from '../../user/entities/user.entity';
 
 export class CreateAuthDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
@@ -28,6 +30,9 @@ export class CreateAuthDto {
   @IsEmail({}, { message: 'Enter a valid email address' })
   @MaxLength(120, { message: 'Email cannot be longer than 120 characters' })
   email: string;
+
+  @IsEnum(UserGender, { message: 'Gender must be MALE or FEMALE' })
+  gender: UserGender;
 
   @IsString({ message: 'Password must be text' })
   @MinLength(6, { message: 'Password must be at least 6 characters' })

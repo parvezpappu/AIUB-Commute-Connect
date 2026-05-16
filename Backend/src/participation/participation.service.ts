@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Commute, CommuteStatus } from '../commute/entities/commute.entity';
+import {
+  Commute,
+  CommuteStatus,
+  ParticipantGenderPreference,
+} from '../commute/entities/commute.entity';
 import { User, UserRole } from '../user/entities/user.entity';
 import { NotificationType } from '../notification/entities/notification.entity';
 import { NotificationService } from '../notification/notification.service';
@@ -53,6 +57,16 @@ export class ParticipationService {
 
     if (commute.creator.id === user.id) {
       throw new BadRequestException('You cannot join your own commute');
+    }
+
+    if (
+      commute.participantGenderPreference !== ParticipantGenderPreference.BOTH &&
+      (!user.gender ||
+        String(commute.participantGenderPreference) !== user.gender)
+    ) {
+      throw new BadRequestException(
+        'Your gender does not match this commute preference',
+      );
     }
 
     const existingParticipation = await this.participationRepository.findOne({

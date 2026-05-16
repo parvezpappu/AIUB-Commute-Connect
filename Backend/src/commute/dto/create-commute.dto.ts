@@ -12,13 +12,21 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { TransportType } from '../entities/commute.entity';
+import {
+  ParticipantGenderPreference,
+  TransportType,
+} from '../entities/commute.entity';
 
 export class CreateCommuteDto {
   @IsEnum(TransportType, {
     message: 'Transport type must be UBER, BUS, BIKE, CNG, RICKSHAW, or WALKING',
   })
   transportType: TransportType;
+
+  @IsEnum(ParticipantGenderPreference, {
+    message: 'Participant gender preference must be MALE, FEMALE, or BOTH',
+  })
+  participantGenderPreference: ParticipantGenderPreference;
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString({ message: 'From location must be text' })

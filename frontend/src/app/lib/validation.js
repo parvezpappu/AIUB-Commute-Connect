@@ -21,6 +21,10 @@
         .min(1, "Email is required")
         .email("Enter a valid email address"),
 
+    gender: z.enum(["MALE", "FEMALE"], {
+        message: "Select your gender",
+    }),
+
     password: z
         .string()
         .min(1, "Password is required")
@@ -45,6 +49,10 @@
     const createCommuteSchema = z.object({
     transportType: z.enum(["UBER", "BUS", "BIKE", "CNG", "RICKSHAW", "WALKING"], {
         message: "Select a valid transport type",
+    }),
+
+    participantGenderPreference: z.enum(["MALE", "FEMALE", "BOTH"], {
+        message: "Select who can join this commute",
     }),
 
     fromLocation: z

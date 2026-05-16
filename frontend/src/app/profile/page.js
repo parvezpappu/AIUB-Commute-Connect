@@ -9,6 +9,7 @@ import {
   clearProfilePicture,
   getCurrentUser,
   getUserRatingSummary,
+  updateGender,
   updateRoutePreference,
   uploadProfilePicture,
 } from "../lib/api";
@@ -40,6 +41,9 @@ export default function ProfilePage() {
     preferredFromLocation: "",
     preferredToLocation: "",
   });
+  const [genderForm, setGenderForm] = useState({
+    gender: "",
+  });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -49,6 +53,8 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isClearingPicture, setIsClearingPicture] = useState(false);
   const [isSavingPreference, setIsSavingPreference] = useState(false);
+  const [isSavingGender, setIsSavingGender] = useState(false);
+  const [isGenderOpen, setIsGenderOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isPreferenceOpen, setIsPreferenceOpen] = useState(false);
 
@@ -62,6 +68,9 @@ export default function ProfilePage() {
         setPreferenceForm({
           preferredFromLocation: data.preferredFromLocation || "",
           preferredToLocation: data.preferredToLocation || "",
+        });
+        setGenderForm({
+          gender: data.gender || "",
         });
       } catch (error) {
         setError(error.message);
@@ -97,6 +106,37 @@ export default function ProfilePage() {
       ...preferenceForm,
       [name]: value,
     });
+  }
+
+  function handleGenderChange(event) {
+    setGenderForm({
+      gender: event.target.value,
+    });
+  }
+
+  async function handleGenderSubmit(event) {
+    event.preventDefault();
+    setMessage("");
+    setError("");
+
+    if (!genderForm.gender) {
+      setError("Select your gender first.");
+      return;
+    }
+
+    setIsSavingGender(true);
+
+    try {
+      const updatedUser = await updateGender({
+        gender: genderForm.gender,
+      });
+      setUser(updatedUser);
+      setMessage("Gender updated.");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsSavingGender(false);
+    }
   }
 
   async function handleRoutePreferenceSubmit(event) {
@@ -302,6 +342,19 @@ export default function ProfilePage() {
 
             <div className="rounded-md border border-slate-200 p-4">
               <p className="text-xs font-medium uppercase text-slate-500">
+                Gender
+              </p>
+              <p className="mt-1 text-slate-900">
+                {user.gender === "MALE"
+                  ? "Male"
+                  : user.gender === "FEMALE"
+                    ? "Female"
+                    : "Not set"}
+              </p>
+            </div>
+
+            <div className="rounded-md border border-slate-200 p-4">
+              <p className="text-xs font-medium uppercase text-slate-500">
                 Preferred route
               </p>
               <p className="mt-1 text-slate-900">
@@ -322,6 +375,65 @@ export default function ProfilePage() {
             </div>
 
           </div>
+
+          <section className="mt-8 rounded-lg border border-slate-200 p-5">
+            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Gender
+                </h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Used to match gender-specific commute preferences.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsGenderOpen((currentValue) => !currentValue)}
+                className="w-fit rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                {isGenderOpen ? "Close" : "Update gender"}
+              </button>
+            </div>
+
+            {isGenderOpen && (
+              <form onSubmit={handleGenderSubmit} className="mt-5 space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {[
+                    { value: "MALE", label: "Male" },
+                    { value: "FEMALE", label: "Female" },
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className={`cursor-pointer rounded-md border p-3 text-center text-sm font-semibold transition ${
+                        genderForm.gender === option.value
+                          ? "border-[#003b73] bg-[#003b73] text-white"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-[#003b73]/40"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="gender"
+                        value={option.value}
+                        checked={genderForm.gender === option.value}
+                        onChange={handleGenderChange}
+                        className="sr-only"
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSavingGender}
+                  className="rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+                >
+                  {isSavingGender ? "Saving..." : "Save gender"}
+                </button>
+              </form>
+            )}
+          </section>
 
           <section className="mt-8 rounded-lg border border-slate-200 p-5">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">

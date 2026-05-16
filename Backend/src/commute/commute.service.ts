@@ -84,6 +84,16 @@ export class CommuteService {
     return Promise.all(commutes.map((commute) => this.attachSeatInfo(commute)));
   }
 
+  async findAllForAdmin() {
+    const commutes = await this.commuteRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return Promise.all(commutes.map((commute) => this.attachSeatInfo(commute)));
+  }
+
   async findOne(id: number) {
     const commute = await this.findCommuteEntity(id);
 

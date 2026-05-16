@@ -46,6 +46,12 @@ const transportTheme = {
   },
 };
 
+const genderPreferenceLabels = {
+  MALE: "Male only",
+  FEMALE: "Female only",
+  BOTH: "Male/Female",
+};
+
 function formatDateTime(value) {
   return new Intl.DateTimeFormat("en-BD", {
     dateStyle: "medium",
@@ -307,6 +313,11 @@ export default function CommutesPage() {
                 participationStatus === "ACCEPTED";
               const needsVerification =
                 currentUser?.role === "STUDENT" && !currentUser?.isVerified;
+              const genderMismatch =
+                currentUser?.role === "STUDENT" &&
+                commute.participantGenderPreference &&
+                commute.participantGenderPreference !== "BOTH" &&
+                commute.participantGenderPreference !== currentUser?.gender;
 
               return (
                 <article
@@ -363,6 +374,14 @@ export default function CommutesPage() {
 
                     <div className="mt-4 grid grid-cols-2 gap-2">
                       <div className="rounded-md bg-slate-50 p-2.5">
+                        <p className="text-xs text-slate-500">Who can join</p>
+                        <p className="mt-1 text-sm font-semibold text-slate-900">
+                          {genderPreferenceLabels[
+                            commute.participantGenderPreference
+                          ] || "Male/Female"}
+                        </p>
+                      </div>
+                      <div className="rounded-md bg-slate-50 p-2.5">
                         <p className="text-xs text-slate-500">Departure</p>
                         <p className="mt-1 text-sm font-semibold text-slate-900">
                           {formatDateTime(commute.departureTime)}
@@ -411,6 +430,7 @@ export default function CommutesPage() {
                       disabled={
                         isAdmin ||
                         needsVerification ||
+                        genderMismatch ||
                         noSeatsLeft ||
                         hasRequested ||
                         joiningId === commute.id
@@ -430,11 +450,13 @@ export default function CommutesPage() {
                         ? "Admin view"
                         : needsVerification
                           ? "Verify email to join"
-                        : getJoinButtonLabel(
-                            participationStatus,
-                            noSeatsLeft,
-                            joiningId === commute.id,
-                          )}
+                          : genderMismatch
+                            ? "Gender preference does not match"
+                            : getJoinButtonLabel(
+                                participationStatus,
+                                noSeatsLeft,
+                                joiningId === commute.id,
+                              )}
                     </button>
                   </div>
                 </article>

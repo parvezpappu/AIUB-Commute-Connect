@@ -34,6 +34,13 @@ export class CommuteController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Get('admin/all')
+  findAllForAdmin() {
+    return this.commuteService.findAllForAdmin();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STUDENT, UserRole.ADMIN)
   @Get(':id')
   findOne(@Param('id') id: string) {

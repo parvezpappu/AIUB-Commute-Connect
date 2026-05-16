@@ -175,6 +175,15 @@ export async function getMyCommutes() {
   }
 }
 
+export async function getAdminCommutes() {
+  try {
+    const response = await api.get("/commutes/admin/all");
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to load admin commutes");
+  }
+}
+
 export async function closeCommute(commuteId) {
   try {
     const response = await api.patch(`/commutes/${commuteId}/close`);
@@ -345,6 +354,15 @@ export async function updateRoutePreference(preferenceData) {
     return response.data;
   } catch (error) {
     throw createApiError(error, "Failed to update route preference");
+  }
+}
+
+export async function updateGender(genderData) {
+  try {
+    const response = await api.patch("/users/me/gender", genderData);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to update gender");
   }
 }
 

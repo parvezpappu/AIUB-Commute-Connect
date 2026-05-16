@@ -15,7 +15,7 @@ const studentLinks = [
 ];
 
 const adminLinks = [
-  { href: "/commutes", label: "Posts" },
+  { href: "/admin/commutes", label: "Posts" },
   { href: "/admin/users", label: "Users" },
   { href: "/profile", label: "Profile" },
 ];

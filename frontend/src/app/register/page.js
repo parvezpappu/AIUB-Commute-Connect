@@ -15,6 +15,7 @@ export default function RegisterPage() {
     fullName: "",
     aiubId: "",
     email: "",
+    gender: "",
     password: "",
     preferredFromLocation: "",
     preferredToLocation: "",
@@ -57,6 +58,7 @@ export default function RegisterPage() {
         fullName: formData.fullName.trim(),
         aiubId: formData.aiubId.trim(),
         email: formData.email.trim(),
+        gender: formData.gender,
         password: formData.password,
         preferredFromLocation: formData.preferredFromLocation.trim(),
         preferredToLocation: formData.preferredToLocation.trim(),
@@ -161,6 +163,40 @@ export default function RegisterPage() {
             />
             {fieldErrors.email && (
               <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Gender
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: "MALE", label: "Male" },
+                { value: "FEMALE", label: "Female" },
+              ].map((option) => (
+                <label
+                  key={option.value}
+                  className={`cursor-pointer rounded-md border px-3 py-2 text-center text-sm font-semibold ${
+                    formData.gender === option.value
+                      ? "border-slate-900 bg-slate-900 text-white"
+                      : "border-slate-300 text-slate-700"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={option.value}
+                    checked={formData.gender === option.value}
+                    onChange={handleChange}
+                    className="sr-only"
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+            {fieldErrors.gender && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.gender}</p>
             )}
           </div>
 

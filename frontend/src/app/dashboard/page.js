@@ -191,7 +191,7 @@ export default function DashboardPage() {
 
             <div className="mt-6 grid gap-3">
               <Link
-                href="/commutes"
+                href={isAdmin ? "/admin/commutes" : "/commutes"}
                 className="rounded-md bg-[#003b73] px-4 py-3 text-center text-sm font-semibold text-white"
               >
                 {isAdmin ? "View commute posts" : "Find a commute"}
@@ -264,7 +264,7 @@ export default function DashboardPage() {
                 </p>
               </div>
               <Link
-                href="/commutes"
+                href={isAdmin ? "/admin/commutes" : "/commutes"}
                 className="text-sm font-semibold text-[#003b73]"
               >
                 View all

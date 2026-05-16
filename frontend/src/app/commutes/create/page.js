@@ -20,12 +20,19 @@ const transportTypes = [
   { value: "WALKING", label: "Walking" },
 ];
 
+const genderPreferenceOptions = [
+  { value: "BOTH", label: "Male/Female" },
+  { value: "MALE", label: "Male only" },
+  { value: "FEMALE", label: "Female only" },
+];
+
 export default function CreateCommutePage() {
   const router = useRouter();
   const isCheckingAuth = useRequireStudent();
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
     transportType: "UBER",
+    participantGenderPreference: "BOTH",
     fromLocation: "",
     toLocation: "",
     meetingLocation: "",
@@ -131,6 +138,7 @@ export default function CreateCommutePage() {
     try {
       await createCommute({
         transportType: formData.transportType,
+        participantGenderPreference: formData.participantGenderPreference,
         fromLocation: formData.fromLocation.trim(),
         toLocation: formData.toLocation.trim(),
         meetingLocation: formData.meetingLocation.trim(),
@@ -201,6 +209,41 @@ export default function CreateCommutePage() {
                   </label>
                 ))}
               </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Who can join?
+              </label>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {genderPreferenceOptions.map((option) => (
+                  <label
+                    key={option.value}
+                    className={`cursor-pointer rounded-md border p-3 text-center text-sm font-semibold transition ${
+                      formData.participantGenderPreference === option.value
+                        ? "border-[#003b73] bg-[#003b73] text-white"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-[#003b73]/40"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="participantGenderPreference"
+                      value={option.value}
+                      checked={
+                        formData.participantGenderPreference === option.value
+                      }
+                      onChange={handleChange}
+                      className="sr-only"
+                    />
+                    {option.label}
+                  </label>
+                ))}
+              </div>
+              {fieldErrors.participantGenderPreference && (
+                <p className="mt-1 text-sm text-red-600">
+                  {fieldErrors.participantGenderPreference}
+                </p>
+              )}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">

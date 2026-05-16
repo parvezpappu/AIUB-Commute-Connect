@@ -19,6 +19,12 @@ const statusStyles = {
   CANCELLED: "border-slate-200 bg-slate-50 text-slate-600",
 };
 
+const genderPreferenceLabels = {
+  MALE: "Male only",
+  FEMALE: "Female only",
+  BOTH: "Male/Female",
+};
+
 function formatDateTime(value) {
   return new Intl.DateTimeFormat("en-BD", {
     dateStyle: "medium",
@@ -315,6 +321,13 @@ export default function JoinedCommutesPage() {
               <p className="text-xs text-slate-500">Commute status</p>
               <p className="mt-1 text-sm font-semibold text-slate-900">
                 {commute.status}
+              </p>
+            </div>
+            <div className="rounded-md bg-slate-50 p-3">
+              <p className="text-xs text-slate-500">Who can join</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">
+                {genderPreferenceLabels[commute.participantGenderPreference] ||
+                  "Male/Female"}
               </p>
             </div>
           </div>

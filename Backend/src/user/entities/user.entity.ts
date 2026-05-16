@@ -13,6 +13,11 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
+export enum UserGender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -26,6 +31,13 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserGender,
+    nullable: true,
+  })
+  gender: UserGender | null;
 
   @Column({ select: false })
   password: string;

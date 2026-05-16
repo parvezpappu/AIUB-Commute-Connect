@@ -24,6 +24,12 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+const genderPreferenceLabels = {
+  MALE: "Male only",
+  FEMALE: "Female only",
+  BOTH: "Male/Female",
+};
+
 function isExpired(value) {
   return value ? new Date(value).getTime() <= Date.now() : false;
 }
@@ -397,6 +403,14 @@ export default function MyCommutesPage() {
                       </div>
 
                       <div className="mt-4 grid grid-cols-2 gap-3">
+                        <div className="rounded-md bg-slate-50 p-3">
+                          <p className="text-xs text-slate-500">Who can join</p>
+                          <p className="text-lg font-semibold">
+                            {genderPreferenceLabels[
+                              commute.participantGenderPreference
+                            ] || "Male/Female"}
+                          </p>
+                        </div>
                         <div className="rounded-md bg-slate-50 p-3">
                           <p className="text-xs text-slate-500">Total seats</p>
                           <p className="text-lg font-semibold">
