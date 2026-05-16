@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+}
 
 :root {
   --background: #ffffff;
@@ -23,6 +26,16 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (min-width: 1024px) {
+  main:has(> .acc-auth-shell) {
+    padding-left: 15rem;
+  }
+
+  main:has(> .acc-auth-shell) > .acc-dashboard-topbar + section {
+    padding-top: 7rem;
+  }
 }
 
 .acc-map-marker span {
@@ -133,4 +146,119 @@ body {
 
 .animate-float {
   animation: float-soft 5s ease-in-out infinite;
+}
+
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal-on-scroll both;
+    animation-range: entry 10% cover 32%;
+    animation-timeline: view();
+  }
+}
+
+@keyframes reveal-on-scroll {
+  from {
+    opacity: 0;
+    transform: translateY(34px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ride-card {
+  animation: ride-card-float 7s ease-in-out infinite;
+}
+
+.route-map {
+  background-position: 0 0;
+  animation: route-map-drift 18s linear infinite;
+}
+
+.route-line::after {
+  animation: route-pulse 2.4s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.88),
+    transparent
+  );
+  border-radius: 9999px;
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.route-dot {
+  animation: marker-pulse 2.6s ease-in-out infinite;
+}
+
+.route-dot-destination {
+  animation-delay: 0.7s;
+}
+
+.route-car {
+  animation: route-car-move 5.8s ease-in-out infinite;
+}
+
+@keyframes ride-card-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes route-map-drift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 68px 34px;
+  }
+}
+
+@keyframes route-pulse {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes marker-pulse {
+  0%,
+  100% {
+    box-shadow: 0 8px 22px rgb(24 55 47 / 0.22);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 10px 28px rgb(255 159 28 / 0.4);
+    transform: scale(1.12);
+  }
+}
+
+@keyframes route-car-move {
+  0%,
+  100% {
+    transform: translate(-28px, 24px) rotate(-27deg);
+  }
+
+  50% {
+    transform: translate(36px, -24px) rotate(-27deg);
+  }
 }

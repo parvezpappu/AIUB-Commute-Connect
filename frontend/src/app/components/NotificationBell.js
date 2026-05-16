@@ -43,7 +43,10 @@ function getNotificationTitle(type) {
   return "Request rejected";
 }
 
-export default function NotificationBell() {
+export default function NotificationBell({
+  buttonClassName = "relative rounded-md border border-white/20 px-3 py-2 text-slate-100 hover:bg-white/10",
+  panelClassName = "absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-lg border border-slate-200 bg-white text-slate-950 shadow-lg",
+}) {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -94,7 +97,7 @@ export default function NotificationBell() {
       <button
         type="button"
         onClick={() => setIsOpen((currentValue) => !currentValue)}
-        className="relative rounded-md border border-white/20 px-3 py-2 text-slate-100 hover:bg-white/10"
+        className={buttonClassName}
       >
         Notifications
         {unreadCount > 0 && (
@@ -105,7 +108,7 @@ export default function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-lg border border-slate-200 bg-white text-slate-950 shadow-lg">
+        <div className={panelClassName}>
           <div className="border-b border-slate-200 px-4 py-3">
             <p className="font-semibold">Notifications</p>
             <p className="text-xs text-slate-500">
