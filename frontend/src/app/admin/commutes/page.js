@@ -33,6 +33,12 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+function formatCommuteCost(commute) {
+  return commute.costToBeDecided
+    ? "Will be decided"
+    : `Tk ${commute.costPerPerson}`;
+}
+
 function isExpired(value) {
   return value ? new Date(value).getTime() <= Date.now() : false;
 }
@@ -253,7 +259,7 @@ export default function AdminCommutesPage() {
                           {commute.fromLocation} to {commute.toLocation}
                         </p>
                         <p className="mt-1 text-xs text-slate-500">
-                          {commute.transportType} · Tk {commute.costPerPerson}
+                          {commute.transportType} · {formatCommuteCost(commute)}
                         </p>
                         <p className="mt-1 text-xs text-slate-500">
                           Meeting: {commute.meetingLocation || "Not specified"}

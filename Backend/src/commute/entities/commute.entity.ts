@@ -71,6 +71,9 @@ export class Commute {
   @Column()
   costPerPerson: number;
 
+  @Column({ default: false })
+  costToBeDecided: boolean;
+
   @Column({
     type: 'enum',
     enum: ParticipantGenderPreference,

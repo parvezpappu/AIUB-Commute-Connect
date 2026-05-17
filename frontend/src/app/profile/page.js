@@ -26,6 +26,37 @@ function getInitials(fullName) {
     .join("");
 }
 
+function DefaultProfileAvatar({ gender, initials }) {
+  const isFemale = gender === "FEMALE";
+
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-full bg-[linear-gradient(145deg,#18372f,#2f6b58)]">
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[#ffc857]/18" />
+      <div
+        className={`absolute left-1/2 top-5 h-11 w-11 -translate-x-1/2 rounded-full ${
+          isFemale ? "bg-[#3a241f]" : "bg-[#2b241d]"
+        }`}
+      />
+      {isFemale && (
+        <div className="absolute left-1/2 top-8 h-16 w-20 -translate-x-1/2 rounded-t-full bg-[#3a241f]" />
+      )}
+      <div className="absolute left-1/2 top-8 h-12 w-12 -translate-x-1/2 rounded-full bg-[#f1c7a7]" />
+      <div className="absolute left-1/2 top-16 h-4 w-7 -translate-x-1/2 rounded-b-full bg-[#e3b590]" />
+      <div
+        className={`absolute left-1/2 bottom-2 h-16 w-24 -translate-x-1/2 rounded-t-full ${
+          isFemale ? "bg-[#ffc857]" : "bg-[#d7efe3]"
+        }`}
+      />
+      <div className="absolute left-[42%] top-12 h-1.5 w-1.5 rounded-full bg-[#18372f]" />
+      <div className="absolute right-[42%] top-12 h-1.5 w-1.5 rounded-full bg-[#18372f]" />
+      <div className="absolute left-1/2 top-[62px] h-1 w-4 -translate-x-1/2 rounded-full bg-[#b56f62]" />
+      <div className="absolute bottom-3 right-3 grid h-8 w-8 place-items-center rounded-full bg-[#18372f] text-xs font-black text-[#ffc857] ring-2 ring-white">
+        {initials || "AC"}
+      </div>
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const isCheckingAuth = useRequireAuth();
@@ -252,37 +283,45 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_12%_12%,#d7efe3_0%,transparent_30%),linear-gradient(135deg,#f5f7f4_0%,#e9efe8_52%,#f8ead2_100%)] text-[#17211d]">
       <AuthenticatedNav />
-      <section className="mx-auto max-w-4xl px-4 py-10">
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex flex-col justify-between gap-6 border-b border-slate-200 pb-6 md:flex-row md:items-start">
+      <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="rounded-[32px] border border-[#18372f]/15 bg-white/72 p-5 shadow-sm backdrop-blur sm:p-6 lg:p-8">
+          <div className="flex flex-col justify-between gap-6 border-b border-[#18372f]/10 pb-6 md:flex-row md:items-start">
             <div className="flex items-center gap-5">
               <div
-                className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#003b73] bg-cover bg-center text-2xl font-semibold text-white"
+                className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#18372f] bg-cover bg-center text-2xl font-black text-white ring-4 ring-white"
                 style={
                   profilePictureSrc
                     ? { backgroundImage: `url(${profilePictureSrc})` }
                     : undefined
                 }
               >
-                {!profilePictureSrc && (getInitials(user.fullName) || "AC")}
+                {!profilePictureSrc && (
+                  <DefaultProfileAvatar
+                    gender={user.gender}
+                    initials={getInitials(user.fullName)}
+                  />
+                )}
               </div>
 
               <div>
-                <h1 className="text-2xl font-semibold text-slate-900">
+                <p className="text-sm font-black uppercase tracking-[0.18em] text-[#2f6b58]">
+                  Profile
+                </p>
+                <h1 className="mt-2 text-3xl font-black text-[#18372f]">
                   My Profile
                 </h1>
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="mt-2 text-sm font-semibold text-[#66736d]">
                   Your AIUB Commute Connect account information.
                 </p>
                 {user.role === "ADMIN" && (
-                  <span className="mt-3 inline-flex rounded-full bg-[#003b73]/10 px-3 py-1 text-xs font-semibold text-[#003b73]">
+                  <span className="mt-3 inline-flex rounded-full bg-[#18372f]/10 px-3 py-1 text-xs font-black text-[#18372f]">
                     Role: Admin
                   </span>
                 )}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <label className="inline-flex cursor-pointer rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                  <label className="inline-flex cursor-pointer rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35">
                     {isUploading ? "Uploading..." : "Upload picture"}
                     <input
                       type="file"
@@ -298,7 +337,7 @@ export default function ProfilePage() {
                       type="button"
                       onClick={handleClearProfilePicture}
                       disabled={isClearingPicture}
-                      className="rounded-md border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                      className="rounded-2xl border border-rose-200 bg-white px-4 py-2 text-sm font-black text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                     >
                       {isClearingPicture ? "Removing..." : "Clear picture"}
                     </button>
@@ -313,38 +352,40 @@ export default function ProfilePage() {
           </div>
 
           {message && (
-            <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
               {message}
             </div>
           )}
 
-          <div className="mt-6 space-y-3">
-            <div className="rounded-md border border-slate-200 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
+          <div className="mt-6 grid gap-3 md:grid-cols-2">
+            <div className="rounded-2xl border border-[#18372f]/10 bg-white/75 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
                 Full name
               </p>
-              <p className="mt-1 text-slate-900">{user.fullName}</p>
+              <p className="mt-1 font-black text-[#18372f]">{user.fullName}</p>
             </div>
 
-            <div className="rounded-md border border-slate-200 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
+            <div className="rounded-2xl border border-[#18372f]/10 bg-white/75 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
                 University ID
               </p>
-              <p className="mt-1 text-slate-900">{user.aiubId}</p>
+              <p className="mt-1 font-black text-[#18372f]">{user.aiubId}</p>
             </div>
 
-            <div className="rounded-md border border-slate-200 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
+            <div className="rounded-2xl border border-[#18372f]/10 bg-white/75 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
                 Email
               </p>
-              <p className="mt-1 text-slate-900">{user.email}</p>
+              <p className="mt-1 break-words font-black text-[#18372f]">
+                {user.email}
+              </p>
             </div>
 
-            <div className="rounded-md border border-slate-200 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
+            <div className="rounded-2xl border border-[#18372f]/10 bg-white/75 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
                 Gender
               </p>
-              <p className="mt-1 text-slate-900">
+              <p className="mt-1 font-black text-[#18372f]">
                 {user.gender === "MALE"
                   ? "Male"
                   : user.gender === "FEMALE"
@@ -353,21 +394,21 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            <div className="rounded-md border border-slate-200 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
+            <div className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
                 Preferred route
               </p>
-              <p className="mt-1 text-slate-900">
+              <p className="mt-1 font-black text-[#18372f]">
                 {user.preferredFromLocation || "Not set"} to{" "}
                 {user.preferredToLocation || "Not set"}
               </p>
             </div>
 
-            <div className="rounded-md border border-slate-200 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
+            <div className="rounded-2xl border border-[#18372f]/10 bg-[#fff7e4] p-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
                 Community rating
               </p>
-              <p className="mt-1 text-slate-900">
+              <p className="mt-1 font-black text-[#18372f]">
                 {ratingSummary?.ratingCount
                   ? `${ratingSummary.averageRating}/5 from ${ratingSummary.ratingCount} rating`
                   : "No ratings yet"}
@@ -376,13 +417,13 @@ export default function ProfilePage() {
 
           </div>
 
-          <section className="mt-8 rounded-lg border border-slate-200 p-5">
+          <section className="mt-8 rounded-[24px] border border-[#18372f]/10 bg-white/60 p-5">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-xl font-black text-[#18372f]">
                   Gender
                 </h2>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm font-semibold text-[#66736d]">
                   Used to match gender-specific commute preferences.
                 </p>
               </div>
@@ -390,7 +431,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsGenderOpen((currentValue) => !currentValue)}
-                className="w-fit rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                className="w-fit rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35"
               >
                 {isGenderOpen ? "Close" : "Update gender"}
               </button>
@@ -407,8 +448,8 @@ export default function ProfilePage() {
                       key={option.value}
                       className={`cursor-pointer rounded-md border p-3 text-center text-sm font-semibold transition ${
                         genderForm.gender === option.value
-                          ? "border-[#003b73] bg-[#003b73] text-white"
-                          : "border-slate-200 bg-white text-slate-700 hover:border-[#003b73]/40"
+                          ? "border-[#18372f] bg-[#18372f] text-white"
+                          : "border-[#18372f]/15 bg-white text-[#18372f] hover:border-[#18372f]/40"
                       }`}
                     >
                       <input
@@ -427,7 +468,7 @@ export default function ProfilePage() {
                 <button
                   type="submit"
                   disabled={isSavingGender}
-                  className="rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+                  className="rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
                 >
                   {isSavingGender ? "Saving..." : "Save gender"}
                 </button>
@@ -435,13 +476,13 @@ export default function ProfilePage() {
             )}
           </section>
 
-          <section className="mt-8 rounded-lg border border-slate-200 p-5">
+          <section className="mt-8 rounded-[24px] border border-[#18372f]/10 bg-white/60 p-5">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-xl font-black text-[#18372f]">
                   Route preference
                 </h2>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm font-semibold text-[#66736d]">
                   Save your regular route for commute post autofill.
                 </p>
               </div>
@@ -451,7 +492,7 @@ export default function ProfilePage() {
                 onClick={() =>
                   setIsPreferenceOpen((currentValue) => !currentValue)
                 }
-                className="w-fit rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                className="w-fit rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35"
               >
                 {isPreferenceOpen ? "Close" : "Edit preference"}
               </button>
@@ -464,7 +505,7 @@ export default function ProfilePage() {
               >
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-slate-700">
+                    <label className="mb-1 block text-sm font-black text-[#18372f]">
                       Preferred from
                     </label>
                     <input
@@ -472,13 +513,13 @@ export default function ProfilePage() {
                       name="preferredFromLocation"
                       value={preferenceForm.preferredFromLocation}
                       onChange={handlePreferenceChange}
-                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-[#003b73]"
+                      className="w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold text-[#18372f] outline-none focus:border-[#18372f]"
                       placeholder="Gazipur"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-slate-700">
+                    <label className="mb-1 block text-sm font-black text-[#18372f]">
                       Preferred to
                     </label>
                     <input
@@ -486,7 +527,7 @@ export default function ProfilePage() {
                       name="preferredToLocation"
                       value={preferenceForm.preferredToLocation}
                       onChange={handlePreferenceChange}
-                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-[#003b73]"
+                      className="w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold text-[#18372f] outline-none focus:border-[#18372f]"
                       placeholder="AIUB Campus"
                     />
                   </div>
@@ -495,7 +536,7 @@ export default function ProfilePage() {
                 <button
                   type="submit"
                   disabled={isSavingPreference}
-                  className="rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+                  className="rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
                 >
                   {isSavingPreference ? "Saving..." : "Save preference"}
                 </button>
@@ -503,13 +544,13 @@ export default function ProfilePage() {
             )}
           </section>
 
-          <section className="mt-8 rounded-lg border border-slate-200 p-5">
+          <section className="mt-8 rounded-[24px] border border-[#18372f]/10 bg-white/60 p-5">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-xl font-black text-[#18372f]">
                   Password
                 </h2>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm font-semibold text-[#66736d]">
                   Change your password only when needed.
                 </p>
               </div>
@@ -517,7 +558,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsPasswordOpen((currentValue) => !currentValue)}
-                className="w-fit rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                className="w-fit rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35"
               >
                 {isPasswordOpen ? "Close" : "Change password"}
               </button>
@@ -525,13 +566,13 @@ export default function ProfilePage() {
 
             {isPasswordOpen && (
             <form onSubmit={handleChangePassword} className="mt-5 space-y-4">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm font-semibold text-[#66736d]">
                 Enter your current password before setting a new one. You will
                 be logged out after a successful change.
               </p>
               <div className="grid gap-4 md:grid-cols-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                  <label className="mb-1 block text-sm font-black text-[#18372f]">
                     Current password
                   </label>
                   <input
@@ -539,13 +580,13 @@ export default function ProfilePage() {
                     name="currentPassword"
                     value={passwordForm.currentPassword}
                     onChange={handlePasswordChange}
-                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-[#003b73]"
+                    className="w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold text-[#18372f] outline-none focus:border-[#18372f]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                  <label className="mb-1 block text-sm font-black text-[#18372f]">
                     New password
                   </label>
                   <input
@@ -553,7 +594,7 @@ export default function ProfilePage() {
                     name="newPassword"
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChange}
-                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-[#003b73]"
+                    className="w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold text-[#18372f] outline-none focus:border-[#18372f]"
                     minLength={6}
                     maxLength={20}
                     required
@@ -561,7 +602,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                  <label className="mb-1 block text-sm font-black text-[#18372f]">
                     Confirm password
                   </label>
                   <input
@@ -569,7 +610,7 @@ export default function ProfilePage() {
                     name="confirmPassword"
                     value={passwordForm.confirmPassword}
                     onChange={handlePasswordChange}
-                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-[#003b73]"
+                    className="w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold text-[#18372f] outline-none focus:border-[#18372f]"
                     required
                   />
                 </div>
@@ -584,7 +625,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={isChangingPassword}
-                className="rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+                className="rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
               >
                 {isChangingPassword ? "Updating..." : "Update password"}
               </button>

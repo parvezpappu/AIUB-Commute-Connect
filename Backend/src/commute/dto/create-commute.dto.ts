@@ -5,6 +5,7 @@ import {
   IsISO8601,
   IsLatitude,
   IsLongitude,
+  IsBoolean,
   IsOptional,
   IsString,
   MaxLength,
@@ -73,4 +74,8 @@ export class CreateCommuteDto {
   @IsInt({ message: 'Cost per person must be a whole number' })
   @Min(0, { message: 'Cost per person cannot be negative' })
   costPerPerson: number;
+
+  @IsOptional()
+  @IsBoolean({ message: 'Cost decision option must be true or false' })
+  costToBeDecided?: boolean;
 }

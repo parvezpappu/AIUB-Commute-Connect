@@ -12,6 +12,9 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const leafletRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [detectedAddress, setDetectedAddress] = useState("");
   const [isLookingUpAddress, setIsLookingUpAddress] = useState(false);
   const [locationError, setLocationError] = useState("");
@@ -91,6 +94,35 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
     mapRef.current.setView(nextPosition, mapRef.current.getZoom());
   }, [value]);
 
+  useEffect(() => {
+    const trimmedQuery = searchQuery.trim();
+
+    if (trimmedQuery.length < 3) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(async () => {
+      setLocationError("");
+      setIsSearching(true);
+
+      try {
+        let data = await searchPlaces(trimmedQuery);
+
+        if (data.length === 0 && !/dhaka|bangladesh/i.test(trimmedQuery)) {
+          data = await searchPlaces(`${trimmedQuery}, Dhaka, Bangladesh`);
+        }
+
+        setSearchResults(data);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 450);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchQuery]);
+
   function updateLocation(latitude, longitude, locationName = "") {
     onChange({
       latitude: Number(latitude.toFixed(6)),
@@ -131,6 +163,69 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
     return data.display_name || "";
   }
 
+  async function searchPlaces(query) {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=bd&addressdetails=1&accept-language=en&q=${encodeURIComponent(
+        query,
+      )}`,
+    );
+
+    if (!response.ok) {
+      throw new Error("Search failed");
+    }
+
+    return response.json();
+  }
+
+  async function handleSearch() {
+    setLocationError("");
+    setSearchResults([]);
+
+    const trimmedQuery = searchQuery.trim();
+
+    if (!trimmedQuery) {
+      setLocationError("Type a place name to search.");
+      return;
+    }
+
+    setIsSearching(true);
+
+    try {
+      let data = await searchPlaces(trimmedQuery);
+
+      if (data.length === 0 && !/dhaka|bangladesh/i.test(trimmedQuery)) {
+        data = await searchPlaces(`${trimmedQuery}, Dhaka, Bangladesh`);
+      }
+
+      setSearchResults(data);
+
+      if (data.length === 0) {
+        setLocationError(
+          "No location found. Try a known nearby place, road, or area name.",
+        );
+      }
+    } catch {
+      setLocationError(
+        "Location search failed. Check internet connection or choose on the map.",
+      );
+    } finally {
+      setIsSearching(false);
+    }
+  }
+
+  function selectSearchResult(result) {
+    const latitude = Number(result.lat);
+    const longitude = Number(result.lon);
+
+    setSearchQuery(result.display_name || searchQuery);
+    setSearchResults([]);
+
+    markerRef.current?.setLatLng([latitude, longitude]);
+    mapRef.current?.setView([latitude, longitude], 17);
+    setDetectedAddress(result.display_name || "");
+    updateLocation(latitude, longitude, result.display_name || "");
+  }
+
   function handleUseCurrentLocation() {
     setLocationError("");
 
@@ -156,13 +251,61 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
   }
 
   return (
-    <div className="rounded-md border border-slate-300 bg-white">
+    <div className="rounded-2xl border border-[#18372f]/15 bg-white">
+      <div className="border-b border-[#18372f]/10 p-3">
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(event) => {
+              const nextQuery = event.target.value;
+              setSearchQuery(nextQuery);
+
+              if (nextQuery.trim().length < 3) {
+                setSearchResults([]);
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleSearch();
+              }
+            }}
+            placeholder="Search exact location, e.g. AIUB Main Gate"
+            className="min-w-0 flex-1 rounded-2xl border border-[#18372f]/15 bg-[#f5f7f4] px-4 py-3 text-sm font-semibold text-[#18372f] outline-none placeholder:text-[#7d857f]/70 focus:border-[#18372f]"
+          />
+          <button
+            type="button"
+            onClick={handleSearch}
+            disabled={isSearching}
+            className="rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+          >
+            {isSearching ? "Searching..." : "Search"}
+          </button>
+        </div>
+
+        {searchResults.length > 0 && (
+          <div className="mt-3 overflow-hidden rounded-2xl border border-[#18372f]/10 bg-white">
+            {searchResults.map((result) => (
+              <button
+                key={result.place_id}
+                type="button"
+                onClick={() => selectSearchResult(result)}
+                className="block w-full border-b border-[#18372f]/10 px-4 py-3 text-left text-sm font-semibold text-[#18372f] last:border-b-0 hover:bg-[#f5f7f4]"
+              >
+                {result.display_name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div
         ref={mapContainerRef}
-        className="h-72 w-full rounded-t-md bg-slate-100"
+        className="h-72 w-full bg-slate-100"
       />
-      <div className="flex flex-col gap-3 border-t border-slate-200 p-3">
-        <div className="text-sm text-slate-600">
+      <div className="flex flex-col gap-3 border-t border-[#18372f]/10 p-3">
+        <div className="text-sm font-semibold text-[#66736d]">
           {value?.latitude && value?.longitude ? (
             <span>
               Selected: {value.latitude}, {value.longitude}
@@ -171,20 +314,22 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
             <span>Click the map or use your current location.</span>
           )}
           {isLookingUpAddress && (
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#66736d]">
               Detecting map address...
             </p>
           )}
           {detectedAddress && (
-            <div className="mt-2 rounded-md bg-slate-50 p-3">
-              <p className="text-xs font-medium uppercase text-slate-500">
+            <div className="mt-2 rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-3">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
                 Detected map address
               </p>
-              <p className="mt-1 text-sm text-slate-700">{detectedAddress}</p>
+              <p className="mt-1 text-sm font-semibold text-[#18372f]">
+                {detectedAddress}
+              </p>
               <button
                 type="button"
                 onClick={() => onUseDetectedAddress?.(detectedAddress)}
-                className="mt-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-white"
+                className="mt-2 rounded-2xl border border-[#18372f]/15 bg-white px-3 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35"
               >
                 Use detected address as name
               </button>
@@ -198,7 +343,7 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
         <button
           type="button"
           onClick={handleUseCurrentLocation}
-          className="w-fit rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          className="w-fit rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35"
         >
           Use my location
         </button>

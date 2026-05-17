@@ -3,7 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import AuthenticatedNav from "../components/AuthenticatedNav";
-import { getCommutes, getCurrentUser } from "../lib/api";
+import {
+  getCommutes,
+  getCurrentUser,
+  getMyCommutes,
+  getMyParticipations,
+} from "../lib/api";
 import { useRequireAuth } from "../lib/auth";
 
 function formatTime(value) {
@@ -20,6 +25,12 @@ function getInitials(name = "") {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
+}
+
+function formatCommuteCost(commute) {
+  return commute.costToBeDecided
+    ? "Will be decided"
+    : `Tk ${commute.costPerPerson}`;
 }
 
 function getTimeLeft(value, now) {
@@ -80,7 +91,7 @@ function RecommendedCommuteCard({ commute, now }) {
 
         <div className="text-right">
           <p className="text-xl font-black text-[#0f6b50]">
-            Tk {commute.costPerPerson}
+            {formatCommuteCost(commute)}
           </p>
           <p className="text-[10px] font-black uppercase text-[#7d857f]">
             Per person
@@ -155,6 +166,91 @@ function RecommendedCommuteCard({ commute, now }) {
   );
 }
 
+function CurrentRideCard({ ride, count, now, onOpen }) {
+  const commute = ride.commute;
+  const seatsLeft = commute.availableSeats ?? commute.seats;
+  const timeLeft = getTimeLeft(commute.expiresAt || commute.departureTime, now);
+  const label = ride.role === "CREATOR" ? "Created by you" : "Accepted ride";
+
+  return (
+    <article className="flex h-full min-h-[430px] flex-col rounded-3xl border border-[#18372f]/15 bg-white/82 p-5 text-[#18372f] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="rounded-full bg-[#18372f]/10 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-[#2f6b58]">
+            Current rides
+          </p>
+          <h3 className="mt-3 text-xl font-black">
+            {commute.fromLocation} to {commute.toLocation}
+          </h3>
+          <p className="mt-1 text-xs font-semibold text-[#66736d]">{label}</p>
+        </div>
+
+        <div className="rounded-2xl bg-[#fff7e4] px-4 py-3 text-center">
+          <p className="text-2xl font-black text-[#9a6a00]">{count}</p>
+          <p className="text-[10px] font-black uppercase text-[#7d857f]">
+            Active
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 space-y-3">
+        <div className="flex items-center gap-3">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#0f6b50]" />
+          <p className="truncate text-sm font-semibold">
+            {commute.fromLocation}
+          </p>
+        </div>
+        <div className="ml-1 h-4 w-px bg-[#18372f]/15" />
+        <div className="flex items-center gap-3">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#003b73]" />
+          <p className="truncate text-sm font-semibold">{commute.toLocation}</p>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-2 text-sm">
+        <div className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-3">
+          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
+            Departure
+          </p>
+          <p className="mt-1 font-black text-[#18372f]">
+            {formatTime(commute.departureTime)}
+          </p>
+        </div>
+
+        <div className="grid gap-2 sm:grid-cols-2">
+          <div className="rounded-2xl border border-[#18372f]/10 bg-[#fff7e4] p-3">
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
+              Countdown
+            </p>
+            <p className="mt-1 font-black text-[#b57a00]">{timeLeft}</p>
+          </div>
+          <div className="rounded-2xl border border-[#18372f]/10 bg-[#edf7f1] p-3">
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
+              Seats left
+            </p>
+            <p className="mt-1 font-black text-[#0f6b50]">{seatsLeft}</p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-3">
+          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
+            Status
+          </p>
+          <p className="mt-1 font-black text-[#18372f]">{commute.status}</p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={onOpen}
+        className="mt-auto w-full rounded-2xl bg-[#18372f] px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#244d42]"
+      >
+        View in My rides
+      </button>
+    </article>
+  );
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const isCheckingAuth = useRequireAuth();
@@ -164,15 +260,19 @@ export default function DashboardPage() {
     time: "",
   });
   const [commutes, setCommutes] = useState([]);
+  const [myCommutes, setMyCommutes] = useState([]);
+  const [participations, setParticipations] = useState([]);
   const [now, setNow] = useState(() => Date.now());
   const [isLoadingPreference, setIsLoadingPreference] = useState(true);
 
   useEffect(() => {
     async function loadDashboardData() {
       try {
-        const [user, commuteData] = await Promise.all([
+        const [user, commuteData, myCommuteData, participationData] = await Promise.all([
           getCurrentUser(),
           getCommutes(),
+          getMyCommutes(),
+          getMyParticipations(),
         ]);
         setFormData((currentData) => ({
           ...currentData,
@@ -180,6 +280,8 @@ export default function DashboardPage() {
           to: user.preferredToLocation || "",
         }));
         setCommutes(commuteData);
+        setMyCommutes(myCommuteData);
+        setParticipations(participationData);
       } catch {
         setFormData({
           from: "",
@@ -187,6 +289,8 @@ export default function DashboardPage() {
           time: "",
         });
         setCommutes([]);
+        setMyCommutes([]);
+        setParticipations([]);
       } finally {
         setIsLoadingPreference(false);
       }
@@ -231,6 +335,41 @@ export default function DashboardPage() {
       })
       .slice(0, 3);
   }, [commutes, formData.from, formData.to]);
+
+  const currentRides = useMemo(() => {
+    const rideById = new Map();
+
+    myCommutes
+      .filter(
+        (commute) => commute.status === "OPEN" || commute.status === "CLOSED",
+      )
+      .forEach((commute) => {
+        rideById.set(`creator-${commute.id}`, {
+          commute,
+          role: "CREATOR",
+        });
+      });
+
+    participations
+      .filter(
+        (participation) =>
+          participation.status === "ACCEPTED" &&
+          participation.commute?.status !== "CANCELLED" &&
+          participation.commute?.status !== "COMPLETED",
+      )
+      .forEach((participation) => {
+        rideById.set(`participant-${participation.commute.id}`, {
+          commute: participation.commute,
+          role: "PARTICIPANT",
+        });
+      });
+
+    return [...rideById.values()].sort(
+      (firstRide, secondRide) =>
+        new Date(firstRide.commute.departureTime).getTime() -
+        new Date(secondRide.commute.departureTime).getTime(),
+    );
+  }, [myCommutes, participations]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -334,6 +473,32 @@ export default function DashboardPage() {
             </button>
           </form>
         </div>
+
+        {currentRides.length > 0 && (
+          <section className="mt-8">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-2xl font-black text-[#18372f]">
+                Your Current Ride
+              </h2>
+              <button
+                type="button"
+                onClick={() => router.push("/commutes/joined")}
+                className="text-sm font-black text-[#18372f] hover:text-[#244d42]"
+              >
+                View all
+              </button>
+            </div>
+
+            <div className="mt-5 grid items-stretch gap-5 md:grid-cols-2 2xl:grid-cols-3">
+              <CurrentRideCard
+                ride={currentRides[0]}
+                count={currentRides.length}
+                now={now}
+                onOpen={() => router.push("/commutes/joined")}
+              />
+            </div>
+          </section>
+        )}
 
         <section className="mt-8">
           <div className="flex items-center justify-between gap-4">

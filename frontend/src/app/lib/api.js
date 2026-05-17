@@ -315,6 +315,15 @@ export async function markNotificationRead(notificationId) {
   }
 }
 
+export async function markAllNotificationsRead() {
+  try {
+    const response = await api.patch("/notifications/read-all");
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to update notifications");
+  }
+}
+
 export async function changePassword(passwordData) {
   try {
     const response = await api.post("/auth/change-password", passwordData);

@@ -114,10 +114,18 @@
 
     costPerPerson: z
         .string()
-        .min(1, "Cost is required")
+        .optional()
+        .default("")
         .refine((value) => Number.isInteger(Number(value)), "Cost must be a whole number")
         .refine((value) => Number(value) >= 0, "Cost must be 0 or more"),
+    costToBeDecided: z.boolean().optional(),
     }).refine(
+    (data) => data.costToBeDecided || String(data.costPerPerson || "").trim().length > 0,
+    {
+        path: ["costPerPerson"],
+        message: "Cost is required unless it will be decided later",
+    },
+    ).refine(
     (data) => new Date(data.expiresAt) >= new Date(data.departureTime),
     {
         path: ["expiresAt"],

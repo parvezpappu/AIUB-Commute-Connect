@@ -21,6 +21,12 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+function formatCommuteCost(commute) {
+  return commute.costToBeDecided
+    ? "Will be decided"
+    : `Tk ${commute.costPerPerson}`;
+}
+
 function getDistanceInKm(fromLatitude, fromLongitude, toLatitude, toLongitude) {
   if (!fromLatitude || !fromLongitude || !toLatitude || !toLongitude) {
     return null;
@@ -312,7 +318,7 @@ export default function CommuteMembersPage() {
                 Cost/person
               </p>
               <p className="mt-1 text-lg font-semibold text-slate-900">
-                Tk {commute.costPerPerson}
+                {formatCommuteCost(commute)}
               </p>
             </div>
           </div>

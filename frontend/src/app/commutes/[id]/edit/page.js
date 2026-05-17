@@ -65,6 +65,7 @@ export default function EditCommutePage() {
           expiresAt: commute.expiresAt ? toDateTimeLocal(commute.expiresAt) : "",
           seats: String(commute.seats ?? 1),
           costPerPerson: String(commute.costPerPerson ?? 0),
+          costToBeDecided: Boolean(commute.costToBeDecided),
         });
       } catch (error) {
         setError(error.message);
@@ -77,11 +78,11 @@ export default function EditCommutePage() {
   }, [commuteId]);
 
   function handleChange(event) {
-    const { name, value } = event.target;
+    const { checked, name, type, value } = event.target;
 
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     });
 
     setFieldErrors({
@@ -151,7 +152,10 @@ export default function EditCommutePage() {
         departureTime: new Date(formData.departureTime).toISOString(),
         expiresAt: new Date(formData.expiresAt).toISOString(),
         seats: Number(formData.seats),
-        costPerPerson: Number(formData.costPerPerson),
+        costPerPerson: formData.costToBeDecided
+          ? 0
+          : Number(formData.costPerPerson),
+        costToBeDecided: formData.costToBeDecided,
       });
 
       router.push("/commutes/my");
@@ -438,9 +442,20 @@ export default function EditCommutePage() {
                   min="0"
                   value={formData.costPerPerson}
                   onChange={handleChange}
+                  disabled={formData.costToBeDecided}
                   className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
                   required
                 />
+                <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-3 text-sm font-semibold text-slate-800">
+                  <input
+                    type="checkbox"
+                    name="costToBeDecided"
+                    checked={formData.costToBeDecided}
+                    onChange={handleChange}
+                    className="h-4 w-4 accent-[#003b73]"
+                  />
+                  Will be decided
+                </label>
                 {fieldErrors.costPerPerson && (
                   <p className="mt-1 text-sm text-red-600">
                     {fieldErrors.costPerPerson}

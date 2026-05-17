@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
+import CommuteRoomModal from "../../components/CommuteRoomModal";
 import MeetingPointTooltip from "../../components/MeetingPointTooltip";
 import UserRatingBadge from "../../components/UserRatingBadge";
 import {
   deleteParticipationHistory,
+  getMyCommutes,
   getMyParticipations,
   leaveCommute,
 } from "../../lib/api";
@@ -25,6 +27,9 @@ const genderPreferenceLabels = {
   BOTH: "Male/Female",
 };
 
+const pageBackground =
+  "radial-gradient(circle at 12% 12%, #d7efe3 0%, transparent 30%), linear-gradient(135deg, #f5f7f4 0%, #e9efe8 52%, #f8ead2 100%)";
+
 function formatDateTime(value) {
   return new Intl.DateTimeFormat("en-BD", {
     dateStyle: "medium",
@@ -32,9 +37,16 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+function formatCommuteCost(commute) {
+  return commute.costToBeDecided
+    ? "Will be decided"
+    : `Tk ${commute.costPerPerson}`;
+}
+
 export default function JoinedCommutesPage() {
   const isCheckingAuth = useRequireStudent();
   const [participations, setParticipations] = useState([]);
+  const [myCommutes, setMyCommutes] = useState([]);
   const [now, setNow] = useState(() => Date.now());
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -42,14 +54,19 @@ export default function JoinedCommutesPage() {
   const [leavingId, setLeavingId] = useState(null);
   const [selectedHistoryIds, setSelectedHistoryIds] = useState([]);
   const [openHistoryId, setOpenHistoryId] = useState(null);
+  const [roomCommuteId, setRoomCommuteId] = useState(null);
   const [isDeletingHistory, setIsDeletingHistory] = useState(false);
 
   async function loadParticipations() {
     setError("");
 
     try {
-      const data = await getMyParticipations();
-      setParticipations(data);
+      const [participationData, commuteData] = await Promise.all([
+        getMyParticipations(),
+        getMyCommutes(),
+      ]);
+      setParticipations(participationData);
+      setMyCommutes(commuteData);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -120,23 +137,6 @@ export default function JoinedCommutesPage() {
     }
   }
 
-  const stats = useMemo(() => {
-    return participations.reduce(
-      (summary, item) => {
-        summary.total += 1;
-        summary[item.status] += 1;
-        return summary;
-      },
-      {
-        total: 0,
-        PENDING: 0,
-        ACCEPTED: 0,
-        REJECTED: 0,
-        CANCELLED: 0,
-      },
-    );
-  }, [participations]);
-
   const acceptedParticipations = useMemo(() => {
     return participations.filter(
       (item) =>
@@ -145,6 +145,18 @@ export default function JoinedCommutesPage() {
         item.commute.status !== "COMPLETED",
     );
   }, [participations]);
+
+  const currentCreatedCommutes = useMemo(() => {
+    return myCommutes
+      .filter(
+        (commute) => commute.status === "OPEN" || commute.status === "CLOSED",
+      )
+      .sort(
+        (firstCommute, secondCommute) =>
+          new Date(firstCommute.departureTime).getTime() -
+          new Date(secondCommute.departureTime).getTime(),
+      );
+  }, [myCommutes]);
 
   const pendingParticipations = useMemo(() => {
     return participations.filter((item) => item.status === "PENDING");
@@ -224,11 +236,11 @@ export default function JoinedCommutesPage() {
     return (
       <article
         key={participation.id}
-        className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
+        className="overflow-hidden rounded-[24px] border border-[#18372f]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
       >
-        <div className="p-4">
+        <div className="p-5">
           <div className="flex items-start justify-between gap-4">
-            <span className="rounded-full bg-[#003b73]/10 px-3 py-1 text-xs font-semibold text-[#003b73]">
+            <span className="rounded-full bg-[#18372f]/10 px-3 py-1 text-xs font-black text-[#18372f]">
               {commute.transportType}
             </span>
             <span
@@ -238,30 +250,34 @@ export default function JoinedCommutesPage() {
             </span>
           </div>
 
-          <h2 className="mt-3 text-lg font-semibold text-slate-950">
+          <h2 className="mt-3 text-xl font-black text-[#18372f]">
             {commute.fromLocation} to {commute.toLocation}
           </h2>
 
           {isAccepted ? (
             <div className="mt-3 space-y-2">
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-md bg-slate-50 p-2.5">
-                  <p className="text-xs text-slate-500">From</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                  <p className="text-xs font-bold uppercase text-[#7d857f]">From</p>
+                  <p className="mt-1 text-sm font-black text-[#18372f]">
                     {commute.fromLocation}
                   </p>
                 </div>
-                <div className="rounded-md bg-slate-50 p-2.5">
-                  <p className="text-xs text-slate-500">Destination</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                  <p className="text-xs font-bold uppercase text-[#7d857f]">
+                    Destination
+                  </p>
+                  <p className="mt-1 text-sm font-black text-[#18372f]">
                     {commute.toLocation}
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-md bg-slate-50 p-2.5">
-                <p className="text-xs text-slate-500">Meeting point</p>
-                <p className="mt-1 text-sm font-semibold text-slate-900">
+              <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                <p className="text-xs font-bold uppercase text-[#7d857f]">
+                  Meeting point
+                </p>
+                <p className="mt-1 text-sm font-black text-[#18372f]">
                   <MeetingPointTooltip
                     label={commute.meetingLocation}
                     tooltip={commute.meetingAddress || commute.meetingLocation}
@@ -269,20 +285,22 @@ export default function JoinedCommutesPage() {
                 </p>
               </div>
 
-              <div className="rounded-md bg-[#003b73]/5 p-2.5">
-                <p className="text-xs font-medium uppercase text-[#003b73]">
+              <div className="rounded-2xl border border-[#ffc857]/35 bg-[#fff7e4] p-3">
+                <p className="text-xs font-black uppercase text-[#8b6400]">
                   Countdown
                 </p>
-                <p className="mt-1 text-base font-semibold text-slate-950">
+                <p className="mt-1 text-base font-black text-[#18372f]">
                   {getCountdown(commute.expiresAt || commute.departureTime)}
                 </p>
               </div>
             </div>
           ) : (
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-md bg-slate-50 p-3 sm:col-span-2">
-              <p className="text-xs text-slate-500">Meeting point</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
+            <div className="rounded-2xl bg-[#f4f7f4] p-3 sm:col-span-2">
+              <p className="text-xs font-bold uppercase text-[#7d857f]">
+                Meeting point
+              </p>
+              <p className="mt-1 text-sm font-black text-[#18372f]">
                 <MeetingPointTooltip
                   label={commute.meetingLocation}
                   tooltip={
@@ -299,33 +317,43 @@ export default function JoinedCommutesPage() {
                 </p>
               )}
             </div>
-            <div className="rounded-md bg-slate-50 p-3">
-              <p className="text-xs text-slate-500">Departure</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
+            <div className="rounded-2xl bg-[#f4f7f4] p-3">
+              <p className="text-xs font-bold uppercase text-[#7d857f]">
+                Departure
+              </p>
+              <p className="mt-1 text-sm font-black text-[#18372f]">
                 {formatDateTime(commute.departureTime)}
               </p>
             </div>
-            <div className="rounded-md bg-slate-50 p-3">
-              <p className="text-xs text-slate-500">Cost/person</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
-                Tk {commute.costPerPerson}
+            <div className="rounded-2xl bg-[#f4f7f4] p-3">
+              <p className="text-xs font-bold uppercase text-[#7d857f]">
+                Cost/person
+              </p>
+              <p className="mt-1 text-sm font-black text-[#18372f]">
+                {formatCommuteCost(commute)}
               </p>
             </div>
-            <div className="rounded-md bg-slate-50 p-3">
-              <p className="text-xs text-slate-500">Requested</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
+            <div className="rounded-2xl bg-[#f4f7f4] p-3">
+              <p className="text-xs font-bold uppercase text-[#7d857f]">
+                Requested
+              </p>
+              <p className="mt-1 text-sm font-black text-[#18372f]">
                 {formatDateTime(participation.joinedAt)}
               </p>
             </div>
-            <div className="rounded-md bg-slate-50 p-3">
-              <p className="text-xs text-slate-500">Commute status</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
+            <div className="rounded-2xl bg-[#f4f7f4] p-3">
+              <p className="text-xs font-bold uppercase text-[#7d857f]">
+                Commute status
+              </p>
+              <p className="mt-1 text-sm font-black text-[#18372f]">
                 {commute.status}
               </p>
             </div>
-            <div className="rounded-md bg-slate-50 p-3">
-              <p className="text-xs text-slate-500">Who can join</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
+            <div className="rounded-2xl bg-[#f4f7f4] p-3">
+              <p className="text-xs font-bold uppercase text-[#7d857f]">
+                Who can join
+              </p>
+              <p className="mt-1 text-sm font-black text-[#18372f]">
                 {genderPreferenceLabels[commute.participantGenderPreference] ||
                   "Male/Female"}
               </p>
@@ -333,11 +361,11 @@ export default function JoinedCommutesPage() {
           </div>
           )}
 
-          <div className="mt-3 rounded-md border border-slate-200 p-2.5">
-            <p className="text-xs font-medium uppercase text-slate-500">
+          <div className="mt-3 rounded-2xl border border-[#18372f]/15 bg-white/70 p-3">
+            <p className="text-xs font-bold uppercase text-[#7d857f]">
               Creator
             </p>
-            <p className="mt-1 text-sm font-semibold text-slate-900">
+            <p className="mt-1 text-sm font-black text-[#18372f]">
               {commute.creator?.fullName}
             </p>
             <UserRatingBadge userId={commute.creator?.id} className="mt-2" />
@@ -345,12 +373,13 @@ export default function JoinedCommutesPage() {
           </div>
 
           {participation.status === "ACCEPTED" && (
-            <Link
-              href={`/commutes/${commute.id}/members`}
-              className="mt-3 block rounded-md bg-[#003b73] px-4 py-2.5 text-center text-sm font-semibold text-white"
+            <button
+              type="button"
+              onClick={() => setRoomCommuteId(commute.id)}
+              className="mt-3 block rounded-2xl bg-[#18372f] px-4 py-3 text-center text-sm font-black text-white transition hover:bg-[#10261f]"
             >
               View commute members
-            </Link>
+            </button>
           )}
 
           {participation.status !== "CANCELLED" && (
@@ -370,16 +399,150 @@ export default function JoinedCommutesPage() {
     );
   }
 
+  function renderCreatedCommuteCard(commute) {
+    return (
+      <article
+        key={commute.id}
+        className="overflow-hidden rounded-[24px] border border-[#18372f]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
+      >
+        <div className="p-5">
+          <div className="flex items-start justify-between gap-4">
+            <span className="rounded-full bg-[#18372f]/10 px-3 py-1 text-xs font-black text-[#18372f]">
+              Created by you
+            </span>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              {commute.status}
+            </span>
+          </div>
+
+          <h2 className="mt-3 text-xl font-black text-[#18372f]">
+            {commute.fromLocation} to {commute.toLocation}
+          </h2>
+
+          <div className="mt-3 space-y-2">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                <p className="text-xs font-bold uppercase text-[#7d857f]">From</p>
+                <p className="mt-1 text-sm font-black text-[#18372f]">
+                  {commute.fromLocation}
+                </p>
+              </div>
+              <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                <p className="text-xs font-bold uppercase text-[#7d857f]">
+                  Destination
+                </p>
+                <p className="mt-1 text-sm font-black text-[#18372f]">
+                  {commute.toLocation}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-[#f4f7f4] p-3">
+              <p className="text-xs font-bold uppercase text-[#7d857f]">
+                Meeting point
+              </p>
+              <p className="mt-1 text-sm font-black text-[#18372f]">
+                <MeetingPointTooltip
+                  label={commute.meetingLocation}
+                  tooltip={commute.meetingAddress || commute.meetingLocation}
+                />
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-[#ffc857]/35 bg-[#fff7e4] p-3">
+                <p className="text-xs font-black uppercase text-[#8b6400]">
+                  Countdown
+                </p>
+                <p className="mt-1 text-base font-black text-[#18372f]">
+                  {getCountdown(commute.expiresAt || commute.departureTime)}
+                </p>
+              </div>
+              <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                <p className="text-xs font-bold uppercase text-[#7d857f]">Seats</p>
+                <p className="mt-1 text-sm font-black text-[#18372f]">
+                  {commute.acceptedSeats ?? 0}/{commute.seats}
+                </p>
+              </div>
+              <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                <p className="text-xs font-bold uppercase text-[#7d857f]">
+                  Cost/person
+                </p>
+                <p className="mt-1 text-sm font-black text-[#18372f]">
+                  {formatCommuteCost(commute)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => setRoomCommuteId(commute.id)}
+              className="block rounded-2xl bg-[#18372f] px-4 py-3 text-center text-sm font-black text-white transition hover:bg-[#10261f]"
+            >
+              View members and map
+            </button>
+            <Link
+              href="/commutes/my"
+              className="block rounded-2xl border border-[#18372f]/20 bg-white/60 px-4 py-3 text-center text-sm font-black text-[#18372f] transition hover:bg-white"
+            >
+              Manage post
+            </Link>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  function renderCreatedCommutesSection() {
+    return (
+      <section className="mt-6">
+        <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+          <h2 className="text-2xl font-black text-[#18372f]">
+            Created/current commutes
+          </h2>
+          <p className="mt-1 text-sm font-semibold text-[#66736d]">
+            Commutes you created that are still active for members and map
+            tracking.
+          </p>
+          </div>
+          <Link
+            href="/commutes/my"
+            className="w-fit rounded-2xl border border-[#18372f]/15 bg-white/80 px-4 py-2.5 text-sm font-black text-[#18372f] shadow-sm transition hover:bg-white"
+          >
+            Manage posts
+          </Link>
+        </div>
+
+        {currentCreatedCommutes.length === 0 ? (
+          <p className="rounded-[24px] border border-dashed border-[#18372f]/20 bg-white/72 p-6 text-sm font-semibold text-[#66736d] backdrop-blur">
+            Nothing here yet.
+          </p>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2">
+            {currentCreatedCommutes.map((commute) =>
+              renderCreatedCommuteCard(commute),
+            )}
+          </div>
+        )}
+      </section>
+    );
+  }
+
   function renderParticipationSection(title, description, items) {
     return (
       <section className="mt-6">
-        <div className="mb-3">
-          <h2 className="text-xl font-semibold text-slate-950">{title}</h2>
-          <p className="mt-1 text-sm text-slate-600">{description}</p>
+        <div className="mb-4">
+          <h2 className="text-2xl font-black text-[#18372f]">{title}</h2>
+          <p className="mt-1 text-sm font-semibold text-[#66736d]">
+            {description}
+          </p>
         </div>
 
         {items.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+          <p className="rounded-[24px] border border-dashed border-[#18372f]/20 bg-white/72 p-6 text-sm font-semibold text-[#66736d] backdrop-blur">
             Nothing here yet.
           </p>
         ) : (
@@ -394,10 +557,10 @@ export default function JoinedCommutesPage() {
   function renderHistorySection() {
     return (
       <section className="mt-6">
-        <div className="mb-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">History</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <h2 className="text-2xl font-black text-[#18372f]">History</h2>
+            <p className="mt-1 text-sm font-semibold text-[#66736d]">
               Closed, rejected, and cancelled participation records.
             </p>
           </div>
@@ -407,7 +570,7 @@ export default function JoinedCommutesPage() {
               <button
                 type="button"
                 onClick={handleSelectAllHistory}
-                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white"
+                className="rounded-2xl border border-[#18372f]/20 bg-white/70 px-4 py-2 text-sm font-black text-[#18372f] hover:bg-white"
               >
                 {isAllHistorySelected ? "Clear selection" : "Select all"}
               </button>
@@ -415,7 +578,7 @@ export default function JoinedCommutesPage() {
                 type="button"
                 onClick={handleDeleteSelectedHistory}
                 disabled={selectedHistoryIds.length === 0 || isDeletingHistory}
-                className="rounded-md border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                className="rounded-2xl border border-rose-200 bg-white/70 px-4 py-2 text-sm font-black text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
               >
                 {isDeletingHistory
                   ? "Deleting..."
@@ -426,7 +589,7 @@ export default function JoinedCommutesPage() {
         </div>
 
         {historyParticipations.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+          <p className="rounded-[24px] border border-dashed border-[#18372f]/20 bg-white/72 p-6 text-sm font-semibold text-[#66736d] backdrop-blur">
             Nothing here yet.
           </p>
         ) : (
@@ -439,7 +602,7 @@ export default function JoinedCommutesPage() {
               return (
                 <article
                   key={participation.id}
-                  className="rounded-lg border border-slate-200 bg-white shadow-sm"
+                  className="rounded-[24px] border border-[#18372f]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
                 >
                   <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-3">
@@ -456,17 +619,17 @@ export default function JoinedCommutesPage() {
                         }
                         className="text-left"
                       >
-                        <p className="font-semibold text-slate-950">
+                        <p className="font-black text-[#18372f]">
                           {commute.fromLocation} to {commute.toLocation}
                         </p>
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-1 text-sm font-semibold text-[#66736d]">
                           {formatDateTime(commute.departureTime)}
                         </p>
                       </button>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                      <span className="rounded-full bg-[#18372f]/10 px-3 py-1 text-xs font-black text-[#18372f]">
                         {commute.status === "CLOSED"
                           ? "CLOSED"
                           : participation.status}
@@ -476,7 +639,7 @@ export default function JoinedCommutesPage() {
                         onClick={() =>
                           setOpenHistoryId(isOpen ? null : participation.id)
                         }
-                        className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700"
+                        className="rounded-2xl border border-[#18372f]/20 bg-white/70 px-3 py-2 text-sm font-black text-[#18372f]"
                       >
                         {isOpen ? "Hide" : "Details"}
                       </button>
@@ -484,13 +647,13 @@ export default function JoinedCommutesPage() {
                   </div>
 
                   {isOpen && (
-                    <div className="border-t border-slate-100 p-4">
+                    <div className="border-t border-[#18372f]/10 p-4">
                       <div className="grid gap-3 sm:grid-cols-3">
-                        <div className="rounded-md bg-slate-50 p-3">
-                          <p className="text-xs text-slate-500">
+                        <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                          <p className="text-xs font-bold uppercase text-[#7d857f]">
                             Meeting point
                           </p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                          <p className="mt-1 text-sm font-black text-[#18372f]">
                             <MeetingPointTooltip
                               label={commute.meetingLocation}
                               tooltip={
@@ -506,21 +669,27 @@ export default function JoinedCommutesPage() {
                             </p>
                           )}
                         </div>
-                        <div className="rounded-md bg-slate-50 p-3">
-                          <p className="text-xs text-slate-500">Transport</p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                        <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                          <p className="text-xs font-bold uppercase text-[#7d857f]">
+                            Transport
+                          </p>
+                          <p className="mt-1 text-sm font-black text-[#18372f]">
                             {commute.transportType}
                           </p>
                         </div>
-                        <div className="rounded-md bg-slate-50 p-3">
-                          <p className="text-xs text-slate-500">Cost/person</p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
-                            Tk {commute.costPerPerson}
+                        <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                          <p className="text-xs font-bold uppercase text-[#7d857f]">
+                            Cost/person
+                          </p>
+                          <p className="mt-1 text-sm font-black text-[#18372f]">
+                            {formatCommuteCost(commute)}
                           </p>
                         </div>
-                        <div className="rounded-md bg-slate-50 p-3">
-                          <p className="text-xs text-slate-500">Requested</p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                        <div className="rounded-2xl bg-[#f4f7f4] p-3">
+                          <p className="text-xs font-bold uppercase text-[#7d857f]">
+                            Requested
+                          </p>
+                          <p className="mt-1 text-sm font-black text-[#18372f]">
                             {formatDateTime(participation.joinedAt)}
                           </p>
                         </div>
@@ -538,123 +707,56 @@ export default function JoinedCommutesPage() {
 
   if (isCheckingAuth || isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-        <p className="text-slate-600">
-          {isCheckingAuth ? "Checking session..." : "Loading joined commutes..."}
+      <main
+        className="flex min-h-screen items-center justify-center"
+        style={{ background: pageBackground }}
+      >
+        <p className="font-semibold text-[#66736d]">
+          {isCheckingAuth ? "Checking session..." : "Loading your rides..."}
         </p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
+    <main
+      className="min-h-screen text-[#18372f]"
+      style={{ background: pageBackground }}
+    >
       <AuthenticatedNav />
-      <section className="mx-auto max-w-6xl px-4 py-8">
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-            <div>
-              <p className="text-sm font-medium uppercase tracking-wide text-[#003b73]">
-                Participation tracker
-              </p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-                My joined commutes
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-600">
-                Track your join requests, accepted seats, and cancelled commute
-                participation in one place.
-              </p>
-            </div>
-
-            <div className="flex gap-2">
-              <Link
-                href="/commutes"
-                className="rounded-md bg-[#003b73] px-4 py-2 text-sm font-semibold text-white"
-              >
-                Browse commutes
-              </Link>
-              <Link
-                href="/profile"
-                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
-              >
-                Profile
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-5">
-            <div className="rounded-md bg-slate-50 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
-                Total
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-[#003b73]">
-                {stats.total}
-              </p>
-            </div>
-            <div className="rounded-md bg-amber-50 p-4">
-              <p className="text-xs font-medium uppercase text-amber-700">
-                Pending
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-amber-700">
-                {stats.PENDING}
-              </p>
-            </div>
-            <div className="rounded-md bg-emerald-50 p-4">
-              <p className="text-xs font-medium uppercase text-emerald-700">
-                Accepted
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-emerald-700">
-                {stats.ACCEPTED}
-              </p>
-            </div>
-            <div className="rounded-md bg-rose-50 p-4">
-              <p className="text-xs font-medium uppercase text-rose-700">
-                Rejected
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-rose-700">
-                {stats.REJECTED}
-              </p>
-            </div>
-            <div className="rounded-md bg-slate-50 p-4">
-              <p className="text-xs font-medium uppercase text-slate-500">
-                Cancelled
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-slate-700">
-                {stats.CANCELLED}
-              </p>
-            </div>
-          </div>
-        </div>
+      <section className="mx-auto max-w-6xl px-4 py-6">
 
         {error && (
-          <div className="mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
             {error}
           </div>
         )}
 
         {message && (
-          <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
             {message}
           </div>
         )}
 
-        {participations.length === 0 ? (
-          <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
-            <h2 className="text-xl font-semibold text-slate-900">
-              No join requests yet
+        {participations.length === 0 && currentCreatedCommutes.length === 0 ? (
+          <div className="rounded-[28px] border border-dashed border-[#18372f]/20 bg-white/75 p-10 text-center shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
+            <h2 className="text-xl font-black text-[#18372f]">
+              No rides yet
             </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
-              Browse available commute posts and request to join one that
-              matches your route.
+            <p className="mx-auto mt-2 max-w-md text-sm font-semibold text-[#66736d]">
+              Browse available commute posts or create your own ride when you
+              are ready.
             </p>
             <Link
               href="/commutes"
-              className="mt-5 inline-block rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white"
+              className="mt-5 inline-block rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white transition hover:bg-[#10261f]"
             >
               Browse commutes
             </Link>
           </div>
         ) : (
           <>
+            {renderCreatedCommutesSection()}
             {renderParticipationSection(
               "Accepted/current commutes",
               "Commutes where the creator accepted your seat.",
@@ -669,6 +771,13 @@ export default function JoinedCommutesPage() {
           </>
         )}
       </section>
+
+      {roomCommuteId && (
+        <CommuteRoomModal
+          commuteId={roomCommuteId}
+          onClose={() => setRoomCommuteId(null)}
+        />
+      )}
     </main>
   );
 }

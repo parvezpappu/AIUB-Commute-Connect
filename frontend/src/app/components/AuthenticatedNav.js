@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getCurrentUser, getMyCommutes, logoutUser } from "../lib/api";
-import NotificationBell from "./NotificationBell";
+import {
+  getCurrentUser,
+  getMyCommutes,
+  getMyNotifications,
+  logoutUser,
+} from "../lib/api";
 
 const studentLinks = [
   { href: "/dashboard", label: "Dashboard", icon: "D" },
@@ -12,13 +16,15 @@ const studentLinks = [
   { href: "/commutes", label: "Browse", icon: "B" },
   { href: "/commutes/create", label: "Create", icon: "+" },
   { href: "/commutes/my", label: "My posts", icon: "M" },
-  { href: "/commutes/joined", label: "Joined", icon: "J" },
+  { href: "/commutes/joined", label: "My rides", icon: "R" },
+  { href: "/notifications", label: "Notifications", icon: "N" },
 ];
 
 const adminLinks = [
   { href: "/dashboard", label: "Dashboard", icon: "D" },
   { href: "/admin/commutes", label: "Posts", icon: "P" },
   { href: "/admin/users", label: "Users", icon: "U" },
+  { href: "/notifications", label: "Notifications", icon: "N" },
   { href: "/profile", label: "Profile", icon: "A" },
 ];
 
@@ -53,23 +59,66 @@ export default function AuthenticatedNav() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [myPostCount, setMyPostCount] = useState(0);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadUser() {
       try {
         const data = await getCurrentUser();
+        if (!isMounted) {
+          return;
+        }
+
         setUser(data);
 
         if (data.role === "STUDENT") {
           const myCommutes = await getMyCommutes();
-          setMyPostCount(myCommutes.length);
+          if (isMounted) {
+            setMyPostCount(myCommutes.length);
+          }
         }
       } catch {
-        setUser(null);
+        if (isMounted) {
+          setUser(null);
+        }
       }
     }
 
     loadUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadNotifications() {
+      try {
+        const notifications = await getMyNotifications();
+
+        if (isMounted) {
+          setUnreadNotificationCount(
+            notifications.filter((notification) => !notification.isRead).length,
+          );
+        }
+      } catch {
+        if (isMounted) {
+          setUnreadNotificationCount(0);
+        }
+      }
+    }
+
+    loadNotifications();
+    const intervalId = window.setInterval(loadNotifications, 10000);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(intervalId);
+    };
   }, []);
 
   const links = user?.role === "ADMIN" ? adminLinks : studentLinks;
@@ -121,19 +170,20 @@ export default function AuthenticatedNav() {
                   >
                     {link.icon}
                   </span>
-                  <span>
+                  <span className="min-w-0 flex-1 truncate">
                     {link.href === "/commutes/my"
                       ? `My posts (${myPostCount})`
                       : link.label}
                   </span>
+                  {link.href === "/notifications" &&
+                    unreadNotificationCount > 0 && (
+                    <span className="rounded-full bg-[#ffc857] px-2 py-0.5 text-xs font-black text-[#18372f]">
+                      {unreadNotificationCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
-
-            <NotificationBell
-              buttonClassName="relative flex shrink-0 items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-[#f5f7f4]/86 transition hover:bg-white/10 hover:text-white"
-              panelClassName="absolute left-0 z-50 mt-2 w-80 overflow-hidden rounded-lg border border-slate-200 bg-white text-slate-950 shadow-lg lg:left-full lg:top-0 lg:ml-2 lg:mt-0"
-            />
           </div>
 
           <div className="mt-auto flex gap-2 lg:flex-col">
