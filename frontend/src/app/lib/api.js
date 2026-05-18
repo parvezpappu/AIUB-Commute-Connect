@@ -91,6 +91,15 @@ export async function resetPassword(resetData) {
   }
 }
 
+export async function verifyPasswordResetOtp(verifyData) {
+  try {
+    const response = await api.post("/auth/verify-password-reset-otp", verifyData);
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "OTP verification failed");
+  }
+}
+
 export async function getCurrentUser() {
   try {
     const response = await api.get("/auth/me");

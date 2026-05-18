@@ -49,7 +49,7 @@ function getNotificationTitle(type) {
 
 function getNotificationTone(type) {
   if (type === "JOIN_REQUEST") {
-    return "border-[#ffc857]/40 bg-[#fff7e4] text-[#8b6400]";
+    return "border-[#8ed8ff]/40 bg-[#e8eef0] text-[#244b58]";
   }
 
   if (type === "REQUEST_ACCEPTED") {
@@ -57,7 +57,7 @@ function getNotificationTone(type) {
   }
 
   if (type === "COMMUTE_COMPLETED") {
-    return "border-[#18372f]/15 bg-[#18372f]/10 text-[#18372f]";
+    return "border-[#07131a]/15 bg-[#07131a]/10 text-[#07131a]";
   }
 
   return "border-rose-200 bg-rose-50 text-rose-700";
@@ -146,7 +146,7 @@ export default function NotificationBell({
       >
         Notifications
         {unreadCount > 0 && (
-          <span className="ml-auto rounded-full bg-[#ffc857] px-2 py-0.5 text-xs font-black text-[#18372f]">
+          <span className="ml-auto rounded-full bg-[#8ed8ff] px-2 py-0.5 text-xs font-black text-[#07131a]">
             {unreadCount}
           </span>
         )}
@@ -154,11 +154,11 @@ export default function NotificationBell({
 
       {isOpen && (
         <div className={panelClassName}>
-          <div className="border-b border-[#18372f]/10 bg-[#f5f7f4] px-4 py-3">
+          <div className="border-b border-[#07131a]/10 bg-[#e8eef0] px-4 py-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-black text-[#18372f]">Notifications</p>
-                <p className="text-xs font-semibold text-[#66736d]">
+                <p className="font-black text-[#07131a]">Notifications</p>
+                <p className="text-xs font-semibold text-[#4f6268]">
                   Requests, decisions, and ride updates
                 </p>
               </div>
@@ -168,7 +168,7 @@ export default function NotificationBell({
                   type="button"
                   onClick={handleMarkAllRead}
                   disabled={isMarkingAll}
-                  className="rounded-full border border-[#18372f]/15 bg-white px-3 py-1 text-xs font-black text-[#18372f] transition hover:bg-[#fff7e4] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-full border border-[#07131a]/15 bg-white px-3 py-1 text-xs font-black text-[#07131a] transition hover:bg-[#e8eef0] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isMarkingAll ? "..." : "Read all"}
                 </button>
@@ -177,25 +177,25 @@ export default function NotificationBell({
             <Link
               href="/notifications"
               onClick={() => setIsOpen(false)}
-              className="mt-3 inline-flex rounded-full border border-[#18372f]/15 bg-white px-3 py-1 text-xs font-black text-[#18372f] transition hover:bg-[#fff7e4]"
+              className="mt-3 inline-flex rounded-full border border-[#07131a]/15 bg-white px-3 py-1 text-xs font-black text-[#07131a] transition hover:bg-[#e8eef0]"
             >
               View all notifications
             </Link>
           </div>
 
           {notifications.length === 0 ? (
-            <p className="px-4 py-5 text-sm font-semibold text-[#66736d]">
+            <p className="px-4 py-5 text-sm font-semibold text-[#4f6268]">
               No notifications yet.
             </p>
           ) : (
-            <div className="max-h-96 divide-y divide-[#18372f]/10 overflow-y-auto bg-white">
+            <div className="max-h-96 divide-y divide-[#07131a]/10 overflow-y-auto bg-white">
               {notifications.map((notification) => (
                 <Link
                   key={notification.id}
                   href={getNotificationHref(notification)}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`block px-4 py-3 text-sm transition hover:bg-[#f5f7f4] ${
-                    notification.isRead ? "bg-white" : "bg-[#fff7e4]/70"
+                  className={`block px-4 py-3 text-sm transition hover:bg-[#e8eef0] ${
+                    notification.isRead ? "bg-white" : "bg-[#e8eef0]/70"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -207,20 +207,20 @@ export default function NotificationBell({
                       {getNotificationTitle(notification.type)}
                     </span>
                     {!notification.isRead && (
-                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#ffc857]" />
+                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#8ed8ff]" />
                     )}
                   </div>
-                  <p className="mt-2 font-semibold leading-5 text-[#18372f]">
+                  <p className="mt-2 font-semibold leading-5 text-[#07131a]">
                     {notification.message}
                   </p>
                   <div className="mt-3 flex items-center justify-between gap-3">
-                    <p className="text-xs font-semibold text-[#7d857f]">
+                    <p className="text-xs font-semibold text-[#56696f]">
                       {formatNotificationTime(notification.createdAt)}
                     </p>
                     {(notification.type === "JOIN_REQUEST" ||
                       notification.type === "REQUEST_ACCEPTED" ||
                       notification.type === "COMMUTE_COMPLETED") && (
-                      <span className="rounded-full bg-[#18372f] px-3 py-1 text-xs font-black text-white">
+                      <span className="rounded-full bg-[#07131a] px-3 py-1 text-xs font-black text-white">
                         View
                       </span>
                     )}

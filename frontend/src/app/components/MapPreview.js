@@ -63,7 +63,7 @@ export default function MapPreview({ latitude, longitude, label }) {
 
   return (
     <div className="overflow-hidden rounded-md border border-slate-200">
-      <div ref={mapContainerRef} className="h-72 w-full bg-slate-100" />
+      <div ref={mapContainerRef} className="h-72 w-full bg-[#dbe6ea]" />
     </div>
   );
 }

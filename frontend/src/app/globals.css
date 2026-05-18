@@ -208,6 +208,13 @@ body {
   animation: route-car-move 5.8s ease-in-out infinite;
 }
 
+.map-pin-travel {
+  animation: map-pin-travel 4s ease-in-out infinite;
+  left: 20%;
+  top: 70%;
+  transform-origin: 50% 100%;
+}
+
 @keyframes ride-card-float {
   0%,
   100% {
@@ -260,5 +267,27 @@ body {
 
   50% {
     transform: translate(36px, -24px) rotate(-27deg);
+  }
+}
+
+@keyframes map-pin-travel {
+  0%,
+  100% {
+    left: 20%;
+    top: 70%;
+    transform: translate(-50%, -100%);
+  }
+
+  45%,
+  55% {
+    left: 65%;
+    top: 38%;
+    transform: translate(-50%, -100%);
+  }
+
+  50% {
+    left: 65%;
+    top: 38%;
+    transform: translate(-50%, -100%) translateY(-8px);
   }
 }

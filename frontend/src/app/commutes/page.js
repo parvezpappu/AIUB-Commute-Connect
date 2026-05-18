@@ -67,6 +67,20 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+function formatTime(value) {
+  return new Intl.DateTimeFormat("en-BD", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function formatExpectedTime(commute) {
+  const startTime = formatTime(commute.departureTime);
+  const endTime = commute.expiresAt ? formatTime(commute.expiresAt) : startTime;
+
+  return `${startTime} - ${endTime}`;
+}
+
 function getInitials(name = "") {
   return name
     .split(" ")
@@ -310,7 +324,7 @@ export default function CommutesPage() {
 
   if (isCheckingAuth || isLoading) {
     return (
-      <main className="min-h-screen bg-[#f4f7fb] px-4 py-10">
+      <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-4 py-10">
         <section className="mx-auto max-w-6xl">
           {isCheckingAuth ? (
             <div className="flex min-h-[60vh] items-center justify-center">
@@ -335,43 +349,27 @@ export default function CommutesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_12%_12%,#d7efe3_0%,transparent_30%),linear-gradient(135deg,#f5f7f4_0%,#e9efe8_52%,#f8ead2_100%)] text-[#17211d]">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
       <AuthenticatedNav />
 
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="rounded-[28px] border border-[#18372f]/15 bg-white/72 p-5 shadow-sm backdrop-blur sm:p-6">
-          <div className="flex flex-col justify-between gap-3 xl:flex-row xl:items-end">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-[#2f6b58]">
-                Browse commutes
-              </p>
-              <h1 className="mt-2 text-3xl font-black text-[#18372f]">
-                Find an open commute that fits.
-              </h1>
-            </div>
-            <p className="text-sm font-bold text-[#66736d]">
-              Showing {filteredCommutes.length} open commute
-              {filteredCommutes.length === 1 ? "" : "s"}
-            </p>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+      <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-3xl font-black text-[#07131a]">Commutes</h1>
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             <button
               type="button"
               onClick={() => setIsFilterOpen(true)}
-              className="rounded-2xl bg-[#18372f] px-6 py-3 font-black text-white shadow-sm transition hover:bg-[#244d42]"
+              className="rounded-xl bg-[#07131a] px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-[#17303a]"
             >
               Filter commutes
             </button>
-            {hasRouteFilters && (
-              <button
-                type="button"
-                onClick={handleClearFilters}
-                className="rounded-2xl border border-[#18372f]/15 bg-white px-6 py-3 font-black text-[#18372f] transition hover:border-[#18372f]/35"
-              >
-                Clear filters
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="rounded-xl border border-[#07131a]/15 bg-white/82 px-4 py-2 text-sm font-black text-[#07131a] transition hover:border-[#07131a]/35"
+            >
+              Clear filters
+            </button>
           </div>
         </div>
 
@@ -381,52 +379,15 @@ export default function CommutesPage() {
           </div>
         )}
 
-        {hasRouteFilters && (
-          <div className="mt-5 flex flex-col justify-between gap-3 rounded-2xl border border-[#18372f]/15 bg-white/72 px-4 py-3 text-sm text-[#66736d] backdrop-blur sm:flex-row sm:items-center">
-            <p>
-              Showing matches
-              {filters.from && (
-                <>
-                  {" "}
-                  from <span className="font-semibold">{filters.from}</span>
-                </>
-              )}
-              {filters.to && (
-                <>
-                  {" "}
-                  to <span className="font-semibold">{filters.to}</span>
-                </>
-              )}
-              {filters.time && (
-                <>
-                  {" "}
-                  after{" "}
-                  <span className="font-semibold">
-                    {formatDateTime(filters.time)}
-                  </span>
-                </>
-              )}
-              .
-            </p>
-            <button
-              type="button"
-              onClick={handleClearFilters}
-              className="font-black text-[#18372f]"
-            >
-              Clear filters
-            </button>
-          </div>
-        )}
-
         {isFilterOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#18372f]/45 px-4 py-6 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#07131a]/45 px-4 py-6 backdrop-blur-sm">
             <form
               onSubmit={handleFilterSubmit}
-              className="w-full max-w-3xl rounded-[28px] border border-[#18372f]/15 bg-[#f5f7f4] p-5 text-[#18372f] shadow-2xl sm:p-6"
+              className="w-full max-w-3xl rounded-[28px] border border-[#07131a]/15 bg-[#e8eef0] p-5 text-[#07131a] shadow-2xl sm:p-6"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-black uppercase tracking-[0.18em] text-[#2f6b58]">
+                  <p className="text-sm font-black uppercase tracking-[0.18em] text-[#244b58]">
                     Filter
                   </p>
                   <h2 className="mt-1 text-2xl font-black">
@@ -436,7 +397,7 @@ export default function CommutesPage() {
                 <button
                   type="button"
                   onClick={() => setIsFilterOpen(false)}
-                  className="rounded-full border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black"
+                  className="rounded-full border border-[#07131a]/15 bg-white px-4 py-2 text-sm font-black"
                 >
                   Close
                 </button>
@@ -451,7 +412,7 @@ export default function CommutesPage() {
                     value={filters.from}
                     onChange={handleFilterChange}
                     placeholder="Kuril"
-                    className="mt-2 w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold outline-none transition placeholder:text-[#7d857f]/60 focus:border-[#18372f]"
+                    className="mt-2 w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold outline-none transition placeholder:text-[#56696f]/60 focus:border-[#07131a]"
                   />
                 </label>
 
@@ -463,7 +424,7 @@ export default function CommutesPage() {
                     value={filters.to}
                     onChange={handleFilterChange}
                     placeholder="AIUB Campus"
-                    className="mt-2 w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold outline-none transition placeholder:text-[#7d857f]/60 focus:border-[#18372f]"
+                    className="mt-2 w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold outline-none transition placeholder:text-[#56696f]/60 focus:border-[#07131a]"
                   />
                 </label>
 
@@ -474,7 +435,7 @@ export default function CommutesPage() {
                     name="time"
                     value={filters.time}
                     onChange={handleFilterChange}
-                    className="mt-2 w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#18372f]"
+                    className="mt-2 w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#07131a]"
                   />
                 </label>
 
@@ -484,7 +445,7 @@ export default function CommutesPage() {
                     name="transportType"
                     value={filters.transportType}
                     onChange={handleFilterChange}
-                    className="mt-2 w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#18372f]"
+                    className="mt-2 w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#07131a]"
                   >
                     <option value="">Type</option>
                     {transportOptions.map((option) => (
@@ -501,7 +462,7 @@ export default function CommutesPage() {
                     name="genderPreference"
                     value={filters.genderPreference}
                     onChange={handleFilterChange}
-                    className="mt-2 w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#18372f]"
+                    className="mt-2 w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#07131a]"
                   >
                     <option value="">Gender</option>
                     <option value="MALE">Male only</option>
@@ -516,7 +477,7 @@ export default function CommutesPage() {
                     name="sortBy"
                     value={filters.sortBy}
                     onChange={handleFilterChange}
-                    className="mt-2 w-full rounded-2xl border border-[#18372f]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#18372f]"
+                    className="mt-2 w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold outline-none transition focus:border-[#07131a]"
                   >
                     <option value="earliest">Earliest</option>
                     <option value="cost">Lowest cost</option>
@@ -528,14 +489,14 @@ export default function CommutesPage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   type="submit"
-                  className="rounded-2xl bg-[#18372f] px-6 py-3 font-black text-white shadow-sm transition hover:bg-[#244d42]"
+                  className="rounded-2xl bg-[#07131a] px-6 py-3 font-black text-white shadow-sm transition hover:bg-[#17303a]"
                 >
                   Apply filters
                 </button>
                 <button
                   type="button"
                   onClick={handleClearFilters}
-                  className="rounded-2xl border border-[#18372f]/15 bg-white px-6 py-3 font-black text-[#18372f] transition hover:border-[#18372f]/35"
+                  className="rounded-2xl border border-[#07131a]/15 bg-white px-6 py-3 font-black text-[#07131a] transition hover:border-[#07131a]/35"
                 >
                   Clear
                 </button>
@@ -545,15 +506,15 @@ export default function CommutesPage() {
         )}
 
         {filteredCommutes.length === 0 ? (
-          <div className="mt-6 rounded-[28px] border border-dashed border-[#18372f]/25 bg-white/72 p-10 text-center backdrop-blur">
-            <h2 className="text-xl font-black text-[#18372f]">
+          <div className="mt-6 rounded-[28px] border border-dashed border-[#07131a]/25 bg-white/72 p-10 text-center backdrop-blur">
+            <h2 className="text-xl font-black text-[#07131a]">
               {hasRouteFilters
                 ? "No commute matches this search"
                 : isAdmin
                   ? "No open commute posts yet"
                   : "No commute posts from other students yet"}
             </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm font-semibold text-[#66736d]">
+            <p className="mx-auto mt-2 max-w-md text-sm font-semibold text-[#4f6268]">
               {hasRouteFilters
                 ? "Try changing the route or time from the dashboard search."
                 : isAdmin
@@ -562,7 +523,7 @@ export default function CommutesPage() {
             </p>
             <Link
               href={isAdmin ? "/admin/users" : "/commutes/my"}
-              className="mt-5 inline-block rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white"
+              className="mt-5 inline-block rounded-2xl bg-[#07131a] px-5 py-3 text-sm font-black text-white"
             >
               {isAdmin ? "Manage users" : "View my posts"}
             </Link>
@@ -570,12 +531,10 @@ export default function CommutesPage() {
         ) : (
           <div className="mt-6 grid items-stretch gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {filteredCommutes.map((commute) => {
-              const theme = transportTheme[commute.transportType] || {
-                label: commute.transportType,
-              };
               const noSeatsLeft = (commute.availableSeats ?? commute.seats) <= 0;
               const seatsLeft = commute.availableSeats ?? commute.seats;
               const creator = commute.creator;
+              const isCostToBeDecided = commute.costToBeDecided;
               const participationStatus =
                 participationStatusByCommute[commute.id];
               const hasRequested =
@@ -592,11 +551,11 @@ export default function CommutesPage() {
               return (
                 <article
                   key={commute.id}
-                  className="flex h-full min-h-[430px] flex-col rounded-3xl border border-[#18372f]/15 bg-white/82 p-5 text-[#18372f] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md"
+                  className="flex h-full min-h-[300px] flex-col rounded-2xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-[#18372f] text-sm font-black text-[#ffc857]">
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#07131a] text-[11px] font-black text-[#8ed8ff]">
                         {creator?.profilePictureUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -609,87 +568,88 @@ export default function CommutesPage() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-base font-black">
+                        <p className="break-words text-[13px] font-black leading-4">
                           {creator?.fullName || "Commute creator"}
-                        </p>
-                        <p className="mt-1 text-xs font-semibold text-[#66736d]">
-                          {creator?.aiubId || "AIUB ID"}
                         </p>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-xl font-black text-[#0f6b50]">
+                      <p className="text-xs font-black text-[#07131a]">
+                        Cost:
+                      </p>
+                      <p
+                        className={`font-black text-[#0f6b50] ${
+                          isCostToBeDecided
+                            ? "max-w-24 text-sm leading-4"
+                            : "text-lg"
+                        }`}
+                      >
                         {formatCommuteCost(commute)}
                       </p>
-                      <p className="text-[10px] font-black uppercase text-[#7d857f]">
-                        Per person
-                      </p>
+                      {!isCostToBeDecided && (
+                        <p className="text-[10px] font-black uppercase text-[#56696f]">
+                          Per person
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <div className="mt-5 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#0f6b50]" />
-                      <p className="truncate text-sm font-semibold">
+                  <div className="mt-3 space-y-1.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="h-2 w-2 rounded-full bg-[#0f6b50]" />
+                      <p className="truncate text-[13px] font-semibold">
                         {commute.fromLocation}
                       </p>
                     </div>
-                    <div className="ml-1 h-4 w-px bg-[#18372f]/15" />
-                    <div className="flex items-center gap-3">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#003b73]" />
-                      <p className="truncate text-sm font-semibold">
+                    <div className="ml-1 h-3 w-px bg-[#07131a]/15" />
+                    <div className="flex items-center gap-2.5">
+                      <span className="h-2 w-2 rounded-full bg-[#003b73]" />
+                      <p className="truncate text-[13px] font-semibold">
                         {commute.toLocation}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-5 grid gap-2 text-sm">
-                    <div className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-3">
-                      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
-                        Departure
-                      </p>
-                      <p className="mt-1 font-black text-[#18372f]">
-                        {formatDateTime(commute.departureTime)}
-                      </p>
-                    </div>
-
+                  <div className="mt-3 grid gap-2 text-sm">
                     <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="rounded-2xl border border-[#18372f]/10 bg-[#fff7e4] p-3">
-                        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
-                          Countdown
+                      <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+                        <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                          Expected time
                         </p>
-                        <p className="mt-1 font-black text-[#b57a00]">
-                          {getTimeLeft(commute.expiresAt || commute.departureTime)}
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-[#18372f]/10 bg-[#edf7f1] p-3">
-                        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
-                          Seats left
-                        </p>
-                        <p className="mt-1 font-black text-[#0f6b50]">
-                          {seatsLeft}
+                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#07131a]">
+                          {formatExpectedTime(commute)}
                         </p>
                       </div>
-                    </div>
-
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-3">
-                        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
-                          Type
-                        </p>
-                        <p className="mt-1 font-black text-[#18372f]">
-                          {theme.label}
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-3">
-                        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
+                      <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+                        <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Who can join
                         </p>
-                        <p className="mt-1 font-black text-[#18372f]">
+                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#07131a]">
                           {genderPreferenceLabels[
                             commute.participantGenderPreference
                           ] || "Male/Female"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+                        <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                          Remaining
+                        </p>
+                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#b57a00]">
+                          {getTimeLeft(
+                            commute.expiresAt || commute.departureTime,
+                          )}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
+                        <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                          Seats left
+                        </p>
+                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#0f6b50]">
+                          {seatsLeft}
                         </p>
                       </div>
                     </div>
@@ -706,14 +666,14 @@ export default function CommutesPage() {
                       joiningId === commute.id
                     }
                     onClick={() => handleJoin(commute.id)}
-                    className={`mt-auto w-full rounded-2xl px-4 py-3 text-sm font-black transition disabled:cursor-not-allowed ${
+                    className={`mt-3 w-full rounded-xl px-4 py-2 text-sm font-black transition disabled:cursor-not-allowed ${
                       isAdmin
-                        ? "bg-slate-100 text-slate-600"
+                        ? "bg-[#dbe6ea] text-[#4f6268]"
                         : needsVerification
                           ? "bg-amber-50 text-amber-700"
                         : hasRequested
                           ? "bg-emerald-50 text-emerald-700"
-                          : "bg-[#18372f] text-white hover:bg-[#244d42] disabled:bg-slate-300"
+                          : "bg-[#07131a] text-white hover:bg-[#17303a] disabled:bg-slate-300"
                     }`}
                   >
                     {isAdmin
@@ -737,3 +697,4 @@ export default function CommutesPage() {
     </main>
   );
 }
+

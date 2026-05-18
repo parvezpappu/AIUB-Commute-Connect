@@ -7,6 +7,35 @@ import { loginUser } from "../lib/api";
 import { useRedirectIfAuthenticated } from "../lib/auth";
 import { hasValidationErrors, validateLoginForm } from "../lib/validation";
 
+function EyeIcon({ isVisible }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    >
+      {isVisible ? (
+        <>
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+          <circle cx="12" cy="12" r="3" />
+        </>
+      ) : (
+        <>
+          <path d="m3 3 18 18" />
+          <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+          <path d="M9.9 4.4A10.7 10.7 0 0 1 12 4c6.5 0 10 8 10 8a18.5 18.5 0 0 1-2.6 3.7" />
+          <path d="M6.6 6.6C3.7 8.5 2 12 2 12s3.5 8 10 8a10.8 10.8 0 0 0 4.1-.8" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const isCheckingAuth = useRedirectIfAuthenticated();
@@ -60,25 +89,25 @@ export default function LoginPage() {
 
   if (isCheckingAuth) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f5f7f4] px-4">
-        <p className="font-semibold text-[#52615a]">Checking session...</p>
+      <main className="flex min-h-screen items-center justify-center bg-[#e8eef0] px-4">
+        <p className="font-semibold text-[#c4d4d9]">Checking session...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_12%_12%,#d7efe3_0%,transparent_30%),linear-gradient(135deg,#f5f7f4_0%,#e9efe8_52%,#f8ead2_100%)] text-[#17211d]">
-      <header className="sticky top-0 z-40 border-b border-[#17211d]/10 bg-[#f5f7f4]/95 backdrop-blur">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-[#18372f] text-base font-black text-[#ffc857]">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
+      <header className="sticky top-0 z-40 border-b border-[#07131a]/10 bg-[#e8eef0]/95 backdrop-blur">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <Link href="/" className="flex min-w-0 items-center gap-3">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#07131a] text-base font-black text-[#8ed8ff] sm:h-10 sm:w-10">
               চ
             </div>
-            <div>
-              <p className="text-lg font-black leading-none text-[#18372f]">
+            <div className="min-w-0">
+              <p className="truncate text-base font-black leading-none text-[#07131a] sm:text-lg">
                 চলোযাই
               </p>
-              <p className="mt-1 text-xs font-bold text-[#6d756f]">
+              <p className="mt-1 hidden text-xs font-bold text-[#6d756f] sm:block">
                 AIUB Commute Connect
               </p>
             </div>
@@ -86,16 +115,16 @@ export default function LoginPage() {
 
           <Link
             href="/register"
-            className="rounded-full border border-[#18372f]/15 bg-white px-5 py-2 text-sm font-black text-[#18372f] shadow-sm hover:border-[#18372f]/40"
+            className="shrink-0 rounded-full border border-[#07131a]/15 bg-white px-4 py-2 text-sm font-black text-[#07131a] shadow-sm hover:border-[#07131a]/40 sm:px-5"
           >
             Register
           </Link>
         </nav>
       </header>
 
-      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center px-4 py-8">
-        <section className="reveal w-full max-w-sm rounded-[24px] border border-[#18372f]/10 bg-white p-5 shadow-2xl shadow-[#18372f]/10">
-          <h1 className="text-2xl font-black text-[#18372f]">Login</h1>
+      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center px-3 py-6 sm:px-4 sm:py-8">
+        <section className="reveal w-full max-w-sm rounded-[22px] border border-[#07131a]/10 bg-white p-4 shadow-2xl shadow-[#07131a]/10 sm:rounded-[24px] sm:p-5">
+          <h1 className="text-2xl font-black text-center text-[#07131a]">Login</h1>
 
           <form
             method="post"
@@ -106,7 +135,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="aiubId"
-                className="mb-1.5 block text-sm font-black text-[#33443d]"
+                className="mb-1.5 block text-sm font-black text-[#244b58]"
               >
                 University ID
               </label>
@@ -116,7 +145,7 @@ export default function LoginPage() {
                 name="aiubId"
                 value={formData.aiubId}
                 onChange={handleChange}
-                className="w-full rounded-xl border border-[#18372f]/15 bg-[#f8faf7] px-3.5 py-2.5 text-[#17211d] outline-none transition focus:border-[#18372f]"
+                className="w-full rounded-xl border border-[#07131a]/15 bg-[#eef3f4] px-3.5 py-2.5 text-[#07131a] outline-none transition focus:border-[#07131a]"
                 placeholder="22-49155-3"
                 autoComplete="username"
               />
@@ -130,7 +159,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="mb-1.5 block text-sm font-black text-[#33443d]"
+                className="mb-1.5 block text-sm font-black text-[#244b58]"
               >
                 Password
               </label>
@@ -141,17 +170,17 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-[#18372f]/15 bg-[#f8faf7] px-3.5 py-2.5 pr-20 text-[#17211d] outline-none transition focus:border-[#18372f]"
+                  className="w-full rounded-xl border border-[#07131a]/15 bg-[#eef3f4] px-3.5 py-2.5 pr-12 text-[#07131a] outline-none transition focus:border-[#07131a]"
                   placeholder="Enter password"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((current) => !current)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-2 py-1 text-sm font-black text-[#18372f] hover:bg-[#18372f]/8"
+                  className="absolute right-2.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-[#07131a] transition hover:bg-[#07131a]/8"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  <EyeIcon isVisible={showPassword} />
                 </button>
               </div>
               {fieldErrors.password && (
@@ -162,7 +191,7 @@ export default function LoginPage() {
               <div className="mt-2 text-right">
                 <Link
                   href="/forgot-password"
-                  className="text-sm font-black text-[#18372f]"
+                  className="text-sm font-black text-[#07131a]"
                 >
                   Forgot password?
                 </Link>
@@ -178,15 +207,15 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-full bg-[#18372f] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#18372f]/15 transition hover:bg-[#102720] disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#07131a] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:bg-[#0b1d25] disabled:cursor-not-allowed disabled:bg-slate-400"
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>
           </form>
 
-          <p className="mt-4 text-center text-sm font-semibold text-[#617169]">
+          <p className="mt-4 text-center text-sm font-semibold text-[#4f6268]">
             New here?{" "}
-            <Link href="/register" className="font-black text-[#18372f]">
+            <Link href="/register" className="font-black text-[#07131a]">
               Register
             </Link>
           </p>

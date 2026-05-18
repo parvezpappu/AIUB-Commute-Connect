@@ -37,6 +37,10 @@ export class CreateAuthDto {
   @IsString({ message: 'Password must be text' })
   @MinLength(6, { message: 'Password must be at least 6 characters' })
   @MaxLength(20, { message: 'Password cannot be longer than 20 characters' })
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
+    message:
+      'Password must include at least one letter, one number, and one special character',
+  })
   password: string;
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))

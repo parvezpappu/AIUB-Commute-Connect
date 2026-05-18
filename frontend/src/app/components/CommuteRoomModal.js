@@ -247,13 +247,13 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
 
   return (
     <div className="fixed inset-0 z-[80] bg-slate-950/60 px-4 py-5 backdrop-blur-sm">
-      <section className="mx-auto flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-[28px] border border-[#18372f]/15 bg-white shadow-2xl">
-        <div className="flex items-start justify-between gap-4 border-b border-[#18372f]/10 px-5 py-4">
+      <section className="mx-auto flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-[28px] border border-[#07131a]/15 bg-white shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b border-[#07131a]/10 px-5 py-4">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#2f6b58]">
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#244b58]">
               Commute room
             </p>
-            <h2 className="mt-1 text-2xl font-black text-[#18372f]">
+            <h2 className="mt-1 text-2xl font-black text-[#07131a]">
               {commute
                 ? `${commute.fromLocation} to ${commute.toLocation}`
                 : "Loading commute"}
@@ -263,7 +263,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-2xl border border-[#18372f]/15 px-4 py-2 text-sm font-black text-[#18372f]"
+            className="rounded-2xl border border-[#07131a]/15 px-4 py-2 text-sm font-black text-[#07131a]"
           >
             Close
           </button>
@@ -271,7 +271,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
 
         <div className="overflow-y-auto px-5 py-5">
           {isLoading ? (
-            <p className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-5 text-sm font-semibold text-[#66736d]">
+            <p className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-5 text-sm font-semibold text-[#4f6268]">
               Loading members and map...
             </p>
           ) : error ? (
@@ -281,16 +281,16 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
           ) : (
             <div className="space-y-5">
               {shouldPromptLocation && (
-                <div className="rounded-2xl border border-[#ffc857]/60 bg-[#fff7e4] p-4 shadow-sm">
+                <div className="rounded-2xl border border-[#8ed8ff]/60 bg-[#e8eef0] p-4 shadow-sm">
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div>
                       <p className="text-sm font-black uppercase tracking-[0.14em] text-[#9a6a00]">
                         Departure soon
                       </p>
-                      <h3 className="mt-1 text-lg font-black text-[#18372f]">
+                      <h3 className="mt-1 text-lg font-black text-[#07131a]">
                         Share live location for this ride?
                       </h3>
-                      <p className="mt-1 text-sm font-semibold text-[#66736d]">
+                      <p className="mt-1 text-sm font-semibold text-[#4f6268]">
                         Your commute starts within 10 minutes. Share location so
                         the group can see how far everyone is from the meeting
                         point.
@@ -300,14 +300,14 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                       <button
                         type="button"
                         onClick={handleStartLocationSharing}
-                        className="rounded-2xl bg-[#18372f] px-4 py-2 text-sm font-black text-white"
+                        className="rounded-2xl bg-[#07131a] px-4 py-2 text-sm font-black text-white"
                       >
                         Share location
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsLocationPromptDismissed(true)}
-                        className="rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f]"
+                        className="rounded-2xl border border-[#07131a]/15 bg-white px-4 py-2 text-sm font-black text-[#07131a]"
                       >
                         Not now
                       </button>
@@ -315,19 +315,19 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                   </div>
                 </div>
               )}
-              <div className="rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-4">
-                <div className="rounded-2xl border border-[#18372f]/10 bg-white/80 p-4">
-                  <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#7d857f]">
+              <div className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-4">
+                <div className="rounded-2xl border border-[#07131a]/10 bg-white/80 p-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                     Meeting point
                   </p>
-                  <p className="mt-1 text-xl font-black text-[#18372f]">
+                  <p className="mt-1 text-xl font-black text-[#07131a]">
                     {commute.meetingLocation || "Not specified"}
                   </p>
                   {commute.meetingAddress && (
                     <button
                       type="button"
                       onClick={openMeetingPointOnMap}
-                      className="mt-2 block text-left text-sm font-semibold leading-6 text-[#2f6b58] underline decoration-[#2f6b58]/30 underline-offset-4 hover:text-[#18372f]"
+                      className="mt-2 block text-left text-sm font-semibold leading-6 text-[#244b58] underline decoration-[#244b58]/30 underline-offset-4 hover:text-[#07131a]"
                     >
                       {commute.meetingAddress}
                     </button>
@@ -339,7 +339,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                       <button
                         type="button"
                         onClick={() => setIsMapOpen((current) => !current)}
-                        className="rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f]"
+                        className="rounded-2xl border border-[#07131a]/15 bg-white px-4 py-2 text-sm font-black text-[#07131a]"
                       >
                         {isMapOpen ? "Hide exact location" : "See exact location"}
                       </button>
@@ -355,7 +355,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                           className={`rounded-2xl px-4 py-2 text-sm font-black ${
                             isSharingLocation
                               ? "border border-rose-200 bg-white text-rose-700"
-                              : "bg-[#18372f] text-white"
+                              : "bg-[#07131a] text-white"
                           }`}
                         >
                           {isSharingLocation
@@ -372,7 +372,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                     )}
 
                     {isMapOpen && (
-                      <div className="mt-3 overflow-hidden rounded-2xl border border-[#18372f]/10">
+                      <div className="mt-3 overflow-hidden rounded-2xl border border-[#07131a]/10">
                         <div ref={mapSectionRef} />
                         <LiveCommuteMap
                           meetingLatitude={commute.meetingLatitude}
@@ -394,19 +394,19 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
               </div>
 
               <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
-                <div className="rounded-2xl border border-[#18372f]/10 bg-white p-5">
-                  <h3 className="text-lg font-black text-[#18372f]">Creator</h3>
+                <div className="rounded-2xl border border-[#07131a]/10 bg-white p-5">
+                  <h3 className="text-lg font-black text-[#07131a]">Creator</h3>
                   <div className="mt-4">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-black text-[#18372f]">
+                      <p className="font-black text-[#07131a]">
                         {commute.creator?.fullName}
                       </p>
                       <UserRatingBadge userId={commute.creator?.id} />
                     </div>
-                    <p className="text-sm font-semibold text-[#66736d]">
+                    <p className="text-sm font-semibold text-[#4f6268]">
                       {commute.creator?.aiubId} · {commute.creator?.email}
                     </p>
-                    <p className="mt-2 text-sm font-semibold text-[#18372f]">
+                    <p className="mt-2 text-sm font-semibold text-[#07131a]">
                       {formatDistance(
                         getDistanceInKm(
                           commute.creatorCurrentLatitude,
@@ -416,28 +416,28 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                         ),
                       )}
                     </p>
-                    <p className="text-xs font-semibold text-[#66736d]">
+                    <p className="text-xs font-semibold text-[#4f6268]">
                       {formatLocationTime(commute.creatorLocationUpdatedAt)}
                     </p>
                   </div>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-[#18372f]/10 bg-white">
-                  <div className="border-b border-[#18372f]/10 px-5 py-4">
-                    <h3 className="text-lg font-black text-[#18372f]">
+                <div className="overflow-hidden rounded-2xl border border-[#07131a]/10 bg-white">
+                  <div className="border-b border-[#07131a]/10 px-5 py-4">
+                    <h3 className="text-lg font-black text-[#07131a]">
                       Joined members
                     </h3>
-                    <p className="text-sm font-semibold text-[#66736d]">
+                    <p className="text-sm font-semibold text-[#4f6268]">
                       Students accepted into this commute.
                     </p>
                   </div>
 
                   {participants.length === 0 ? (
-                    <p className="p-5 text-sm font-semibold text-[#66736d]">
+                    <p className="p-5 text-sm font-semibold text-[#4f6268]">
                       No accepted members yet.
                     </p>
                   ) : (
-                    <div className="divide-y divide-[#18372f]/10">
+                    <div className="divide-y divide-[#07131a]/10">
                       {participants.map((participant) => (
                         <div
                           key={participant.id}
@@ -445,16 +445,16 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                         >
                           <div>
                             <div className="flex flex-wrap items-center gap-2">
-                              <p className="font-black text-[#18372f]">
+                              <p className="font-black text-[#07131a]">
                                 {participant.user.fullName}
                               </p>
                               <UserRatingBadge userId={participant.user?.id} />
                             </div>
-                            <p className="text-sm font-semibold text-[#66736d]">
+                            <p className="text-sm font-semibold text-[#4f6268]">
                               {participant.user.aiubId} ·{" "}
                               {participant.user.email}
                             </p>
-                            <p className="mt-1 text-sm font-semibold text-[#18372f]">
+                            <p className="mt-1 text-sm font-semibold text-[#07131a]">
                               {formatDistance(
                                 getDistanceInKm(
                                   participant.currentLatitude,
@@ -464,7 +464,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                                 ),
                               )}
                             </p>
-                            <p className="text-xs font-semibold text-[#66736d]">
+                            <p className="text-xs font-semibold text-[#4f6268]">
                               {formatLocationTime(participant.locationUpdatedAt)}
                             </p>
                           </div>

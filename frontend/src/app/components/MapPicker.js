@@ -251,8 +251,8 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
   }
 
   return (
-    <div className="rounded-2xl border border-[#18372f]/15 bg-white">
-      <div className="border-b border-[#18372f]/10 p-3">
+    <div className="rounded-2xl border border-[#07131a]/15 bg-white">
+      <div className="border-b border-[#07131a]/10 p-3">
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
             type="text"
@@ -272,26 +272,26 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
               }
             }}
             placeholder="Search exact location, e.g. AIUB Main Gate"
-            className="min-w-0 flex-1 rounded-2xl border border-[#18372f]/15 bg-[#f5f7f4] px-4 py-3 text-sm font-semibold text-[#18372f] outline-none placeholder:text-[#7d857f]/70 focus:border-[#18372f]"
+            className="min-w-0 flex-1 rounded-2xl border border-[#07131a]/15 bg-[#e8eef0] px-4 py-3 text-sm font-semibold text-[#07131a] outline-none placeholder:text-[#56696f]/70 focus:border-[#07131a]"
           />
           <button
             type="button"
             onClick={handleSearch}
             disabled={isSearching}
-            className="rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+            className="rounded-2xl bg-[#07131a] px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             {isSearching ? "Searching..." : "Search"}
           </button>
         </div>
 
         {searchResults.length > 0 && (
-          <div className="mt-3 overflow-hidden rounded-2xl border border-[#18372f]/10 bg-white">
+          <div className="mt-3 overflow-hidden rounded-2xl border border-[#07131a]/10 bg-white">
             {searchResults.map((result) => (
               <button
                 key={result.place_id}
                 type="button"
                 onClick={() => selectSearchResult(result)}
-                className="block w-full border-b border-[#18372f]/10 px-4 py-3 text-left text-sm font-semibold text-[#18372f] last:border-b-0 hover:bg-[#f5f7f4]"
+                className="block w-full border-b border-[#07131a]/10 px-4 py-3 text-left text-sm font-semibold text-[#07131a] last:border-b-0 hover:bg-[#e8eef0]"
               >
                 {result.display_name}
               </button>
@@ -302,10 +302,10 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
 
       <div
         ref={mapContainerRef}
-        className="h-72 w-full bg-slate-100"
+        className="h-72 w-full bg-[#dbe6ea]"
       />
-      <div className="flex flex-col gap-3 border-t border-[#18372f]/10 p-3">
-        <div className="text-sm font-semibold text-[#66736d]">
+      <div className="flex flex-col gap-3 border-t border-[#07131a]/10 p-3">
+        <div className="text-sm font-semibold text-[#4f6268]">
           {value?.latitude && value?.longitude ? (
             <span>
               Selected: {value.latitude}, {value.longitude}
@@ -314,22 +314,22 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
             <span>Click the map or use your current location.</span>
           )}
           {isLookingUpAddress && (
-            <p className="mt-1 text-sm text-[#66736d]">
+            <p className="mt-1 text-sm text-[#4f6268]">
               Detecting map address...
             </p>
           )}
           {detectedAddress && (
-            <div className="mt-2 rounded-2xl border border-[#18372f]/10 bg-[#f5f7f4] p-3">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#7d857f]">
+            <div className="mt-2 rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-3">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Detected map address
               </p>
-              <p className="mt-1 text-sm font-semibold text-[#18372f]">
+              <p className="mt-1 text-sm font-semibold text-[#07131a]">
                 {detectedAddress}
               </p>
               <button
                 type="button"
                 onClick={() => onUseDetectedAddress?.(detectedAddress)}
-                className="mt-2 rounded-2xl border border-[#18372f]/15 bg-white px-3 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35"
+                className="mt-2 rounded-2xl border border-[#07131a]/15 bg-white px-3 py-2 text-sm font-black text-[#07131a] hover:border-[#07131a]/35"
               >
                 Use detected address as name
               </button>
@@ -343,7 +343,7 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
         <button
           type="button"
           onClick={handleUseCurrentLocation}
-          className="w-fit rounded-2xl border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f] hover:border-[#18372f]/35"
+          className="w-fit rounded-2xl border border-[#07131a]/15 bg-white px-4 py-2 text-sm font-black text-[#07131a] hover:border-[#07131a]/35"
         >
           Use my location
         </button>

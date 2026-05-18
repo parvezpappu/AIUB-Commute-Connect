@@ -12,7 +12,7 @@ export class MailService {
       heading: 'Verify your email',
       intro:
         'Use this one-time password to finish creating your AIUB Commute Connect account.',
-      note: 'Use your name and university ID exactly as shown on your university ID card.',
+      note: 'If you did not request to verify your email, you can safely ignore this email.',
       fallbackLabel: 'Email OTP',
     });
   }
@@ -151,7 +151,7 @@ export class MailService {
                         <div style="font-size:13px;color:#52627a;margin-bottom:8px;">Your one-time password</div>
                         <div style="font-size:34px;line-height:1;font-weight:800;letter-spacing:8px;color:#003d73;">${otp}</div>
                       </div>
-                      <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#52627a;">This code will expire in 10 minutes.</p>
+                      <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#52627a;">This code will expire in 5 minutes.</p>
                       <p style="margin:0;padding:14px 16px;background:#fff8e6;border-left:4px solid #f2b705;border-radius:6px;font-size:14px;line-height:1.6;color:#5c4a12;">${safeNote}</p>
                     </td>
                   </tr>

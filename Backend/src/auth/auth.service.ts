@@ -15,9 +15,13 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import { ResendVerificationOtpDto } from './dto/resend-verification-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { VerifyPasswordResetOtpDto } from './dto/verify-password-reset-otp.dto';
 import { PendingRegistration } from './entities/pending-registration.entity';
 import { MailService } from './mail.service';
 import { UserService } from '../user/user.service';
+
+const EMAIL_VERIFICATION_OTP_EXPIRY_MINUTES = 5;
+const PASSWORD_RESET_OTP_EXPIRY_MINUTES = 5;
 
 @Injectable()
 export class AuthService {
@@ -30,7 +34,9 @@ export class AuthService {
   ) {}
 
   async registerUser(createAuthDto: CreateAuthDto) {
-    const existingEmail = await this.userService.findByEmail(createAuthDto.email);
+    const existingEmail = await this.userService.findByEmail(
+      createAuthDto.email,
+    );
 
     if (existingEmail) {
       throw new ConflictException('Email already exists');
@@ -44,23 +50,25 @@ export class AuthService {
       throw new ConflictException('University ID already exists');
     }
 
-    const pendingWithEmail =
-      await this.pendingRegistrationRepository.findOne({
-        where: { email: createAuthDto.email },
-      });
-    const pendingWithAiubId =
-      await this.pendingRegistrationRepository.findOne({
-        where: { aiubId: createAuthDto.aiubId },
-      });
+    const pendingWithEmail = await this.pendingRegistrationRepository.findOne({
+      where: { email: createAuthDto.email },
+    });
+    const pendingWithAiubId = await this.pendingRegistrationRepository.findOne({
+      where: { aiubId: createAuthDto.aiubId },
+    });
 
     if (pendingWithAiubId && pendingWithAiubId.email !== createAuthDto.email) {
-      throw new ConflictException('University ID is already pending verification');
+      throw new ConflictException(
+        'University ID is already pending verification',
+      );
     }
 
     const otp = this.generateOtp();
     const hashedPassword = await bcrypt.hash(createAuthDto.password, 10);
     const hashedOtp = await bcrypt.hash(otp, 10);
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const otpExpiresAt = new Date(
+      Date.now() + EMAIL_VERIFICATION_OTP_EXPIRY_MINUTES * 60 * 1000,
+    );
 
     const pendingRegistration =
       pendingWithEmail ?? this.pendingRegistrationRepository.create();
@@ -90,7 +98,7 @@ export class AuthService {
   }
 
   async loginUser(loginAuthDto: LoginAuthDto) {
-    const user = await this.userService.findByAiubId(loginAuthDto.aiubId,true);
+    const user = await this.userService.findByAiubId(loginAuthDto.aiubId, true);
 
     if (!user) {
       throw new UnauthorizedException('Invalid university ID or password');
@@ -129,7 +137,9 @@ export class AuthService {
   }
 
   async verifyEmail(verifyEmailDto: VerifyEmailDto) {
-    const existingUser = await this.userService.findByEmail(verifyEmailDto.email);
+    const existingUser = await this.userService.findByEmail(
+      verifyEmailDto.email,
+    );
 
     if (existingUser?.isVerified) {
       return {
@@ -137,14 +147,13 @@ export class AuthService {
       };
     }
 
-    const pendingRegistration =
-      await this.pendingRegistrationRepository
-        .createQueryBuilder('pendingRegistration')
-        .addSelect('pendingRegistration.emailVerificationOtp')
-        .where('pendingRegistration.email = :email', {
-          email: verifyEmailDto.email,
-        })
-        .getOne();
+    const pendingRegistration = await this.pendingRegistrationRepository
+      .createQueryBuilder('pendingRegistration')
+      .addSelect('pendingRegistration.emailVerificationOtp')
+      .where('pendingRegistration.email = :email', {
+        email: verifyEmailDto.email,
+      })
+      .getOne();
 
     if (!pendingRegistration) {
       throw new BadRequestException('No pending registration found');
@@ -205,7 +214,7 @@ export class AuthService {
     const otp = this.generateOtp();
     pendingRegistration.emailVerificationOtp = await bcrypt.hash(otp, 10);
     pendingRegistration.emailVerificationOtpExpiresAt = new Date(
-      Date.now() + 10 * 60 * 1000,
+      Date.now() + EMAIL_VERIFICATION_OTP_EXPIRY_MINUTES * 60 * 1000,
     );
     await this.pendingRegistrationRepository.save(pendingRegistration);
     await this.mailService.sendVerificationOtp(
@@ -225,7 +234,9 @@ export class AuthService {
 
   async changePassword(userId: number, changePasswordDto: ChangePasswordDto) {
     if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
-      throw new BadRequestException('New password and confirmation do not match');
+      throw new BadRequestException(
+        'New password and confirmation do not match',
+      );
     }
 
     const user = await this.userService.findById(userId, true);
@@ -266,7 +277,9 @@ export class AuthService {
 
     const otp = this.generateOtp();
     user.passwordResetOtp = await bcrypt.hash(otp, 10);
-    user.passwordResetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    user.passwordResetOtpExpiresAt = new Date(
+      Date.now() + PASSWORD_RESET_OTP_EXPIRY_MINUTES * 60 * 1000,
+    );
     await this.userService.save(user);
     await this.mailService.sendPasswordResetOtp(user.email, user.fullName, otp);
 
@@ -277,7 +290,9 @@ export class AuthService {
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     if (resetPasswordDto.newPassword !== resetPasswordDto.confirmPassword) {
-      throw new BadRequestException('New password and confirmation do not match');
+      throw new BadRequestException(
+        'New password and confirmation do not match',
+      );
     }
 
     const user = await this.userService.findByEmailForPasswordReset(
@@ -308,6 +323,35 @@ export class AuthService {
 
     return {
       message: 'Password reset successfully. You can now login.',
+    };
+  }
+
+  async verifyPasswordResetOtp(
+    verifyPasswordResetOtpDto: VerifyPasswordResetOtpDto,
+  ) {
+    const user = await this.userService.findByEmailForPasswordReset(
+      verifyPasswordResetOtpDto.email,
+    );
+
+    if (!user || !user.passwordResetOtp || !user.passwordResetOtpExpiresAt) {
+      throw new BadRequestException('Invalid email or OTP');
+    }
+
+    if (user.passwordResetOtpExpiresAt < new Date()) {
+      throw new BadRequestException('OTP expired. Please request a new OTP');
+    }
+
+    const isOtpMatched = await bcrypt.compare(
+      verifyPasswordResetOtpDto.otp,
+      user.passwordResetOtp,
+    );
+
+    if (!isOtpMatched) {
+      throw new BadRequestException('Invalid email or OTP');
+    }
+
+    return {
+      message: 'OTP verified successfully',
     };
   }
 }

@@ -1,6 +1,7 @@
     import { z } from "zod";
 
     const aiubIdRegex = /^\d{2}-\d{5}-\d$/;
+    const strongPasswordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
     const registerSchema = z.object({
     fullName: z
@@ -29,7 +30,11 @@
         .string()
         .min(1, "Password is required")
         .min(6, "Password must be at least 6 characters")
-        .max(20, "Password must not be more than 20 characters"),
+        .max(20, "Password must not be more than 20 characters")
+        .regex(
+        strongPasswordRegex,
+        "Password must include a letter, number, and special character",
+        ),
 
     preferredFromLocation: z.string().trim().optional(),
 

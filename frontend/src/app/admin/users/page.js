@@ -7,6 +7,9 @@ import UserRatingBadge from "../../components/UserRatingBadge";
 import { deleteAdminUser, getAdminUsers } from "../../lib/api";
 import { useRequireAdmin } from "../../lib/auth";
 
+const pageBackground =
+  "radial-gradient(circle at 78% 18%, rgba(160,183,190,0.42) 0%, transparent 34%), linear-gradient(115deg, #07131a 0%, #17303a 32%, #4f6268 70%, #d7dedc 100%)";
+
 function formatDateTime(value) {
   return new Intl.DateTimeFormat("en-BD", {
     dateStyle: "medium",
@@ -66,8 +69,11 @@ export default function AdminUsersPage() {
 
   if (isCheckingAuth || isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-        <p className="text-slate-600">
+      <main
+        className="flex min-h-screen items-center justify-center"
+        style={{ background: pageBackground }}
+      >
+        <p className="font-semibold text-[#4f6268]">
           {isCheckingAuth ? "Checking admin access..." : "Loading users..."}
         </p>
       </main>
@@ -75,46 +81,49 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
+    <main
+      className="min-h-screen text-[#07131a]"
+      style={{ background: pageBackground }}
+    >
       <AuthenticatedNav />
       <section className="mx-auto max-w-6xl px-4 py-8">
-        <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-4 rounded-[28px] border border-[#07131a]/15 bg-white/80 p-6 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur sm:flex-row sm:items-center">
           <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-[#003b73]">
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-[#244b58]">
               Admin
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-[#07131a]">
               Users
             </h1>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm font-semibold text-[#4f6268]">
               View registered users and remove accounts when needed.
             </p>
           </div>
 
           <Link
             href="/dashboard"
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+            className="rounded-2xl border border-[#07131a]/15 bg-white px-4 py-2.5 text-sm font-black text-[#07131a] transition hover:border-[#07131a]/35"
           >
             Dashboard
           </Link>
         </div>
 
         {message && (
-          <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
             {message}
           </div>
         )}
 
         {error && (
-          <div className="mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
             {error}
           </div>
         )}
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-[28px] border border-[#07131a]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
+            <table className="min-w-full divide-y divide-[#07131a]/10 text-sm">
+              <thead className="bg-[#e8eef0] text-left text-xs font-black uppercase tracking-[0.12em] text-[#4f6268]">
                 <tr>
                   <th className="px-4 py-3">ID</th>
                   <th className="px-4 py-3">Name</th>
@@ -128,15 +137,21 @@ export default function AdminUsersPage() {
                   <th className="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#07131a]/10">
                 {users.map((user) => (
-                  <tr key={user.id}>
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                  <tr key={user.id} className="align-middle hover:bg-[#e8eef0]/70">
+                    <td className="px-4 py-3 font-black text-[#07131a]">
                       {user.id}
                     </td>
-                    <td className="px-4 py-3">{user.fullName}</td>
-                    <td className="px-4 py-3">{user.aiubId}</td>
-                    <td className="px-4 py-3">{user.email}</td>
+                    <td className="px-4 py-3 font-black text-[#07131a]">
+                      {user.fullName}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-[#4f6268]">
+                      {user.aiubId}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-[#4f6268]">
+                      {user.email}
+                    </td>
                     <td className="px-4 py-3">
                       {user.gender === "MALE"
                         ? "Male"
@@ -148,7 +163,7 @@ export default function AdminUsersPage() {
                       <UserRatingBadge userId={user.id} />
                     </td>
                     <td className="px-4 py-3">
-                      <span className="rounded-full bg-[#003b73]/10 px-3 py-1 text-xs font-semibold text-[#003b73]">
+                      <span className="rounded-full bg-[#07131a]/10 px-3 py-1 text-xs font-black text-[#07131a]">
                         {user.role}
                       </span>
                     </td>
@@ -163,7 +178,7 @@ export default function AdminUsersPage() {
                         type="button"
                         onClick={() => handleDelete(user)}
                         disabled={deletingId === user.id}
-                        className="rounded-md border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                        className="rounded-2xl border border-rose-200 bg-white px-3 py-2 text-xs font-black text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                       >
                         {deletingId === user.id ? "Deleting..." : "Delete"}
                       </button>
@@ -175,7 +190,7 @@ export default function AdminUsersPage() {
           </div>
 
           {users.length === 0 && (
-            <p className="p-6 text-center text-sm text-slate-500">
+            <p className="p-6 text-center text-sm font-semibold text-[#4f6268]">
               No users found.
             </p>
           )}

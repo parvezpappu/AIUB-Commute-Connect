@@ -208,7 +208,7 @@ export default function LiveCommuteMap({
 
   return (
     <div className="overflow-hidden rounded-md border border-slate-200">
-      <div ref={mapContainerRef} className="h-80 w-full bg-slate-100" />
+      <div ref={mapContainerRef} className="h-80 w-full bg-[#dbe6ea]" />
     </div>
   );
 }

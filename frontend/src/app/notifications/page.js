@@ -11,7 +11,7 @@ import {
 import { useRequireAuth } from "../lib/auth";
 
 const pageBackground =
-  "radial-gradient(circle at 12% 12%, #d7efe3 0%, transparent 30%), linear-gradient(135deg, #f5f7f4 0%, #e9efe8 52%, #f8ead2 100%)";
+  "radial-gradient(circle at 78% 18%, rgba(160,183,190,0.42) 0%, transparent 34%), linear-gradient(115deg, #07131a 0%, #17303a 32%, #4f6268 70%, #d7dedc 100%)";
 
 const filters = [
   { label: "All", value: "ALL" },
@@ -51,7 +51,7 @@ function getNotificationTitle(type) {
 
 function getNotificationTone(type) {
   if (type === "JOIN_REQUEST") {
-    return "border-[#ffc857]/40 bg-[#fff7e4] text-[#8b6400]";
+    return "border-[#8ed8ff]/40 bg-[#e8eef0] text-[#244b58]";
   }
 
   if (type === "REQUEST_ACCEPTED") {
@@ -59,7 +59,7 @@ function getNotificationTone(type) {
   }
 
   if (type === "COMMUTE_COMPLETED") {
-    return "border-[#18372f]/15 bg-[#18372f]/10 text-[#18372f]";
+    return "border-[#07131a]/15 bg-[#07131a]/10 text-[#07131a]";
   }
 
   return "border-rose-200 bg-rose-50 text-rose-700";
@@ -183,7 +183,7 @@ export default function NotificationsPage() {
         className="flex min-h-screen items-center justify-center"
         style={{ background: pageBackground }}
       >
-        <p className="font-semibold text-[#66736d]">
+        <p className="font-semibold text-[#4f6268]">
           {isCheckingAuth ? "Checking session..." : "Loading notifications..."}
         </p>
       </main>
@@ -192,22 +192,22 @@ export default function NotificationsPage() {
 
   return (
     <main
-      className="min-h-screen text-[#18372f]"
+      className="min-h-screen text-[#07131a]"
       style={{ background: pageBackground }}
     >
       <AuthenticatedNav />
 
       <section className="mx-auto max-w-5xl px-4 py-6">
-        <div className="rounded-[28px] border border-[#18372f]/15 bg-white/80 p-5 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
+        <div className="rounded-[28px] border border-[#07131a]/15 bg-white/80 p-5 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.28em] text-[#2f6f61]">
+              <p className="text-xs font-black uppercase tracking-[0.28em] text-[#244b58]">
                 Activity center
               </p>
-              <h1 className="mt-2 text-3xl font-black text-[#18372f]">
+              <h1 className="mt-2 text-3xl font-black text-[#07131a]">
                 Notifications
               </h1>
-              <p className="mt-1 text-sm font-semibold text-[#66736d]">
+              <p className="mt-1 text-sm font-semibold text-[#4f6268]">
                 See all requests, decisions, completed rides, and rating
                 reminders.
               </p>
@@ -217,7 +217,7 @@ export default function NotificationsPage() {
               type="button"
               onClick={handleMarkAllRead}
               disabled={unreadCount === 0 || isMarkingAll}
-              className="w-fit rounded-2xl bg-[#18372f] px-5 py-3 text-sm font-black text-white transition hover:bg-[#10261f] disabled:cursor-not-allowed disabled:bg-[#18372f]/35"
+              className="w-fit rounded-2xl bg-[#07131a] px-5 py-3 text-sm font-black text-white transition hover:bg-[#0b1d25] disabled:cursor-not-allowed disabled:bg-[#07131a]/35"
             >
               {isMarkingAll ? "Updating..." : `Mark all read (${unreadCount})`}
             </button>
@@ -241,8 +241,8 @@ export default function NotificationsPage() {
                 onClick={() => setActiveFilter(filter.value)}
                 className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-black transition ${
                   isActive
-                    ? "bg-[#ffc857] text-[#18372f]"
-                    : "border border-[#18372f]/15 bg-white/72 text-[#66736d] hover:bg-white"
+                    ? "bg-[#8ed8ff] text-[#07131a]"
+                    : "border border-[#07131a]/15 bg-white/72 text-[#4f6268] hover:bg-white"
                 }`}
               >
                 {filter.label}
@@ -253,11 +253,11 @@ export default function NotificationsPage() {
 
         <div className="mt-5 space-y-3">
           {filteredNotifications.length === 0 ? (
-            <div className="rounded-[28px] border border-dashed border-[#18372f]/20 bg-white/72 p-10 text-center shadow-[0_20px_60px_rgba(24,55,47,0.06)] backdrop-blur">
-              <h2 className="text-xl font-black text-[#18372f]">
+            <div className="rounded-[28px] border border-dashed border-[#07131a]/20 bg-white/72 p-10 text-center shadow-[0_20px_60px_rgba(24,55,47,0.06)] backdrop-blur">
+              <h2 className="text-xl font-black text-[#07131a]">
                 No notifications here
               </h2>
-              <p className="mx-auto mt-2 max-w-md text-sm font-semibold text-[#66736d]">
+              <p className="mx-auto mt-2 max-w-md text-sm font-semibold text-[#4f6268]">
                 New ride requests, creator decisions, and completed ride
                 reminders will appear here.
               </p>
@@ -268,8 +268,8 @@ export default function NotificationsPage() {
                 key={notification.id}
                 className={`rounded-[24px] border p-4 shadow-[0_18px_50px_rgba(24,55,47,0.07)] backdrop-blur transition ${
                   notification.isRead
-                    ? "border-[#18372f]/12 bg-white/76"
-                    : "border-[#ffc857]/55 bg-[#fff7e4]/82"
+                    ? "border-[#07131a]/12 bg-white/76"
+                    : "border-[#8ed8ff]/55 bg-[#e8eef0]/82"
                 }`}
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -283,16 +283,16 @@ export default function NotificationsPage() {
                         {getNotificationTitle(notification.type)}
                       </span>
                       {!notification.isRead && (
-                        <span className="rounded-full bg-[#ffc857] px-2.5 py-1 text-xs font-black text-[#18372f]">
+                        <span className="rounded-full bg-[#8ed8ff] px-2.5 py-1 text-xs font-black text-[#07131a]">
                           New
                         </span>
                       )}
                     </div>
 
-                    <p className="mt-3 text-base font-black leading-6 text-[#18372f]">
+                    <p className="mt-3 text-base font-black leading-6 text-[#07131a]">
                       {notification.message}
                     </p>
-                    <p className="mt-2 text-sm font-semibold text-[#66736d]">
+                    <p className="mt-2 text-sm font-semibold text-[#4f6268]">
                       {formatNotificationTime(notification.createdAt)}
                     </p>
                   </div>
@@ -302,7 +302,7 @@ export default function NotificationsPage() {
                       <button
                         type="button"
                         onClick={() => handleMarkRead(notification)}
-                        className="rounded-2xl border border-[#18372f]/15 bg-white/75 px-4 py-2 text-sm font-black text-[#18372f] transition hover:bg-white"
+                        className="rounded-2xl border border-[#07131a]/15 bg-white/75 px-4 py-2 text-sm font-black text-[#07131a] transition hover:bg-white"
                       >
                         Mark read
                       </button>
@@ -310,7 +310,7 @@ export default function NotificationsPage() {
                     <Link
                       href={getNotificationHref(notification)}
                       onClick={() => handleMarkRead(notification)}
-                      className="rounded-2xl bg-[#18372f] px-4 py-2 text-sm font-black text-white transition hover:bg-[#10261f]"
+                      className="rounded-2xl bg-[#07131a] px-4 py-2 text-sm font-black text-white transition hover:bg-[#0b1d25]"
                     >
                       View
                     </Link>

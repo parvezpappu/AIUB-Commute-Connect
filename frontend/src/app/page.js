@@ -23,45 +23,45 @@ const benefits = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#f5f7f4] text-[#17211d]">
-      <header className="sticky top-0 z-40 border-b border-[#17211d]/10 bg-[#f5f7f4]/95 backdrop-blur">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-full bg-[#18372f] text-lg font-black text-[#ffc857]">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#07131a]/82 backdrop-blur">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:py-4">
+          <Link href="/" className="flex min-w-0 items-center gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 text-lg font-black text-[#8ed8ff] ring-1 ring-white/15 sm:h-11 sm:w-11">
               চ
             </div>
-            <div>
-              <p className="text-xl font-black leading-none text-[#18372f]">
+            <div className="min-w-0">
+              <p className="truncate text-lg font-black leading-none text-white sm:text-xl">
                 চলোযাই
               </p>
-              <p className="mt-1 text-xs font-bold text-[#6d756f]">
+              <p className="mt-1 hidden text-xs font-bold text-white/58 sm:block">
                 AIUB Commute Connect
               </p>
             </div>
           </Link>
 
-          <div className="hidden items-center gap-6 text-sm font-bold text-[#43514a] md:flex">
-            <a href="#purpose" className="hover:text-[#123f31]">
+          <div className="hidden items-center gap-6 text-sm font-bold text-white/70 md:flex">
+            <a href="#purpose" className="hover:text-white">
               Purpose
             </a>
-            <a href="#journey" className="hover:text-[#123f31]">
+            <a href="#journey" className="hover:text-white">
               Journey
             </a>
-            <a href="#features" className="hover:text-[#123f31]">
+            <a href="#features" className="hover:text-white">
               Features
             </a>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <Link
               href="/login"
-              className="rounded-full px-4 py-2 text-sm font-black text-[#18372f] hover:bg-[#18372f]/8"
+              className="rounded-full border bg-[#071016] px-5 py-1.5 text-center text-sm font-black text-[#07131a] shadow-lg shadow-[#07131a]/15 transition hover:border-white hover:bg-white"
             >
               Login
             </Link>
             <Link
               href="/register"
-              className="rounded-full bg-[#18372f] px-5 py-2 text-sm font-black text-white shadow-sm transition hover:bg-[#102720]"
+              className="rounded-full border bg-[#071016] px-5 py-1.5 text-center text-sm font-black text-[#07131a] shadow-lg shadow-[#07131a]/15 transition hover:border-white hover:bg-white"
             >
               Register
             </Link>
@@ -69,102 +69,132 @@ export default function HomePage() {
         </nav>
       </header>
 
-      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_12%_12%,#d7efe3_0%,transparent_30%),linear-gradient(135deg,#f5f7f4_0%,#e9efe8_52%,#f8ead2_100%)]">
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[repeating-linear-gradient(115deg,transparent_0,transparent_18px,rgba(24,55,47,0.05)_19px,rgba(24,55,47,0.05)_20px)]" />
-      <div className="mx-auto grid min-h-[calc(100vh-77px)] max-w-7xl items-center gap-12 px-4 py-12 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="relative overflow-hidden bg-transparent">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_18%,rgba(93,139,150,0.18)_0%,transparent_28%),linear-gradient(90deg,rgba(7,19,26,0.18)_0%,transparent_58%)]" />
+      <div className="mx-auto grid min-h-[calc(100vh-70px)] max-w-7xl items-start gap-8 px-4 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="reveal">
-          <p className="inline-flex rounded-full border border-[#18372f]/15 bg-white px-4 py-2 text-sm font-black text-[#18372f] shadow-sm">
-            Built for everyday AIUB commutes
-          </p>
-
-          <h1 className="mt-7 max-w-3xl text-5xl font-black leading-[0.97] tracking-normal text-[#18372f] sm:text-7xl">
+          <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[0.97] tracking-normal text-[#07131a] sm:mt-7 sm:text-7xl">
             চলোযাই
           </h1>
-          <p className="mt-5 max-w-3xl text-3xl font-black leading-tight text-[#293d35] sm:text-5xl">
+          <p className="mt-4 max-w-3xl text-2xl font-black leading-tight text-[#122832] sm:mt-5 sm:text-5xl">
             Find your route people before the ride starts.
           </p>
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-[#52615a]">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-[#c4d4d9] sm:mt-6 sm:text-lg sm:leading-8">
             Create a commute post, request a seat, split the cost, and meet at a
             selected pickup point with students going the same way.
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
             <Link
               href="/register"
-              className="rounded-full bg-[#18372f] px-7 py-4 text-center text-sm font-black text-white shadow-lg shadow-[#18372f]/15 transition hover:bg-[#102720]"
+              className="rounded-full border bg-[#071016] px-5 py-2.5 text-center text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:border-white hover:bg-white hover:text-[#07131a] sm:py-2"
             >
-              Create account
+              Create an account
             </Link>
             <Link
               href="/login"
-              className="rounded-full border border-[#18372f]/20 bg-white px-7 py-4 text-center text-sm font-black text-[#18372f] transition hover:border-[#18372f]/50"
+              className="rounded-full border bg-[#071016] px-5 py-2.5 text-center text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:border-white hover:bg-white hover:text-[#07131a] sm:py-2"
             >
-              Login with University ID
+              Login 
             </Link>
           </div>
         </div>
 
         <div className="reveal relative">
-          <div className="absolute -right-6 -top-6 h-36 w-36 rounded-full bg-[#ffc857]/60 blur-3xl" />
-          <div className="absolute -bottom-8 left-8 h-44 w-44 rounded-full bg-[#7fc8a9]/40 blur-3xl" />
+          <div className="absolute -right-6 -top-6 h-36 w-36 rounded-full bg-[#8ed8ff]/60 blur-3xl" />
+          <div className="absolute -bottom-8 left-8 h-44 w-44 rounded-full bg-[#8aa0a8]/40 blur-3xl" />
 
-          <div className="ride-card relative rounded-[32px] border border-[#18372f]/12 bg-white p-4 shadow-2xl shadow-[#18372f]/12">
+          <div className="ride-card relative rounded-[24px] border border-[#07131a]/12 bg-white p-3 shadow-2xl shadow-[#07131a]/12 sm:rounded-[32px] sm:p-4">
             <div className="grid gap-4 md:grid-cols-[1fr_0.82fr]">
-              <div className="rounded-[24px] bg-[#18372f] p-6 text-white">
-                <p className="text-sm font-black uppercase tracking-[0.18em] text-[#a8e6c4]">
-                  Commute card
+              <div className="rounded-[20px] bg-[#071016] p-4 text-white sm:rounded-[24px] sm:p-6">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8ed8ff] sm:text-sm">
+                 Sample Commute card
                 </p>
-                <h2 className="mt-5 text-3xl font-black">Kuril to AIUB</h2>
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl bg-white/10 p-4">
+                <h2 className="mt-4 text-2xl font-black sm:mt-5 sm:text-3xl">Kuril to AIUB</h2>
+                <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:gap-3">
+                  <div className="rounded-2xl border border-white/70 bg-white/10 p-3 sm:border-2 sm:p-4">
                     <p className="text-xs font-bold text-white/60">Transport</p>
                     <p className="mt-1 font-black">Uber</p>
                   </div>
-                  <div className="rounded-2xl bg-white/10 p-4">
+                  <div className="rounded-2xl border border-white/70 bg-white/10 p-3 sm:border-2 sm:p-4">
                     <p className="text-xs font-bold text-white/60">Seats</p>
                     <p className="mt-1 font-black">1 left</p>
                   </div>
-                  <div className="rounded-2xl bg-white/10 p-4">
+                  <div className="rounded-2xl border border-white/70 bg-white/10 p-3 sm:border-2 sm:p-4">
                     <p className="text-xs font-bold text-white/60">Cost</p>
                     <p className="mt-1 font-black">Tk 10</p>
                   </div>
-                  <div className="rounded-2xl bg-white/10 p-4">
+                  <div className="rounded-2xl border border-white/70 bg-white/10 p-3 sm:border-2 sm:p-4">
                     <p className="text-xs font-bold text-white/60">Join</p>
                     <p className="mt-1 font-black">Request</p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-[24px] bg-[#e9efe9] p-4">
-                <div className="route-map relative h-full min-h-72 overflow-hidden rounded-[20px] bg-[linear-gradient(135deg,#d7e4d9_25%,#c7dacb_25%,#c7dacb_50%,#d7e4d9_50%,#d7e4d9_75%,#c7dacb_75%)] bg-[length:34px_34px]">
+              <div className="rounded-[20px] bg-[#dbe6ea] p-3 sm:rounded-[24px] sm:p-4">
+                <div className="route-map relative h-64 overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#d7e4e7_25%,#c5d4d8_25%,#c5d4d8_50%,#d7e4e7_50%,#d7e4e7_75%,#c5d4d8_75%)] bg-[length:34px_34px] sm:h-full sm:min-h-72 sm:rounded-[20px]">
                   <div className="absolute left-0 top-[42%] h-4 w-full -rotate-[17deg] bg-white/45" />
                   <div className="absolute left-[8%] top-[20%] h-3 w-[90%] rotate-[8deg] bg-white/35" />
                   <div className="absolute bottom-[18%] left-[4%] h-3 w-[88%] -rotate-[4deg] bg-white/35" />
-                  <div className="route-line absolute left-[20%] top-[67%] h-1.5 w-[55%] -rotate-[27deg] rounded-full bg-[#18372f]/45" />
-                  <div className="route-dot absolute left-[17%] top-[66%] h-5 w-5 rounded-full border-4 border-white bg-[#18372f] shadow-lg" />
-                  <div className="route-dot route-dot-destination absolute left-[72%] top-[25%] h-5 w-5 rounded-full border-4 border-white bg-[#ff9f1c] shadow-lg" />
-                  <div className="route-car absolute left-[42%] top-[47%] h-6 w-10 -rotate-[27deg] rounded-full bg-[#ff9f1c] shadow-lg">
-                    <span className="absolute bottom-[-3px] left-1 h-2 w-2 rounded-full bg-[#18372f]" />
-                    <span className="absolute bottom-[-3px] right-1 h-2 w-2 rounded-full bg-[#18372f]" />
+                  <svg
+                    className="absolute inset-0 h-full w-full"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1="20"
+                      y1="70"
+                      x2="65"
+                      y2="36"
+                      stroke="#07131a"
+                      strokeWidth="2.2"
+                      strokeDasharray="1 5"
+                      strokeLinecap="round"
+                      opacity="0.68"
+                    />
+                  </svg>
+                  <div className="route-dot absolute left-[20%] top-[70%] h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-[#07131a] shadow-lg" />
+                  <div className="route-dot route-dot-destination absolute left-[65%] top-[36%] h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-[#0b83c9] shadow-lg" />
+                  <div className="map-pin-travel absolute h-14 w-10 sm:h-16 sm:w-12">
+                    <svg
+                      viewBox="0 0 64 76"
+                      className="h-full w-full drop-shadow-xl"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M32 4C18.2 4 7 15.2 7 29c0 19.8 25 43 25 43s25-23.2 25-43C57 15.2 45.8 4 32 4Z"
+                        fill="#34A853"
+                      />
+                      <path
+                        d="M32 4C18.2 4 7 15.2 7 29c0 7.1 3.2 14.7 7.3 21.4L32 29V4Z"
+                        fill="#EA4335"
+                      />
+                      <path
+                        d="M32 4v25l18.2-15.8A24.9 24.9 0 0 0 32 4Z"
+                        fill="#4285F4"
+                      />
+                      <path
+                        d="M14.3 50.4C21.8 62.2 32 72 32 72V29L14.3 50.4Z"
+                        fill="#FBBC05"
+                      />
+                      <circle cx="32" cy="29" r="11" fill="white" />
+                    </svg>
+                    <span className="absolute bottom-0 left-1/2 h-2 w-8 -translate-x-1/2 rounded-full bg-[#07131a]/25 blur-[1px]" />
                   </div>
-                  <div className="absolute left-[7%] top-[74%] rounded-2xl bg-white px-4 py-3 shadow-lg">
-                    <p className="text-xs font-black uppercase text-[#6d756f]">
-                      Start
-                    </p>
-                    <p className="mt-1 font-black text-[#18372f]">Kuril</p>
-                  </div>
-                  <div className="absolute right-4 top-4 rounded-2xl bg-white px-4 py-3 shadow-lg">
-                    <p className="text-xs font-black uppercase text-[#6d756f]">
+                  
+                  <div className="absolute right-3 top-2 rounded-2xl bg-white px-3 py-2 shadow-lg sm:right-4 sm:top-0 sm:px-4 sm:py-3">
+                    <p className="text-[10px] font-black uppercase text-[#6d756f] sm:text-xs">
                       Destination
                     </p>
-                    <p className="mt-1 font-black text-[#18372f]"></p>
+                    <p className="mt-1 font-black text-[#07131a]"></p>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white p-4 shadow-lg">
-                    <p className="text-xs font-black uppercase text-[#6d756f]">
-                      Meeting point
+                  <div className="absolute bottom-3 left-3 rounded-2xl bg-white px-3 py-2 shadow-lg sm:bottom-4 sm:left-4 sm:w-35 sm:p-4">
+                    <p className="text-[10px] font-black uppercase text-[#6d756f] sm:text-xs">
+                      Pickup Point
                     </p>
-                    <p className="mt-1 font-black text-[#18372f]">
+                    <p className="mt-1 font-black text-[#07131a]">
                       
                     </p>
                   </div>
@@ -176,10 +206,10 @@ export default function HomePage() {
               {highlights.map(([title, text]) => (
                 <div
                   key={title}
-                  className="rounded-2xl border border-[#18372f]/10 bg-[#fbfaf6] p-4"
+                  className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-4"
                 >
-                  <p className="font-black text-[#18372f]">{title}</p>
-                  <p className="mt-2 text-xs leading-5 text-[#617169]">{text}</p>
+                  <p className="font-black text-[#07131a]">{title}</p>
+                  <p className="mt-2 text-xs leading-5 text-[#4f6268]">{text}</p>
                 </div>
               ))}
             </div>
@@ -188,10 +218,11 @@ export default function HomePage() {
       </div>
       </section>
 
-      <section id="purpose" className="bg-[#18372f] px-4 py-24 text-white">
+      <section id="purpose" className="relative overflow-hidden bg-[#07131a] px-4 py-24 text-white">
+        <div className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-[#8ed8ff]/18 blur-3xl" />
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="reveal">
-            <p className="text-sm font-black uppercase tracking-[0.28em] text-[#a8e6c4]">
+            <p className="inline-flex rounded-full border border-[#8ed8ff]/30 bg-[#8ed8ff]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#8ed8ff]">
               Purpose
             </p>
             <h2 className="mt-5 text-4xl font-black leading-tight sm:text-5xl">
@@ -199,8 +230,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="reveal rounded-[28px] border border-white/10 bg-white/8 p-6 text-lg leading-8 text-white/72">
-            <p>
+<div className="reveal rounded-[28px] border border-white bg-white/8 p-6 text-white/80 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur flex items-center justify-center text-center min-h-[160px]">             <p>
               চলোযাই helps AIUB students coordinate shared transport around
               matching routes and times. The focus is simple: post a route,
               request a seat, confirm members, and meet at the right point.
@@ -209,13 +239,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="journey" className="bg-[#f5f7f4] px-4 py-24">
+      <section id="journey" className="bg-[linear-gradient(135deg,#e8eef0_0%,#cdd9dd_52%,#8aa0a8_100%)] px-4 py-24">
         <div className="mx-auto max-w-7xl">
           <div className="reveal max-w-3xl">
-            <p className="text-sm font-black uppercase tracking-[0.28em] text-[#0f7b52]">
+            <p className="inline-flex rounded-full border border-[#07131a]/10 bg-white/54 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#244b58] shadow-sm backdrop-blur">
               Journey
             </p>
-            <h2 className="mt-5 text-4xl font-black leading-tight text-[#18372f] sm:text-5xl">
+            <h2 className="mt-5 text-4xl font-black leading-tight text-[#07131a] sm:text-5xl">
               The flow stays close to how students actually commute.
             </h2>
           </div>
@@ -224,37 +254,38 @@ export default function HomePage() {
             {steps.map(([title, text], index) => (
               <article
                 key={title}
-                className="reveal rounded-[28px] border border-[#18372f]/10 bg-white p-6 shadow-sm"
+                className="reveal rounded-[28px] border border-white/55 bg-white/76 p-6 shadow-[0_20px_60px_rgba(7,19,26,0.12)] backdrop-blur transition hover:-translate-y-1 hover:bg-white/88"
               >
-                <p className="text-5xl font-black text-[#ff9f1c]">
+                <p className="grid h-16 w-16 place-items-center rounded-2xl bg-[#07131a] text-3xl font-black text-[#8ed8ff] shadow-lg shadow-[#07131a]/20">
                   {index + 1}
                 </p>
-                <h3 className="mt-8 text-xl font-black text-[#18372f]">
+                <h3 className="mt-8 text-xl font-black text-[#07131a]">
                   {title}
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-[#617169]">{text}</p>
+                <p className="mt-3 text-sm leading-6 text-[#465a62]">{text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="features" className="bg-[#e8efe8] px-4 py-24">
+      <section id="features" className="relative overflow-hidden bg-[linear-gradient(135deg,#122832_0%,#2f4851_52%,#56696f_100%)] px-4 py-24">
+        <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-[38rem] -translate-x-1/2 rounded-full bg-[#8ed8ff]/12 blur-3xl" />
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1.18fr]">
           <div className="reveal">
-            <p className="text-sm font-black uppercase tracking-[0.28em] text-[#0f7b52]">
+            <p className="inline-flex rounded-full border border-[#8ed8ff]/30 bg-[#8ed8ff]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#8ed8ff]">
               Why it helps
             </p>
-            <h2 className="mt-5 text-4xl font-black leading-tight text-[#18372f] sm:text-5xl">
+            <h2 className="mt-5 text-4xl font-black leading-tight text-white sm:text-5xl">
               Less confusion before the ride, more clarity for everyone.
             </h2>
           </div>
 
-          <div className="reveal rounded-[32px] bg-[#18372f] p-6 text-white shadow-xl shadow-[#18372f]/15">
+          <div className="reveal rounded-[32px] border border-white/10 bg-[#07131a]/78 p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,0.24)] backdrop-blur">
             <ul className="space-y-5">
               {benefits.map((benefit) => (
                 <li key={benefit} className="flex gap-4">
-                  <span className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#ffc857] text-sm font-black text-[#18372f]">
+                  <span className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#8ed8ff] text-sm font-black text-[#07131a]">
                     ✓
                   </span>
                   <p className="text-lg leading-8 text-white/78">{benefit}</p>
@@ -265,28 +296,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="border-t border-[#18372f]/10 bg-[#f5f7f4] px-4 py-10">
+      <footer className="border-t border-white/10 bg-[#07131a] px-4 py-10">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 md:flex-row md:items-center">
           <div>
-            <p className="text-xl font-black text-[#18372f]">চলোযাই</p>
-            <p className="mt-1 text-sm font-semibold text-[#617169]">
+            <p className="text-xl font-black text-white">চলোযাই</p>
+            <p className="mt-1 text-sm font-semibold text-white/60">
               AIUB Commute Connect
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-4 text-sm font-bold text-[#43514a]">
-            <a href="#purpose" className="hover:text-[#18372f]">
+          <div className="flex flex-wrap gap-4 text-sm font-bold text-white/66">
+            <a href="#purpose" className="hover:text-white">
               Purpose
             </a>
-            <a href="#journey" className="hover:text-[#18372f]">
+            <a href="#journey" className="hover:text-white">
               Journey
             </a>
-            <a href="#features" className="hover:text-[#18372f]">
+            <a href="#features" className="hover:text-white">
               Features
             </a>
           </div>
 
-          <p className="text-sm font-semibold text-[#617169]">
+          <p className="text-sm font-semibold text-white/55">
             © 2026 চলোযাই. All rights reserved.
           </p>
         </div>

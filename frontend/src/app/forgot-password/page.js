@@ -2,8 +2,21 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { forgotPassword, resetPassword } from "../lib/api";
+import { useEffect, useState } from "react";
+import {
+  forgotPassword,
+  resetPassword,
+  verifyPasswordResetOtp,
+} from "../lib/api";
+
+const OTP_EXPIRY_SECONDS = 5 * 60;
+
+function formatCountdown(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
+}
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -16,8 +29,23 @@ export default function ForgotPasswordPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [remainingSeconds, setRemainingSeconds] = useState(OTP_EXPIRY_SECONDS);
+
+  useEffect(() => {
+    if (!isOtpSent || isOtpVerified) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setRemainingSeconds((currentSeconds) => Math.max(currentSeconds - 1, 0));
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [isOtpSent, isOtpVerified]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -37,11 +65,33 @@ export default function ForgotPasswordPage() {
     try {
       await forgotPassword(formData.email.trim());
       setIsOtpSent(true);
-      setMessage("Password reset OTP sent to your email.");
+      setIsOtpVerified(false);
+      setRemainingSeconds(OTP_EXPIRY_SECONDS);
+      setMessage("");
     } catch (error) {
       setError(error.message);
     } finally {
       setIsSendingOtp(false);
+    }
+  }
+
+  async function handleVerifyOtp(event) {
+    event.preventDefault();
+    setError("");
+    setMessage("");
+    setIsVerifyingOtp(true);
+
+    try {
+      await verifyPasswordResetOtp({
+        email: formData.email.trim(),
+        otp: formData.otp.trim(),
+      });
+      setIsOtpVerified(true);
+      setMessage("");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsVerifyingOtp(false);
     }
   }
 
@@ -64,7 +114,7 @@ export default function ForgotPasswordPage() {
         newPassword: formData.newPassword,
         confirmPassword: formData.confirmPassword,
       });
-      window.alert("Password reset successfully. You can now login.");
+      window.alert("Password reset successful");
       router.push("/login");
     } catch (error) {
       setError(error.message);
@@ -73,26 +123,47 @@ export default function ForgotPasswordPage() {
     }
   }
 
+  function getFormHandler() {
+    if (!isOtpSent) {
+      return handleSendOtp;
+    }
+
+    if (!isOtpVerified) {
+      return handleVerifyOtp;
+    }
+
+    return handleResetPassword;
+  }
+
+  function getSubmitLabel() {
+    if (!isOtpSent) {
+      return isSendingOtp ? "Sending OTP..." : "Send OTP";
+    }
+
+    if (!isOtpVerified) {
+      return isVerifyingOtp ? "Verifying..." : "Verify OTP";
+    }
+
+    return isResetting ? "Resetting..." : "Reset password";
+  }
+
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-10">
-      <section className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-sm">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-slate-900">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-3 py-6 sm:px-4 sm:py-10">
+      <section className="mx-auto w-full max-w-md rounded-[24px] border border-white/20 bg-white/76 p-5 shadow-sm backdrop-blur sm:rounded-[28px] sm:p-6">
+        <div className="mb-5 sm:mb-6">
+          <h1 className="text-2xl font-semibold text-[#07131a]">
             Forgot password
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-[#4f6268]">
             Use your account email to receive a password reset OTP.
           </p>
         </div>
 
-        <form
-          onSubmit={isOtpSent ? handleResetPassword : handleSendOtp}
-          className="space-y-4"
-        >
+        <form onSubmit={getFormHandler()} className="space-y-4">
           <div>
             <label
               htmlFor="email"
-              className="mb-1 block text-sm font-medium text-slate-700"
+              className="mb-1 block text-sm font-medium text-[#244b58]"
             >
               Email
             </label>
@@ -102,19 +173,19 @@ export default function ForgotPasswordPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900"
+              className="w-full rounded-xl border border-[#a0b7be] bg-white/82 px-3 py-2 text-[#07131a] outline-none focus:border-[#17303a]"
               placeholder="student@example.com"
               required
               disabled={isOtpSent}
             />
           </div>
 
-          {isOtpSent && (
+          {isOtpSent && !isOtpVerified && (
             <>
               <div>
                 <label
                   htmlFor="otp"
-                  className="mb-1 block text-sm font-medium text-slate-700"
+                  className="mb-1 block text-sm font-medium text-[#244b58]"
                 >
                   OTP
                 </label>
@@ -124,16 +195,32 @@ export default function ForgotPasswordPage() {
                   name="otp"
                   value={formData.otp}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900"
+                  className="w-full rounded-xl border border-[#a0b7be] bg-white/82 px-3 py-2 text-[#07131a] outline-none focus:border-[#17303a]"
                   maxLength={6}
                   required
                 />
               </div>
 
+              <div
+                className={`rounded-2xl border px-4 py-3 text-sm font-black ${
+                  remainingSeconds > 0
+                    ? "border-[#8ed8ff]/40 bg-[#e8eef0] text-[#244b58]"
+                    : "border-red-200 bg-red-50 text-red-700"
+                }`}
+              >
+                {remainingSeconds > 0
+                  ? `Remaining: ${formatCountdown(remainingSeconds)}`
+                  : "OTP expired. Please request a new OTP."}
+              </div>
+            </>
+          )}
+
+          {isOtpVerified && (
+            <>
               <div>
                 <label
                   htmlFor="newPassword"
-                  className="mb-1 block text-sm font-medium text-slate-700"
+                  className="mb-1 block text-sm font-medium text-[#244b58]"
                 >
                   New password
                 </label>
@@ -143,7 +230,7 @@ export default function ForgotPasswordPage() {
                   name="newPassword"
                   value={formData.newPassword}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900"
+                  className="w-full rounded-xl border border-[#a0b7be] bg-white/82 px-3 py-2 text-[#07131a] outline-none focus:border-[#17303a]"
                   minLength={6}
                   maxLength={20}
                   required
@@ -153,7 +240,7 @@ export default function ForgotPasswordPage() {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="mb-1 block text-sm font-medium text-slate-700"
+                  className="mb-1 block text-sm font-medium text-[#244b58]"
                 >
                   Confirm password
                 </label>
@@ -163,7 +250,7 @@ export default function ForgotPasswordPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900"
+                  className="w-full rounded-xl border border-[#a0b7be] bg-white/82 px-3 py-2 text-[#07131a] outline-none focus:border-[#17303a]"
                   required
                 />
               </div>
@@ -184,16 +271,15 @@ export default function ForgotPasswordPage() {
 
           <button
             type="submit"
-            disabled={isSendingOtp || isResetting}
-            className="w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+            disabled={
+              isSendingOtp ||
+              isVerifyingOtp ||
+              isResetting ||
+              (isOtpSent && !isOtpVerified && remainingSeconds === 0)
+            }
+            className="w-full rounded-xl bg-[#07131a] px-4 py-2 font-medium text-white transition hover:bg-[#17303a] disabled:cursor-not-allowed disabled:bg-[#8aa0a8]"
           >
-            {isOtpSent
-              ? isResetting
-                ? "Resetting..."
-                : "Reset password"
-              : isSendingOtp
-                ? "Sending OTP..."
-                : "Send OTP"}
+            {getSubmitLabel()}
           </button>
         </form>
 
@@ -202,22 +288,25 @@ export default function ForgotPasswordPage() {
             type="button"
             onClick={() => {
               setIsOtpSent(false);
+              setIsOtpVerified(false);
               setMessage("");
               setError("");
+              setRemainingSeconds(OTP_EXPIRY_SECONDS);
             }}
-            className="mt-3 w-full rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            className="mt-3 w-full rounded-xl border border-[#a0b7be] px-4 py-2 text-sm font-medium text-[#244b58] transition hover:bg-white/60"
           >
             Use another email
           </button>
         )}
 
-        <p className="mt-5 text-center text-sm text-slate-600">
+        <p className="mt-5 text-center text-sm text-[#4f6268]">
           Remembered your password?{" "}
-          <Link href="/login" className="font-medium text-slate-900">
+          <Link href="/login" className="font-medium text-[#07131a]">
             Login
           </Link>
         </p>
       </section>
+
     </main>
   );
 }

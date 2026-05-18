@@ -16,9 +16,12 @@ const statusFilters = ["ALL", "OPEN", "CLOSED", "COMPLETED"];
 const statusStyles = {
   OPEN: "bg-emerald-50 text-emerald-700",
   CLOSED: "bg-amber-50 text-amber-700",
-  COMPLETED: "bg-[#003b73]/10 text-[#003b73]",
-  CANCELLED: "bg-slate-100 text-slate-700",
+  COMPLETED: "bg-[#07131a]/10 text-[#07131a]",
+  CANCELLED: "bg-[#dbe6ea] text-[#4f6268]",
 };
+
+const pageBackground =
+  "radial-gradient(circle at 78% 18%, rgba(160,183,190,0.42) 0%, transparent 34%), linear-gradient(115deg, #07131a 0%, #17303a 32%, #4f6268 70%, #d7dedc 100%)";
 
 const genderPreferenceLabels = {
   MALE: "Male only",
@@ -139,8 +142,11 @@ export default function AdminCommutesPage() {
 
   if (isCheckingAuth || isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-        <p className="text-slate-600">
+      <main
+        className="flex min-h-screen items-center justify-center"
+        style={{ background: pageBackground }}
+      >
+        <p className="font-semibold text-[#4f6268]">
           {isCheckingAuth
             ? "Checking admin access..."
             : "Loading commute posts..."}
@@ -150,19 +156,22 @@ export default function AdminCommutesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f7fb] text-slate-950">
+    <main
+      className="min-h-screen text-[#07131a]"
+      style={{ background: pageBackground }}
+    >
       <AuthenticatedNav />
 
       <section className="mx-auto max-w-7xl px-4 py-8">
-        <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-4 rounded-[28px] border border-[#07131a]/15 bg-white/80 p-6 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur sm:flex-row sm:items-center">
           <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-[#003b73]">
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-[#244b58]">
               Admin
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-[#07131a]">
               Commute posts
             </h1>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm font-semibold text-[#4f6268]">
               Review every commute post and take action when a post is invalid
               or already completed.
             </p>
@@ -170,7 +179,7 @@ export default function AdminCommutesPage() {
 
           <Link
             href="/admin/users"
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+            className="rounded-2xl border border-[#07131a]/15 bg-white px-4 py-2.5 text-sm font-black text-[#07131a] transition hover:border-[#07131a]/35"
           >
             Manage users
           </Link>
@@ -186,12 +195,12 @@ export default function AdminCommutesPage() {
           ].map(([label, value]) => (
             <div
               key={label}
-              className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+              className="rounded-[22px] border border-[#07131a]/15 bg-white/80 p-4 shadow-[0_16px_40px_rgba(24,55,47,0.06)]"
             >
-              <p className="text-xs font-medium uppercase text-slate-500">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#56696f]">
                 {label}
               </p>
-              <p className="mt-1 text-2xl font-semibold text-[#003b73]">
+              <p className="mt-1 text-2xl font-black text-[#07131a]">
                 {value}
               </p>
             </div>
@@ -199,13 +208,13 @@ export default function AdminCommutesPage() {
         </div>
 
         {message && (
-          <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
             {message}
           </div>
         )}
 
         {error && (
-          <div className="mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
             {error}
           </div>
         )}
@@ -216,10 +225,10 @@ export default function AdminCommutesPage() {
               key={status}
               type="button"
               onClick={() => setActiveStatus(status)}
-              className={`rounded-md border px-4 py-2 text-sm font-semibold ${
+              className={`rounded-2xl border px-4 py-2 text-sm font-black transition ${
                 activeStatus === status
-                  ? "border-[#003b73] bg-[#003b73] text-white"
-                  : "border-slate-300 bg-white text-slate-700"
+                  ? "border-[#07131a] bg-[#07131a] text-white"
+                  : "border-[#07131a]/15 bg-white/80 text-[#4f6268] hover:bg-white"
               }`}
             >
               {status === "ALL" ? "All" : status}
@@ -228,19 +237,19 @@ export default function AdminCommutesPage() {
         </div>
 
         {visibleCommutes.length === 0 ? (
-          <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
-            <h2 className="text-xl font-semibold text-slate-900">
+          <div className="mt-6 rounded-[28px] border border-dashed border-[#07131a]/20 bg-white/72 p-10 text-center">
+            <h2 className="text-xl font-black text-[#07131a]">
               No commute posts found
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm font-semibold text-[#4f6268]">
               Try another status filter.
             </p>
           </div>
         ) : (
-          <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="mt-6 overflow-hidden rounded-[28px] border border-[#07131a]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
+              <table className="min-w-full divide-y divide-[#07131a]/10 text-sm">
+                <thead className="bg-[#e8eef0] text-left text-xs font-black uppercase tracking-[0.12em] text-[#4f6268]">
                   <tr>
                     <th className="px-4 py-3">Route</th>
                     <th className="px-4 py-3">Creator</th>
@@ -251,50 +260,50 @@ export default function AdminCommutesPage() {
                     <th className="px-4 py-3 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-[#07131a]/10">
                   {visibleCommutes.map((commute) => (
-                    <tr key={commute.id} className="align-top">
+                    <tr key={commute.id} className="align-top hover:bg-[#e8eef0]/70">
                       <td className="px-4 py-4">
-                        <p className="font-semibold text-slate-950">
+                        <p className="font-black text-[#07131a]">
                           {commute.fromLocation} to {commute.toLocation}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          {commute.transportType} · {formatCommuteCost(commute)}
+                        <p className="mt-1 text-xs font-semibold text-[#4f6268]">
+                          {commute.transportType} - {formatCommuteCost(commute)}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-xs font-semibold text-[#4f6268]">
                           Meeting: {commute.meetingLocation || "Not specified"}
                         </p>
                       </td>
                       <td className="px-4 py-4">
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-black text-[#07131a]">
                           {commute.creator?.fullName}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs font-semibold text-[#4f6268]">
                           {commute.creator?.aiubId}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs font-semibold text-[#4f6268]">
                           {commute.creator?.email}
                         </p>
                       </td>
                       <td className="px-4 py-4">
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-black text-[#07131a]">
                           {formatDateTime(commute.departureTime)}
                         </p>
                         <p
                           className={`mt-1 text-xs ${
                             isExpired(commute.expiresAt)
                               ? "text-rose-600"
-                              : "text-slate-500"
+                              : "text-[#4f6268]"
                           }`}
                         >
                           Request closes: {formatDateTime(commute.expiresAt)}
                         </p>
                       </td>
                       <td className="px-4 py-4">
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-black text-[#07131a]">
                           {commute.acceptedSeats ?? 0}/{commute.seats}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs font-semibold text-[#4f6268]">
                           {commute.availableSeats ?? commute.seats} left
                         </p>
                       </td>
@@ -316,7 +325,7 @@ export default function AdminCommutesPage() {
                         <div className="flex flex-wrap justify-end gap-2">
                           <Link
                             href={`/commutes/${commute.id}/members`}
-                            className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                            className="rounded-2xl border border-[#07131a]/15 bg-white px-3 py-2 text-xs font-black text-[#07131a] hover:bg-[#e8eef0]"
                           >
                             View
                           </Link>
@@ -327,7 +336,7 @@ export default function AdminCommutesPage() {
                               updatingId === commute.id ||
                               commute.status !== "OPEN"
                             }
-                            className="rounded-md border border-amber-200 px-3 py-2 text-xs font-semibold text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                            className="rounded-2xl border border-amber-200 bg-white px-3 py-2 text-xs font-black text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                           >
                             Close
                           </button>
@@ -338,7 +347,7 @@ export default function AdminCommutesPage() {
                               updatingId === commute.id ||
                               commute.status === "COMPLETED"
                             }
-                            className="rounded-md border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                            className="rounded-2xl border border-emerald-200 bg-white px-3 py-2 text-xs font-black text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                           >
                             Complete
                           </button>
@@ -346,7 +355,7 @@ export default function AdminCommutesPage() {
                             type="button"
                             onClick={() => handleAction(commute, "delete")}
                             disabled={updatingId === commute.id}
-                            className="rounded-md border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                            className="rounded-2xl border border-rose-200 bg-white px-3 py-2 text-xs font-black text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                           >
                             Delete
                           </button>

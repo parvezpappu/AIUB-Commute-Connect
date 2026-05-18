@@ -80,25 +80,25 @@ export default function RegisterPage() {
 
   if (isCheckingAuth) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f5f7f4] px-4">
-        <p className="font-semibold text-[#52615a]">Checking session...</p>
+      <main className="flex min-h-screen items-center justify-center bg-[#e8eef0] px-4">
+        <p className="font-semibold text-[#c4d4d9]">Checking session...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_12%_12%,#d7efe3_0%,transparent_30%),linear-gradient(135deg,#f5f7f4_0%,#e9efe8_52%,#f8ead2_100%)] text-[#17211d]">
-      <header className="sticky top-0 z-40 border-b border-[#17211d]/10 bg-[#f5f7f4]/95 backdrop-blur">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-[#18372f] text-base font-black text-[#ffc857]">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
+      <header className="sticky top-0 z-40 border-b border-[#07131a]/10 bg-[#e8eef0]/95 backdrop-blur">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <Link href="/" className="flex min-w-0 items-center gap-3">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#07131a] text-base font-black text-[#8ed8ff] sm:h-10 sm:w-10">
               চ
             </div>
-            <div>
-              <p className="text-lg font-black leading-none text-[#18372f]">
+            <div className="min-w-0">
+              <p className="truncate text-base font-black leading-none text-[#07131a] sm:text-lg">
                 চলোযাই
               </p>
-              <p className="mt-1 text-xs font-bold text-[#6d756f]">
+              <p className="mt-1 hidden text-xs font-bold text-[#6d756f] sm:block">
                 AIUB Commute Connect
               </p>
             </div>
@@ -106,48 +106,24 @@ export default function RegisterPage() {
 
           <Link
             href="/login"
-            className="rounded-full border border-[#18372f]/15 bg-white px-5 py-2 text-sm font-black text-[#18372f] shadow-sm hover:border-[#18372f]/40"
+            className="shrink-0 rounded-full border border-[#07131a]/15 bg-white px-4 py-2 text-sm font-black text-[#07131a] shadow-sm hover:border-[#07131a]/40 sm:px-5"
           >
             Login
           </Link>
         </nav>
       </header>
 
-      <section className="mx-auto grid min-h-[calc(100vh-65px)] max-w-4xl items-center gap-6 px-4 py-4 lg:grid-cols-[0.72fr_1.28fr]">
-        <aside className="reveal hidden lg:block">
-          <h1 className="max-w-sm text-3xl font-black leading-tight text-[#18372f]">
-            Create your commute account before the next ride.
-          </h1>
-
-          <div className="mt-6 rounded-[24px] border border-[#18372f]/10 bg-[#18372f] p-5 text-white shadow-xl shadow-[#18372f]/12">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a8e6c4]">
-                Account setup
-              </p>
-              <div className="mt-4 space-y-3">
-              {[
-                "Register with AIUB information",
-                "Verify your email with OTP",
-                "Save preferred route for faster posting",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <span className="grid h-6 w-6 place-items-center rounded-full bg-[#ffc857] text-xs font-black text-[#18372f]">
-                    ✓
-                  </span>
-                  <p className="text-sm font-semibold text-white/80">{item}</p>
-                </div>
-              ))}
-              </div>
-          </div>
+      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center px-3 py-6 sm:px-4 sm:py-8">        <aside className="reveal hidden lg:block">
+          
         </aside>
 
-        <section className="reveal rounded-[24px] border border-[#18372f]/10 bg-white p-4 shadow-2xl shadow-[#18372f]/10 sm:p-5">
-          <div className="mb-7 lg:hidden">
+            <section className="reveal w-full max-w-md rounded-[22px] border border-[#07131a]/10 bg-white p-4 shadow-xl sm:rounded-2xl sm:p-5">          <div className="mb-5 lg:hidden">
             <Link href="/" className="flex items-center gap-3 lg:hidden">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-[#18372f] text-lg font-black text-[#ffc857]">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-[#07131a] text-lg font-black text-[#8ed8ff]">
                 চ
               </div>
               <div>
-                <p className="font-black leading-none text-[#18372f]">
+                <p className="font-black leading-none text-[#07131a]">
                   চলোযাই
                 </p>
                 <p className="mt-1 text-xs font-bold text-[#6d756f]">
@@ -158,7 +134,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <h2 className="text-2xl font-black text-[#18372f]">
+            <h2 className="text-center text-2xl font-black text-[#07131a]">
               Create account
             </h2>
           </div>
@@ -173,7 +149,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="fullName"
-                  className="mb-1.5 block text-sm font-black text-[#33443d]"
+                  className="mb-1.5 block text-sm font-black text-[#244b58]"
                 >
                   Full name
                 </label>
@@ -183,8 +159,8 @@ export default function RegisterPage() {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-[#18372f]/15 bg-[#f8faf7] px-3.5 py-2.5 text-[#17211d] outline-none transition focus:border-[#18372f]"
-                  placeholder="Md Parvej Mia"
+                  className="w-full rounded-xl border border-[#07131a]/15 bg-[#eef3f4] px-3.5 py-2.5 text-[#07131a] outline-none transition focus:border-[#07131a]"
+                  placeholder="Your Name"
                   autoComplete="name"
                 />
                 {fieldErrors.fullName && (
@@ -197,7 +173,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="aiubId"
-                  className="mb-1.5 block text-sm font-black text-[#33443d]"
+                  className="mb-1.5 block text-sm font-black text-[#244b58]"
                 >
                   University ID
                 </label>
@@ -207,8 +183,8 @@ export default function RegisterPage() {
                   name="aiubId"
                   value={formData.aiubId}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-[#18372f]/15 bg-[#f8faf7] px-3.5 py-2.5 text-[#17211d] outline-none transition focus:border-[#18372f]"
-                  placeholder="22-49155-3"
+                  className="w-full rounded-xl border border-[#07131a]/15 bg-[#eef3f4] px-3.5 py-2.5 text-[#07131a] outline-none transition focus:border-[#07131a]"
+                  placeholder="xx-xxxxx-x"
                   autoComplete="username"
                 />
                 {fieldErrors.aiubId && (
@@ -223,7 +199,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-1.5 block text-sm font-black text-[#33443d]"
+                  className="mb-1.5 block text-sm font-black text-[#244b58]"
                 >
                   Email
                 </label>
@@ -233,7 +209,7 @@ export default function RegisterPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-[#18372f]/15 bg-[#f8faf7] px-3.5 py-2.5 text-[#17211d] outline-none transition focus:border-[#18372f]"
+                  className="w-full rounded-xl border border-[#07131a]/15 bg-[#eef3f4] px-3.5 py-2.5 text-[#07131a] outline-none transition focus:border-[#07131a]"
                   placeholder="student@aiub.edu"
                   autoComplete="email"
                 />
@@ -247,7 +223,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="mb-1.5 block text-sm font-black text-[#33443d]"
+                  className="mb-1.5 block text-sm font-black text-[#244b58]"
                 >
                   Password
                 </label>
@@ -257,8 +233,8 @@ export default function RegisterPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-[#18372f]/15 bg-[#f8faf7] px-3.5 py-2.5 text-[#17211d] outline-none transition focus:border-[#18372f]"
-                  placeholder="Minimum 6 characters"
+                  className="w-full rounded-xl border border-[#07131a]/15 bg-[#eef3f4] px-3.5 py-2.5 text-[#07131a] outline-none transition focus:border-[#07131a]"
+                  placeholder="Letter, number, special character"
                   autoComplete="new-password"
                 />
                 {fieldErrors.password && (
@@ -270,7 +246,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-black text-[#33443d]">
+              <label className="mb-1.5 block text-sm font-black text-[#244b58]">
                 Gender
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -279,8 +255,8 @@ export default function RegisterPage() {
                     key={option.value}
                     className={`cursor-pointer rounded-xl border px-4 py-2.5 text-center text-sm font-black transition ${
                       formData.gender === option.value
-                        ? "border-[#18372f] bg-[#18372f] text-white"
-                        : "border-[#18372f]/15 bg-[#f8faf7] text-[#43514a] hover:border-[#18372f]/40"
+                        ? "border-[#07131a] bg-[#07131a] text-white"
+                        : "border-[#07131a]/15 bg-[#eef3f4] text-[#4f6268] hover:border-[#07131a]/40"
                     }`}
                   >
                     <input
@@ -302,9 +278,9 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div className="rounded-[20px] border border-[#18372f]/10 bg-[#f8faf7] p-3.5">
-              <p className="font-black text-[#18372f]">Daily route preference</p>
-              <p className="mt-1 text-sm leading-5 text-[#617169]">
+            <div className="rounded-[20px] border border-[#07131a]/10 bg-[#eef3f4] p-3.5">
+              <p className="font-black text-[#07131a]">Daily route preference</p>
+              <p className="mt-1 text-sm leading-5 text-[#4f6268]">
                 Optional. These locations will auto-fill when you create a
                 commute post.
               </p>
@@ -313,7 +289,7 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="preferredFromLocation"
-                    className="mb-1.5 block text-sm font-black text-[#33443d]"
+                    className="mb-1.5 block text-sm font-black text-[#244b58]"
                   >
                     Preferred from
                   </label>
@@ -323,7 +299,7 @@ export default function RegisterPage() {
                     name="preferredFromLocation"
                     value={formData.preferredFromLocation}
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-[#18372f]/15 bg-white px-3.5 py-2.5 text-[#17211d] outline-none transition focus:border-[#18372f]"
+                    className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3.5 py-2.5 text-[#07131a] outline-none transition focus:border-[#07131a]"
                     placeholder="Gazipur"
                   />
                 </div>
@@ -331,7 +307,7 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="preferredToLocation"
-                    className="mb-1.5 block text-sm font-black text-[#33443d]"
+                    className="mb-1.5 block text-sm font-black text-[#244b58]"
                   >
                     Preferred to
                   </label>
@@ -341,7 +317,7 @@ export default function RegisterPage() {
                     name="preferredToLocation"
                     value={formData.preferredToLocation}
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-[#18372f]/15 bg-white px-3.5 py-2.5 text-[#17211d] outline-none transition focus:border-[#18372f]"
+                    className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3.5 py-2.5 text-[#07131a] outline-none transition focus:border-[#07131a]"
                     placeholder="AIUB Campus"
                   />
                 </div>
@@ -357,15 +333,15 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-full bg-[#18372f] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#18372f]/15 transition hover:bg-[#102720] disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#07131a] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:bg-[#0b1d25] disabled:cursor-not-allowed disabled:bg-slate-400"
             >
               {isLoading ? "Creating account..." : "Create account"}
             </button>
           </form>
 
-          <p className="mt-4 text-center text-sm font-semibold text-[#617169]">
+          <p className="mt-4 text-center text-sm font-semibold text-[#4f6268]">
             Already have an account?{" "}
-            <Link href="/login" className="font-black text-[#18372f]">
+            <Link href="/login" className="font-black text-[#07131a]">
               Login
             </Link>
           </p>
