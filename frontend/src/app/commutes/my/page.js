@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
 import CommuteRoomModal from "../../components/CommuteRoomModal";
 import MeetingPointTooltip from "../../components/MeetingPointTooltip";
-import UserRatingBadge from "../../components/UserRatingBadge";
 import { useRequireStudent } from "../../lib/auth";
 import {
   cancelCommute,
@@ -14,7 +13,6 @@ import {
   getCommuteParticipants,
   getCommuteRequests,
   getMyCommutes,
-  submitCommuteRatings,
   updateJoinRequest,
 } from "../../lib/api";
 
@@ -56,34 +54,6 @@ const statusStyles = {
   CANCELLED: "bg-rose-50 text-rose-700",
 };
 
-const tripExperienceOptions = [
-  { value: 1, label: "Poor" },
-  { value: 2, label: "Below Avg" },
-  { value: 3, label: "Average" },
-  { value: 4, label: "Good" },
-  { value: 5, label: "Excellent" },
-];
-
-function StarRating({ value, onChange }) {
-  return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((rating) => (
-        <button
-          key={rating}
-          type="button"
-          onClick={() => onChange(rating)}
-          className={`text-2xl leading-none ${
-            rating <= value ? "text-[#003b73]" : "text-slate-300"
-          }`}
-          aria-label={`${rating} star rating`}
-        >
-          ★
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export default function MyCommutesPage() {
   const isCheckingAuth = useRequireStudent();
   const [commutes, setCommutes] = useState([]);
@@ -94,11 +64,7 @@ export default function MyCommutesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [updatingKey, setUpdatingKey] = useState("");
   const [managingId, setManagingId] = useState(null);
-  const [ratingCommute, setRatingCommute] = useState(null);
   const [roomCommuteId, setRoomCommuteId] = useState(null);
-  const [userRatings, setUserRatings] = useState({});
-  const [overallRating, setOverallRating] = useState(0);
-  const [isSubmittingRatings, setIsSubmittingRatings] = useState(false);
 
   async function loadData() {
     setError("");
@@ -166,6 +132,8 @@ export default function MyCommutesPage() {
     try {
       if (action === "close") {
         await closeCommute(commuteId);
+      } else if (action === "finish") {
+        await completeCommute(commuteId);
       } else {
         await cancelCommute(commuteId);
       }
@@ -176,58 +144,6 @@ export default function MyCommutesPage() {
       setError(error.message);
     } finally {
       setManagingId(null);
-    }
-  }
-
-  function openRatingModal(commute) {
-    const participants = participantsByCommute[commute.id] || [];
-    setRatingCommute(commute);
-    setUserRatings(
-      Object.fromEntries(
-        participants.map((participant) => [participant.user.id, 0]),
-      ),
-    );
-    setOverallRating(0);
-    setError("");
-    setMessage("");
-  }
-
-  function closeRatingModal() {
-    setRatingCommute(null);
-    setUserRatings({});
-    setOverallRating(0);
-  }
-
-  async function finishCommuteWithFeedback(skipFeedback = false) {
-    if (!ratingCommute) {
-      return;
-    }
-
-    setError("");
-    setMessage("");
-    setIsSubmittingRatings(true);
-
-    try {
-      if (!skipFeedback) {
-        await submitCommuteRatings(ratingCommute.id, {
-          overallRating: overallRating || undefined,
-          userRatings: Object.entries(userRatings)
-            .filter(([, rating]) => rating > 0)
-            .map(([ratedUserId, rating]) => ({
-              ratedUserId: Number(ratedUserId),
-              rating,
-            })),
-        });
-      }
-
-      await completeCommute(ratingCommute.id);
-      setMessage("Journey completed successfully.");
-      closeRatingModal();
-      await loadData();
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsSubmittingRatings(false);
     }
   }
 
@@ -398,11 +314,15 @@ export default function MyCommutesPage() {
                         {canFinishJourney(commute) && (
                           <button
                             type="button"
-                            onClick={() => openRatingModal(commute)}
+                            onClick={() =>
+                              handleCommuteAction(commute.id, "finish")
+                            }
                             disabled={managingId === commute.id}
                             className="rounded-2xl bg-emerald-600 px-4 py-2.5 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
                           >
-                            Finish journey
+                            {managingId === commute.id
+                              ? "Finishing..."
+                              : "Finish journey"}
                           </button>
                         )}
 
@@ -488,7 +408,6 @@ export default function MyCommutesPage() {
                                   <p className="font-black text-[#07131a]">
                                     {request.user.fullName}
                                   </p>
-                                  <UserRatingBadge userId={request.user?.id} />
                                 </div>
                                 <p className="text-sm font-semibold text-[#4f6268]">
                                   {request.user.aiubId} - {request.user.email}
@@ -560,7 +479,6 @@ export default function MyCommutesPage() {
                                 <p className="font-black text-[#07131a]">
                                   {participant.user.fullName}
                                 </p>
-                                <UserRatingBadge userId={participant.user?.id} />
                               </div>
                               <p className="text-sm font-semibold text-[#4f6268]">
                                 {participant.user.aiubId} -{" "}
@@ -580,118 +498,6 @@ export default function MyCommutesPage() {
         )}
       </section>
 
-      {ratingCommute && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 px-4 py-8">
-          <section className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
-            <div className="text-center">
-              <h2 className="text-2xl font-semibold text-slate-950">
-                Rate Your {ratingCommute.transportType} Group
-              </h2>
-              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-                Your ride from{" "}
-                <span className="font-semibold text-[#003b73]">
-                  {ratingCommute.fromLocation}
-                </span>{" "}
-                to{" "}
-                <span className="font-semibold text-[#003b73]">
-                  {ratingCommute.toLocation}
-                </span>{" "}
-                is complete. Please rate your co-passengers to maintain
-                community standards.
-              </p>
-            </div>
-
-            <div className="mt-6 overflow-hidden rounded-md border border-slate-200">
-              <div className="grid grid-cols-[1fr_auto] bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
-                <p>Co-passenger</p>
-                <p>Rating</p>
-              </div>
-
-              {(participantsByCommute[ratingCommute.id] || []).length === 0 ? (
-                <p className="px-4 py-5 text-sm text-slate-500">
-                  No accepted co-passengers to rate.
-                </p>
-              ) : (
-                <div className="divide-y divide-slate-100">
-                  {(participantsByCommute[ratingCommute.id] || []).map(
-                    (participant) => (
-                      <div
-                        key={participant.id}
-                        className="grid gap-3 px-4 py-4 sm:grid-cols-[1fr_auto] sm:items-center"
-                      >
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="font-semibold text-slate-900">
-                              {participant.user.fullName}
-                            </p>
-                            <UserRatingBadge userId={participant.user?.id} />
-                          </div>
-                          <p className="text-sm text-slate-500">
-                            ID: {participant.user.aiubId}
-                          </p>
-                        </div>
-
-                        <StarRating
-                          value={userRatings[participant.user.id] || 0}
-                          onChange={(rating) =>
-                            setUserRatings((currentRatings) => ({
-                              ...currentRatings,
-                              [participant.user.id]: rating,
-                            }))
-                          }
-                        />
-                      </div>
-                    ),
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="mt-8 text-center">
-              <h3 className="text-lg font-semibold text-slate-950">
-                Overall Trip Experience
-              </h3>
-              <div className="mt-4 grid grid-cols-5 gap-2">
-                {tripExperienceOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setOverallRating(option.value)}
-                    className={`rounded-md border px-2 py-3 text-sm font-semibold ${
-                      overallRating === option.value
-                        ? "border-[#003b73] bg-[#003b73] text-white"
-                        : "border-slate-200 text-slate-600 hover:border-[#003b73]/40"
-                    }`}
-                  >
-                    <span className="block text-lg">★</span>
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={() => finishCommuteWithFeedback(true)}
-                disabled={isSubmittingRatings}
-                className="rounded-md border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:text-slate-400"
-              >
-                Skip for now
-              </button>
-              <button
-                type="button"
-                onClick={() => finishCommuteWithFeedback(false)}
-                disabled={isSubmittingRatings}
-                className="rounded-md bg-[#003b73] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
-              >
-                {isSubmittingRatings ? "Submitting..." : "Submit Feedback"}
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
-
       {roomCommuteId && (
         <CommuteRoomModal
           commuteId={roomCommuteId}
@@ -701,4 +507,5 @@ export default function MyCommutesPage() {
     </main>
   );
 }
+
 

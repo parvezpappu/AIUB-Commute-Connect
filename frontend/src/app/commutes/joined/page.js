@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
 import CommuteRoomModal from "../../components/CommuteRoomModal";
 import MeetingPointTooltip from "../../components/MeetingPointTooltip";
-import UserRatingBadge from "../../components/UserRatingBadge";
 import {
   deleteParticipationHistory,
   getMyCommutes,
@@ -368,7 +367,6 @@ export default function JoinedCommutesPage() {
             <p className="mt-1 text-sm font-black text-[#07131a]">
               {commute.creator?.fullName}
             </p>
-            <UserRatingBadge userId={commute.creator?.id} className="mt-2" />
             <p className="text-xs text-slate-500">{commute.creator?.aiubId}</p>
           </div>
 

@@ -9,7 +9,6 @@ import { UserModule } from './user/user.module';
 import { CommuteModule } from './commute/commute.module';
 import { ParticipationModule } from './participation/participation.module';
 import { NotificationModule } from './notification/notification.module';
-import { RatingModule } from './rating/rating.module';
 
 
 @Module({
@@ -35,7 +34,6 @@ import { RatingModule } from './rating/rating.module';
     CommuteModule,
     ParticipationModule,
     NotificationModule,
-    RatingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

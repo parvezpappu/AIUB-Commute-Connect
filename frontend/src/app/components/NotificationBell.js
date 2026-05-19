@@ -17,10 +17,6 @@ function getNotificationHref(notification) {
     return "/commutes/joined";
   }
 
-  if (notification.type === "COMMUTE_COMPLETED") {
-    return `/commutes/${notification.commute.id}/rate`;
-  }
-
   return "/commutes/joined";
 }
 
@@ -40,11 +36,7 @@ function getNotificationTitle(type) {
     return "Request accepted";
   }
 
-  if (type === "COMMUTE_COMPLETED") {
-    return "Rate completed ride";
-  }
-
-  return "Request rejected";
+  return type === "COMMUTE_COMPLETED" ? "Ride completed" : "Request rejected";
 }
 
 function getNotificationTone(type) {

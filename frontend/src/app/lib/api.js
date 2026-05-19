@@ -211,24 +211,6 @@ export async function completeCommute(commuteId) {
   }
 }
 
-export async function submitCommuteRatings(commuteId, ratingData) {
-  try {
-    const response = await api.post(`/commutes/${commuteId}/ratings`, ratingData);
-    return response.data;
-  } catch (error) {
-    throw createApiError(error, "Failed to submit feedback");
-  }
-}
-
-export async function getUserRatingSummary(userId) {
-  try {
-    const response = await api.get(`/ratings/users/${userId}/summary`);
-    return response.data;
-  } catch (error) {
-    throw createApiError(error, "Failed to load rating summary");
-  }
-}
-
 export async function cancelCommute(commuteId) {
   try {
     const response = await api.patch(`/commutes/${commuteId}/cancel`);

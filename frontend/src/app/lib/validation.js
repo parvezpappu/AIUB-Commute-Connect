@@ -2,6 +2,10 @@
 
     const aiubIdRegex = /^\d{2}-\d{5}-\d$/;
     const strongPasswordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
+    const isValidDateTime = (value) => {
+    const date = new Date(value);
+    return !Number.isNaN(date.getTime());
+    };
 
     const registerSchema = z.object({
     fullName: z
@@ -97,18 +101,14 @@
     departureTime: z
         .string()
         .min(1, "Departure time is required")
-        .refine((value) => {
-        const departureDate = new Date(value);
-        return !Number.isNaN(departureDate.getTime()) && departureDate > new Date();
-        }, "Departure time must be in the future"),
+        .refine(isValidDateTime, "Enter a valid departure date and time")
+        .refine((value) => new Date(value) > new Date(), "Departure time must be in the future"),
 
     expiresAt: z
         .string()
         .min(1, "Request close time is required")
-        .refine((value) => {
-        const closeDate = new Date(value);
-        return !Number.isNaN(closeDate.getTime()) && closeDate > new Date();
-        }, "Request close time must be in the future"),
+        .refine(isValidDateTime, "Enter a valid request close date and time")
+        .refine((value) => new Date(value) > new Date(), "Request close time must be in the future"),
 
     seats: z
         .string()
@@ -131,7 +131,10 @@
         message: "Cost is required unless it will be decided later",
     },
     ).refine(
-    (data) => new Date(data.expiresAt) >= new Date(data.departureTime),
+    (data) =>
+        isValidDateTime(data.expiresAt) &&
+        isValidDateTime(data.departureTime) &&
+        new Date(data.expiresAt) > new Date(data.departureTime),
     {
         path: ["expiresAt"],
         message: "Request close time must be after departure time",

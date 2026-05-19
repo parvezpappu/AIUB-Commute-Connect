@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import LiveCommuteMap from "./LiveCommuteMap";
-import UserRatingBadge from "./UserRatingBadge";
 import {
   getCommute,
   getCommuteParticipants,
@@ -401,7 +400,6 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                       <p className="font-black text-[#07131a]">
                         {commute.creator?.fullName}
                       </p>
-                      <UserRatingBadge userId={commute.creator?.id} />
                     </div>
                     <p className="text-sm font-semibold text-[#4f6268]">
                       {commute.creator?.aiubId} · {commute.creator?.email}
@@ -448,7 +446,6 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                               <p className="font-black text-[#07131a]">
                                 {participant.user.fullName}
                               </p>
-                              <UserRatingBadge userId={participant.user?.id} />
                             </div>
                             <p className="text-sm font-semibold text-[#4f6268]">
                               {participant.user.aiubId} ·{" "}

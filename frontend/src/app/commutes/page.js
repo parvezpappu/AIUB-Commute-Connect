@@ -551,7 +551,7 @@ export default function CommutesPage() {
               return (
                 <article
                   key={commute.id}
-                  className="flex h-full min-h-[300px] flex-col rounded-2xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md"
+                  className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-2.5">
                     <div className="flex min-w-0 items-center gap-2.5">
@@ -568,21 +568,21 @@ export default function CommutesPage() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="break-words text-[13px] font-black leading-4">
+                        <p className="break-words text-sm font-black leading-5">
                           {creator?.fullName || "Commute creator"}
                         </p>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-xs font-black text-[#07131a]">
+                      <p className="text-sm font-black text-[#07131a]">
                         Cost:
                       </p>
                       <p
                         className={`font-black text-[#0f6b50] ${
                           isCostToBeDecided
-                            ? "max-w-24 text-sm leading-4"
-                            : "text-lg"
+                            ? "max-w-24 text-base leading-5"
+                            : "text-xl"
                         }`}
                       >
                         {formatCommuteCost(commute)}
@@ -598,26 +598,27 @@ export default function CommutesPage() {
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center gap-2.5">
                       <span className="h-2 w-2 rounded-full bg-[#0f6b50]" />
-                      <p className="truncate text-[13px] font-semibold">
+                      <p className="truncate text-sm font-semibold">
                         {commute.fromLocation}
                       </p>
                     </div>
                     <div className="ml-1 h-3 w-px bg-[#07131a]/15" />
                     <div className="flex items-center gap-2.5">
                       <span className="h-2 w-2 rounded-full bg-[#003b73]" />
-                      <p className="truncate text-[13px] font-semibold">
+                      <p className="truncate text-sm font-semibold">
                         {commute.toLocation}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-3 grid gap-2 text-sm">
+                  <div className="mt-auto">
+                  <div className="grid gap-2 text-sm">
                     <div className="grid gap-2 sm:grid-cols-2">
                       <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
                         <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Expected time
                         </p>
-                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#07131a]">
+                        <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
                           {formatExpectedTime(commute)}
                         </p>
                       </div>
@@ -625,7 +626,7 @@ export default function CommutesPage() {
                         <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Who can join
                         </p>
-                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#07131a]">
+                        <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
                           {genderPreferenceLabels[
                             commute.participantGenderPreference
                           ] || "Male/Female"}
@@ -638,7 +639,7 @@ export default function CommutesPage() {
                         <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Remaining
                         </p>
-                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#b57a00]">
+                        <p className="mt-0.5 text-sm font-black leading-5 text-[#b57a00]">
                           {getTimeLeft(
                             commute.expiresAt || commute.departureTime,
                           )}
@@ -648,7 +649,7 @@ export default function CommutesPage() {
                         <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Seats left
                         </p>
-                        <p className="mt-0.5 text-[13px] font-black leading-4 text-[#0f6b50]">
+                        <p className="mt-0.5 text-sm font-black leading-5 text-[#0f6b50]">
                           {seatsLeft}
                         </p>
                       </div>
@@ -688,6 +689,7 @@ export default function CommutesPage() {
                               joiningId === commute.id,
                             )}
                   </button>
+                  </div>
                 </article>
               );
             })}

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
-import UserRatingBadge from "../../components/UserRatingBadge";
 import { deleteAdminUser, getAdminUsers } from "../../lib/api";
 import { useRequireAdmin } from "../../lib/auth";
 
@@ -130,7 +129,6 @@ export default function AdminUsersPage() {
                   <th className="px-4 py-3">University ID</th>
                   <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3">Gender</th>
-                  <th className="px-4 py-3">Rating</th>
                   <th className="px-4 py-3">Role</th>
                   <th className="px-4 py-3">Verified</th>
                   <th className="px-4 py-3">Created</th>
@@ -158,9 +156,6 @@ export default function AdminUsersPage() {
                         : user.gender === "FEMALE"
                           ? "Female"
                           : "Not set"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <UserRatingBadge userId={user.id} />
                     </td>
                     <td className="px-4 py-3">
                       <span className="rounded-full bg-[#07131a]/10 px-3 py-1 text-xs font-black text-[#07131a]">

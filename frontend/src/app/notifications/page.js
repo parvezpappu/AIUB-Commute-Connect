@@ -26,10 +26,6 @@ function getNotificationHref(notification) {
     return "/commutes/my";
   }
 
-  if (notification.type === "COMMUTE_COMPLETED") {
-    return `/commutes/${notification.commute.id}/rate`;
-  }
-
   return "/commutes/joined";
 }
 
@@ -208,8 +204,7 @@ export default function NotificationsPage() {
                 Notifications
               </h1>
               <p className="mt-1 text-sm font-semibold text-[#4f6268]">
-                See all requests, decisions, completed rides, and rating
-                reminders.
+                See all requests, decisions, and completed ride updates.
               </p>
             </div>
 
@@ -258,8 +253,8 @@ export default function NotificationsPage() {
                 No notifications here
               </h2>
               <p className="mx-auto mt-2 max-w-md text-sm font-semibold text-[#4f6268]">
-                New ride requests, creator decisions, and completed ride
-                reminders will appear here.
+                New ride requests, creator decisions, and completed ride updates
+                will appear here.
               </p>
             </div>
           ) : (

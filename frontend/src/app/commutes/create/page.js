@@ -83,6 +83,7 @@ export default function CreateCommutePage() {
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
+      ...(name === "costPerPerson" ? { costToBeDecided: false } : {}),
     });
 
     setFieldErrors({
@@ -123,6 +124,19 @@ export default function CreateCommutePage() {
     setFieldErrors({
       ...fieldErrors,
       meetingLocation: "",
+    });
+  }
+
+  function handleCostModeChange(costToBeDecided) {
+    setFormData({
+      ...formData,
+      costToBeDecided,
+      costPerPerson: costToBeDecided ? "" : formData.costPerPerson || "0",
+    });
+
+    setFieldErrors({
+      ...fieldErrors,
+      costPerPerson: "",
     });
   }
 
@@ -183,109 +197,82 @@ export default function CreateCommutePage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
       <AuthenticatedNav />
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <section className="rounded-[32px] border border-[#07131a]/15 bg-white/72 p-5 shadow-sm backdrop-blur sm:p-6 lg:p-8">
-          <div className="mb-8 flex flex-col justify-between gap-4 border-b border-[#07131a]/10 pb-6 lg:flex-row lg:items-end">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-[#244b58]">
-                Create commute
-              </p>
-              <h1 className="mt-2 text-3xl font-black tracking-tight text-[#07131a]">
-                Publish a commute post
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm font-semibold text-[#4f6268]">
-                Add route, timing, seats, cost, and a precise meeting point.
-              </p>
-            </div>
-
-            {currentUser?.preferredFromLocation &&
-              currentUser?.preferredToLocation && (
-                <div className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] px-4 py-3 text-sm">
-                  <p className="font-black text-[#07131a]">
-                    Saved route applied
-                  </p>
-                  <p className="mt-1 font-semibold text-[#4f6268]">
-                    {currentUser.preferredFromLocation} to{" "}
-                    {currentUser.preferredToLocation}
-                  </p>
-                </div>
-              )}
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <section className="rounded-[24px] border border-[#07131a]/10 bg-white/70 p-5">
-              <h2 className="mb-4 text-xl font-black text-[#07131a]">
-                Transport and participants
+      <section className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
+        <h1 className="mb-3 text-2xl font-black text-[#07131a]">
+          Create post
+        </h1>
+        <section className="rounded-[24px] border border-[#07131a]/15 bg-white/72 p-4 shadow-sm backdrop-blur">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="max-w-2xl space-y-4"
+          >
+            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+              <h2 className="mb-3 text-lg font-black text-[#07131a]">
+                Transport
               </h2>
 
-              <div className="grid gap-6 lg:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
-                    Transport type
+              <div className="grid gap-2 sm:grid-cols-3">
+                {transportTypes.map((type) => (
+                  <label
+                    key={type.value}
+                    className={`cursor-pointer rounded-xl border px-3 py-2 text-center text-sm font-black transition ${
+                      formData.transportType === type.value
+                        ? "border-[#07131a] bg-[#07131a] text-white"
+                        : "border-[#07131a]/15 bg-white text-[#07131a] hover:border-[#07131a]/40"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="transportType"
+                      value={type.value}
+                      checked={formData.transportType === type.value}
+                      onChange={handleChange}
+                      className="sr-only"
+                    />
+                    {type.label}
                   </label>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {transportTypes.map((type) => (
-                      <label
-                        key={type.value}
-                        className={`cursor-pointer rounded-2xl border p-3 text-center text-sm font-black transition ${
-                          formData.transportType === type.value
-                            ? "border-[#07131a] bg-[#07131a] text-white"
-                            : "border-[#07131a]/15 bg-white text-[#07131a] hover:border-[#07131a]/40"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="transportType"
-                          value={type.value}
-                          checked={formData.transportType === type.value}
-                          onChange={handleChange}
-                          className="sr-only"
-                        />
-                        {type.label}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
-                    Who can join?
-                  </label>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {genderPreferenceOptions.map((option) => (
-                      <label
-                        key={option.value}
-                        className={`cursor-pointer rounded-2xl border p-3 text-center text-sm font-black transition ${
-                          formData.participantGenderPreference === option.value
-                            ? "border-[#07131a] bg-[#07131a] text-white"
-                            : "border-[#07131a]/15 bg-white text-[#07131a] hover:border-[#07131a]/40"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="participantGenderPreference"
-                          value={option.value}
-                          checked={
-                            formData.participantGenderPreference === option.value
-                          }
-                          onChange={handleChange}
-                          className="sr-only"
-                        />
-                        {option.label}
-                      </label>
-                    ))}
-                  </div>
-                  <FieldError message={fieldErrors.participantGenderPreference} />
-                </div>
+                ))}
               </div>
             </section>
 
-            <section className="rounded-[24px] border border-[#07131a]/10 bg-white/70 p-5">
-              <h2 className="mb-4 text-xl font-black text-[#07131a]">Route</h2>
+            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+              <h2 className="mb-3 text-lg font-black text-[#07131a]">
+                Who can join
+              </h2>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {genderPreferenceOptions.map((option) => (
+                  <label
+                    key={option.value}
+                    className={`cursor-pointer rounded-xl border px-3 py-2 text-center text-sm font-black transition ${
+                      formData.participantGenderPreference === option.value
+                        ? "border-[#07131a] bg-[#07131a] text-white"
+                        : "border-[#07131a]/15 bg-white text-[#07131a] hover:border-[#07131a]/40"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="participantGenderPreference"
+                      value={option.value}
+                      checked={
+                        formData.participantGenderPreference === option.value
+                      }
+                      onChange={handleChange}
+                      className="sr-only"
+                    />
+                    {option.label}
+                  </label>
+                ))}
+              </div>
+              <FieldError message={fieldErrors.participantGenderPreference} />
+            </section>
+
+            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+              <h2 className="mb-3 text-lg font-black text-[#07131a]">Route</h2>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
+                  <label className="mb-1 block text-sm font-black text-[#07131a]">
                     From
                   </label>
                   <input
@@ -293,15 +280,14 @@ export default function CreateCommutePage() {
                     name="fromLocation"
                     value={formData.fromLocation}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
+                    className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2.5 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
                     placeholder="Kuril Bishwa Road"
-                    required
                   />
                   <FieldError message={fieldErrors.fromLocation} />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
+                  <label className="mb-1 block text-sm font-black text-[#07131a]">
                     To
                   </label>
                   <input
@@ -309,19 +295,18 @@ export default function CreateCommutePage() {
                     name="toLocation"
                     value={formData.toLocation}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
+                    className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2.5 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
                     placeholder="AIUB Campus"
-                    required
                   />
                   <FieldError message={fieldErrors.toLocation} />
                 </div>
               </div>
             </section>
 
-            <section className="rounded-[24px] border border-[#07131a]/10 bg-white/70 p-5">
-              <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+              <div className="mb-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
                 <div>
-                  <h2 className="text-xl font-black text-[#07131a]">
+                  <h2 className="text-lg font-black text-[#07131a]">
                     Meeting point
                   </h2>
                   <p className="mt-1 text-sm font-semibold text-[#4f6268]">
@@ -331,7 +316,7 @@ export default function CreateCommutePage() {
                 <button
                   type="button"
                   onClick={() => setIsMapOpen((current) => !current)}
-                  className="w-fit rounded-2xl border border-[#07131a]/15 bg-white px-4 py-2 text-sm font-black text-[#07131a] hover:border-[#07131a]/35"
+                  className="w-fit rounded-xl border border-[#07131a]/15 bg-white px-3 py-2 text-sm font-black text-[#07131a] hover:border-[#07131a]/35"
                 >
                   {isMapOpen
                     ? "Hide map"
@@ -346,19 +331,18 @@ export default function CreateCommutePage() {
                 name="meetingLocation"
                 value={formData.meetingLocation}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
+                className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2.5 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
                 placeholder="Example: AIUB main gate or Kuril foot overbridge"
-                required
               />
               {formData.meetingAddress && (
-                <p className="mt-2 rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] px-4 py-3 text-sm font-semibold text-[#4f6268]">
+                <p className="mt-2 rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2 text-sm font-semibold text-[#4f6268]">
                   Exact address: {formData.meetingAddress}
                 </p>
               )}
               <FieldError message={fieldErrors.meetingLocation} />
 
               {isMapOpen && (
-                <div className="mt-4 overflow-hidden rounded-2xl border border-[#07131a]/10">
+                <div className="mt-3 overflow-hidden rounded-xl border border-[#07131a]/10">
                   <MapPicker
                     value={{
                       latitude: formData.meetingLatitude,
@@ -376,14 +360,14 @@ export default function CreateCommutePage() {
               />
             </section>
 
-            <section className="rounded-[24px] border border-[#07131a]/10 bg-white/70 p-5">
-              <h2 className="mb-4 text-xl font-black text-[#07131a]">
+            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+              <h2 className="mb-3 text-lg font-black text-[#07131a]">
                 Schedule and cost
               </h2>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
+                  <label className="mb-1 block text-sm font-black text-[#07131a]">
                     Departure time
                   </label>
                   <input
@@ -391,14 +375,13 @@ export default function CreateCommutePage() {
                     name="departureTime"
                     value={formData.departureTime}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
-                    required
+                    className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2.5 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
                   />
                   <FieldError message={fieldErrors.departureTime} />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
+                  <label className="mb-1 block text-sm font-black text-[#07131a]">
                     Request closes at
                   </label>
                   <input
@@ -406,14 +389,13 @@ export default function CreateCommutePage() {
                     name="expiresAt"
                     value={formData.expiresAt}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
-                    required
+                    className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2.5 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
                   />
                   <FieldError message={fieldErrors.expiresAt} />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
+                  <label className="mb-1 block text-sm font-black text-[#07131a]">
                     Seats
                   </label>
                   <input
@@ -423,49 +405,61 @@ export default function CreateCommutePage() {
                     max="10"
                     value={formData.seats}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
-                    required
+                    className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2.5 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
                   />
                   <FieldError message={fieldErrors.seats} />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-black text-[#07131a]">
+                  <label className="mb-1 block text-sm font-black text-[#07131a]">
                     Cost per person
                   </label>
-                  <input
-                    type="number"
-                    name="costPerPerson"
-                    min="0"
-                    value={formData.costPerPerson}
-                    onChange={handleChange}
-                    disabled={formData.costToBeDecided}
-                    className="w-full rounded-2xl border border-[#07131a]/15 bg-white px-4 py-3 font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
-                    required
-                  />
-                  <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] px-4 py-3 text-sm font-black text-[#07131a]">
+                  <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
                     <input
-                      type="checkbox"
-                      name="costToBeDecided"
-                      checked={formData.costToBeDecided}
+                      type="number"
+                      name="costPerPerson"
+                      min="0"
+                      value={formData.costPerPerson}
                       onChange={handleChange}
-                      className="h-4 w-4 accent-[#07131a]"
+                      disabled={formData.costToBeDecided}
+                      className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2.5 font-semibold text-[#07131a] outline-none focus:border-[#07131a] disabled:bg-[#e8eef0] disabled:text-[#56696f]"
                     />
+                    <button
+                      type="button"
+                      onClick={() => handleCostModeChange(false)}
+                      className={`rounded-xl border px-3 py-2 text-sm font-black transition ${
+                        !formData.costToBeDecided
+                          ? "border-[#07131a] bg-[#07131a] text-white"
+                          : "border-[#07131a]/15 bg-white text-[#07131a] hover:border-[#07131a]/35"
+                      }`}
+                    >
+                      Tk
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCostModeChange(true)}
+                    className={`mt-2 w-full rounded-xl border px-3 py-2 text-sm font-black transition ${
+                      formData.costToBeDecided
+                        ? "border-[#07131a] bg-[#07131a] text-white"
+                        : "border-[#07131a]/15 bg-[#e8eef0] text-[#07131a] hover:border-[#07131a]/35"
+                    }`}
+                  >
                     Will be decided
-                  </label>
+                  </button>
                   <FieldError message={fieldErrors.costPerPerson} />
                 </div>
               </div>
             </section>
 
             {error && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+              <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">
                 {error}
               </div>
             )}
 
             {currentUser && !currentUser.isVerified && (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
                 Verify your email before publishing commute posts.
                 <a
                   href={`/verify-email?email=${encodeURIComponent(
@@ -481,7 +475,7 @@ export default function CreateCommutePage() {
             <button
               type="submit"
               disabled={isLoading || (currentUser && !currentUser.isVerified)}
-              className="w-full rounded-2xl bg-[#07131a] px-5 py-4 text-sm font-black text-white transition hover:bg-[#17303a] disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="w-full rounded-xl bg-[#07131a] px-5 py-3 text-sm font-black text-white transition hover:bg-[#17303a] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isLoading ? "Creating commute..." : "Publish commute"}
             </button>

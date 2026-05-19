@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LiveCommuteMap from "../../../components/LiveCommuteMap";
-import UserRatingBadge from "../../../components/UserRatingBadge";
 import {
   getCommute,
   getCommuteParticipants,
@@ -393,7 +392,6 @@ export default function CommuteMembersPage() {
               <p className="font-semibold text-slate-900">
                 {commute.creator?.fullName}
               </p>
-              <UserRatingBadge userId={commute.creator?.id} />
             </div>
             <p className="text-sm text-slate-500">
               {commute.creator?.aiubId} - {commute.creator?.email}
@@ -440,7 +438,6 @@ export default function CommuteMembersPage() {
                       <p className="font-semibold text-slate-900">
                         {participant.user.fullName}
                       </p>
-                      <UserRatingBadge userId={participant.user?.id} />
                     </div>
                     <p className="text-sm text-slate-500">
                       {participant.user.aiubId} - {participant.user.email}

@@ -114,6 +114,7 @@ function RecommendedCommuteCard({
     commute.participantGenderPreference &&
     commute.participantGenderPreference !== "BOTH" &&
     commute.participantGenderPreference !== currentUser?.gender;
+  const isAdmin = currentUser?.role === "ADMIN";
   const genderPreferenceLabels = {
     MALE: "Male only",
     FEMALE: "Female only",
@@ -121,7 +122,7 @@ function RecommendedCommuteCard({
   };
 
   return (
-    <article className="flex h-full min-h-[300px] flex-col rounded-2xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
+    <article className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
       <div className="flex items-start justify-between gap-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#07131a] text-[11px] font-black text-[#8ed8ff]">
@@ -137,19 +138,19 @@ function RecommendedCommuteCard({
             )}
           </div>
           <div className="min-w-0">
-            <p className="break-words text-[13px] font-black leading-4">
+            <p className="break-words text-sm font-black leading-5">
               {creator?.fullName || "Commute creator"}
             </p>
           </div>
         </div>
 
         <div className="text-right">
-          <p className="text-xs font-black text-[#07131a]">
+          <p className="text-sm font-black text-[#07131a]">
             Cost:
           </p>
           <p
             className={`font-black text-[#0f6b50] ${
-              isCostToBeDecided ? "max-w-24 text-sm leading-4" : "text-lg"
+              isCostToBeDecided ? "max-w-24 text-base leading-5" : "text-xl"
             }`}
           >
             {costLabel}
@@ -165,80 +166,96 @@ function RecommendedCommuteCard({
       <div className="mt-3 space-y-1.5">
         <div className="flex items-center gap-2.5">
           <span className="h-2 w-2 rounded-full bg-[#0f6b50]" />
-          <p className="truncate text-[13px] font-semibold">
+          <p className="truncate text-sm font-semibold">
             {commute.fromLocation}
           </p>
         </div>
         <div className="ml-1 h-3 w-px bg-[#07131a]/15" />
         <div className="flex items-center gap-2.5">
           <span className="h-2 w-2 rounded-full bg-[#003b73]" />
-          <p className="truncate text-[13px] font-semibold">{commute.toLocation}</p>
+          <p className="truncate text-sm font-semibold">{commute.toLocation}</p>
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 text-sm">
-        <div className="grid gap-2 sm:grid-cols-2">
-          <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
-            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-              Expected time
-            </p>
-            <p className="mt-0.5 text-[13px] font-black leading-4 text-[#07131a]">
-              {formatExpectedTime(commute)}
-            </p>
+      <div className="mt-auto">
+        <div className="grid gap-2 text-sm">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Expected time
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
+                {formatExpectedTime(commute)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Who can join
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
+                {genderPreferenceLabels[commute.participantGenderPreference] ||
+                  "Male/Female"}
+              </p>
+            </div>
           </div>
-          <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
-            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-              Who can join
-            </p>
-            <p className="mt-0.5 text-[13px] font-black leading-4 text-[#07131a]">
-              {genderPreferenceLabels[commute.participantGenderPreference] ||
-                "Male/Female"}
-            </p>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Remaining
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#b57a00]">
+                {timeLeft}
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Seats left
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#0f6b50]">
+                {seatsLeft}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2">
-          <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
-            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-              Remaining
-            </p>
-            <p className="mt-0.5 text-[13px] font-black leading-4 text-[#b57a00]">{timeLeft}</p>
+        {isAdmin ? (
+          <div className="mt-3 w-full rounded-xl bg-[#07131a]/10 px-4 py-2 text-center text-sm font-black text-[#07131a]">
+            Admin view only
           </div>
-          <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
-            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-              Seats left
-            </p>
-            <p className="mt-0.5 text-[13px] font-black leading-4 text-[#0f6b50]">{seatsLeft}</p>
-          </div>
-        </div>
+        ) : (
+          <button
+            type="button"
+            disabled={
+              needsVerification ||
+              genderMismatch ||
+              noSeatsLeft ||
+              hasRequested ||
+              isJoining
+            }
+            onClick={() => onJoin(commute.id)}
+            className={`mt-3 w-full rounded-xl px-4 py-2 text-sm font-black shadow-sm transition disabled:cursor-not-allowed ${
+              needsVerification
+                ? "bg-amber-50 text-amber-700"
+                : genderMismatch
+                  ? "bg-rose-50 text-rose-700"
+                  : hasRequested
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-[#07131a] text-white hover:bg-[#17303a] disabled:bg-slate-300"
+            }`}
+          >
+            {needsVerification
+              ? "Verify email to join"
+              : genderMismatch
+                ? "Gender preference does not match"
+                : getJoinButtonLabel(
+                    participationStatus,
+                    noSeatsLeft,
+                    isJoining,
+                  )}
+          </button>
+        )}
       </div>
-
-      <button
-        type="button"
-        disabled={
-          needsVerification ||
-          genderMismatch ||
-          noSeatsLeft ||
-          hasRequested ||
-          isJoining
-        }
-        onClick={() => onJoin(commute.id)}
-        className={`mt-3 w-full rounded-xl px-4 py-2 text-sm font-black shadow-sm transition disabled:cursor-not-allowed ${
-          needsVerification
-            ? "bg-amber-50 text-amber-700"
-            : genderMismatch
-              ? "bg-rose-50 text-rose-700"
-              : hasRequested
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-[#07131a] text-white hover:bg-[#17303a] disabled:bg-slate-300"
-        }`}
-      >
-        {needsVerification
-          ? "Verify email to join"
-          : genderMismatch
-            ? "Gender preference does not match"
-            : getJoinButtonLabel(participationStatus, noSeatsLeft, isJoining)}
-      </button>
     </article>
   );
 }
@@ -250,80 +267,89 @@ function CurrentRideCard({ ride, count, now, onOpen }) {
   const label = ride.role === "CREATOR" ? "Created by you" : "Accepted ride";
 
   return (
-    <article className="flex h-full min-h-[430px] flex-col rounded-3xl border border-[#07131a]/15 bg-white/82 p-5 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
-      <div className="flex items-start justify-between gap-4">
+    <article className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
+      <div className="flex items-start justify-between gap-2.5">
         <div>
-          <p className="rounded-full bg-[#07131a]/10 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-[#244b58]">
+          <p className="rounded-full bg-[#07131a]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#244b58]">
             Current rides
           </p>
-          <h3 className="mt-3 text-xl font-black">
+          <h3 className="mt-2 text-sm font-black leading-5">
             {commute.fromLocation} to {commute.toLocation}
           </h3>
           <p className="mt-1 text-xs font-semibold text-[#4f6268]">{label}</p>
         </div>
 
-        <div className="rounded-2xl bg-[#e8eef0] px-4 py-3 text-center">
-          <p className="text-2xl font-black text-[#9a6a00]">{count}</p>
+        <div className="rounded-xl bg-[#e8eef0] px-3 py-2 text-center">
+          <p className="text-xl font-black text-[#9a6a00]">{count}</p>
           <p className="text-[10px] font-black uppercase text-[#56696f]">
             Active
           </p>
         </div>
       </div>
 
-      <div className="mt-5 space-y-3">
-        <div className="flex items-center gap-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#0f6b50]" />
+      <div className="mt-3 space-y-1.5">
+        <div className="flex items-center gap-2.5">
+          <span className="h-2 w-2 rounded-full bg-[#0f6b50]" />
           <p className="truncate text-sm font-semibold">
             {commute.fromLocation}
           </p>
         </div>
-        <div className="ml-1 h-4 w-px bg-[#07131a]/15" />
-        <div className="flex items-center gap-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#003b73]" />
+        <div className="ml-1 h-3 w-px bg-[#07131a]/15" />
+        <div className="flex items-center gap-2.5">
+          <span className="h-2 w-2 rounded-full bg-[#003b73]" />
           <p className="truncate text-sm font-semibold">{commute.toLocation}</p>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-2 text-sm">
-        <div className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-3">
-          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-            Departure
-          </p>
-          <p className="mt-1 font-black text-[#07131a]">
-            {formatTime(commute.departureTime)}
-          </p>
+      <div className="mt-auto">
+        <div className="grid gap-2 text-sm">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Expected time
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
+                {formatExpectedTime(commute)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Status
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
+                {commute.status}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Remaining
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#b57a00]">
+                {timeLeft}
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
+                Seats left
+              </p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#0f6b50]">
+                {seatsLeft}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-3">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-              Countdown
-            </p>
-            <p className="mt-1 font-black text-[#b57a00]">{timeLeft}</p>
-          </div>
-          <div className="rounded-2xl border border-[#07131a]/10 bg-[#dbe6ea] p-3">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-              Seats left
-            </p>
-            <p className="mt-1 font-black text-[#0f6b50]">{seatsLeft}</p>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-3">
-          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#56696f]">
-            Status
-          </p>
-          <p className="mt-1 font-black text-[#07131a]">{commute.status}</p>
-        </div>
+        <button
+          type="button"
+          onClick={onOpen}
+          className="mt-3 w-full rounded-xl bg-[#07131a] px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-[#17303a]"
+        >
+          View in My rides
+        </button>
       </div>
-
-      <button
-        type="button"
-        onClick={onOpen}
-        className="mt-auto w-full rounded-2xl bg-[#07131a] px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#17303a]"
-      >
-        View in My rides
-      </button>
     </article>
   );
 }

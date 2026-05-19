@@ -50,7 +50,7 @@ export class NotificationService {
       user,
       commute,
       type: NotificationType.COMMUTE_COMPLETED,
-      message: `${commute.fromLocation} to ${commute.toLocation} is complete. Please rate your group.`,
+      message: `${commute.fromLocation} to ${commute.toLocation} is complete.`,
       isRead: false,
     });
 
