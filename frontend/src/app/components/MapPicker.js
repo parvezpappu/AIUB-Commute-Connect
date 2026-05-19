@@ -285,7 +285,7 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
         </div>
 
         {searchResults.length > 0 && (
-          <div className="mt-3 overflow-hidden rounded-2xl border border-[#07131a]/10 bg-white">
+          <div className="mt-3 overflow-hidden rounded-2xl border border-[#1d5d82] bg-[#abc9d3]">
             {searchResults.map((result) => (
               <button
                 key={result.place_id}
@@ -318,8 +318,8 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
               Detecting map address...
             </p>
           )}
-          {detectedAddress && (
-            <div className="mt-2 rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-3">
+          {detectedAddress && onUseDetectedAddress && (
+            <div className="mt-2 rounded-2xl border border-[#1d5d82] bg-[#abc9d3] p-3">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Detected map address
               </p>
@@ -351,3 +351,5 @@ export default function MapPicker({ value, onChange, onUseDetectedAddress }) {
     </div>
   );
 }
+
+

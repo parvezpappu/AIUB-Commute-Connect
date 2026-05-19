@@ -149,7 +149,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-3 py-6 sm:px-4 sm:py-10">
-      <section className="mx-auto w-full max-w-md rounded-[24px] border border-white/20 bg-white/76 p-5 shadow-sm backdrop-blur sm:rounded-[28px] sm:p-6">
+      <section className="mx-auto w-full max-w-md rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] p-5 shadow-sm backdrop-blur sm:rounded-[28px] sm:p-6">
         <div className="mb-5 sm:mb-6">
           <h1 className="text-2xl font-semibold text-[#07131a]">
             Forgot password
@@ -310,3 +310,5 @@ export default function ForgotPasswordPage() {
     </main>
   );
 }
+
+

@@ -122,7 +122,7 @@ function RecommendedCommuteCard({
   };
 
   return (
-    <article className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
+    <article className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#1d5d82] bg-[#abc9d3] p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
       <div className="flex items-start justify-between gap-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#07131a] text-[11px] font-black text-[#8ed8ff]">
@@ -180,7 +180,7 @@ function RecommendedCommuteCard({
       <div className="mt-auto">
         <div className="grid gap-2 text-sm">
           <div className="grid gap-2 sm:grid-cols-2">
-            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Expected time
               </p>
@@ -188,7 +188,7 @@ function RecommendedCommuteCard({
                 {formatExpectedTime(commute)}
               </p>
             </div>
-            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Who can join
               </p>
@@ -200,7 +200,7 @@ function RecommendedCommuteCard({
           </div>
 
           <div className="grid gap-2 sm:grid-cols-2">
-            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Remaining
               </p>
@@ -234,7 +234,7 @@ function RecommendedCommuteCard({
               isJoining
             }
             onClick={() => onJoin(commute.id)}
-            className={`mt-3 w-full rounded-xl px-4 py-2 text-sm font-black shadow-sm transition disabled:cursor-not-allowed ${
+            className={`mt-3 w-full rounded-xl px-4 py-2 text-sm cursor-pointer font-black shadow-sm transition disabled:cursor-not-allowed ${
               needsVerification
                 ? "bg-amber-50 text-amber-700"
                 : genderMismatch
@@ -267,7 +267,7 @@ function CurrentRideCard({ ride, count, now, onOpen }) {
   const label = ride.role === "CREATOR" ? "Created by you" : "Accepted ride";
 
   return (
-    <article className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
+    <article className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#1d5d82] bg-[#abc9d3] p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md">
       <div className="flex items-start justify-between gap-2.5">
         <div>
           <p className="rounded-full bg-[#07131a]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#244b58]">
@@ -304,7 +304,7 @@ function CurrentRideCard({ ride, count, now, onOpen }) {
       <div className="mt-auto">
         <div className="grid gap-2 text-sm">
           <div className="grid gap-2 sm:grid-cols-2">
-            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Expected time
               </p>
@@ -312,7 +312,7 @@ function CurrentRideCard({ ride, count, now, onOpen }) {
                 {formatExpectedTime(commute)}
               </p>
             </div>
-            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Status
               </p>
@@ -323,7 +323,7 @@ function CurrentRideCard({ ride, count, now, onOpen }) {
           </div>
 
           <div className="grid gap-2 sm:grid-cols-2">
-            <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+            <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Remaining
               </p>
@@ -555,11 +555,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
+    <main className="relative min-h-screen overflow-hidden bg-[#e8eef0] text-[#07131a]">
       <AuthenticatedNav />
 
       <section className="relative mx-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-        <div className="rounded-[28px] border border-[#07131a]/15 bg-white/72 p-4 shadow-sm backdrop-blur sm:p-5">
+        <div className="rounded-[28px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-sm backdrop-blur sm:p-5">
           <div className="max-w-2xl">
             <p className="text-sm font-black uppercase tracking-[0.18em] text-[#244b58]">
               Quick route
@@ -677,7 +677,7 @@ export default function DashboardPage() {
           </div>
 
           {recommendedCommutes.length === 0 ? (
-            <p className="mt-4 rounded-2xl border border-[#07131a]/10 bg-white/72 p-5 text-sm font-semibold text-[#4f6268] backdrop-blur">
+            <p className="mt-4 rounded-2xl border border-[#1d5d82] bg-[#abc9d3] p-5 text-sm font-semibold text-[#4f6268] backdrop-blur">
               No open commute posts are available right now.
             </p>
           ) : (
@@ -700,3 +700,6 @@ export default function DashboardPage() {
     </main>
   );
 }
+
+
+

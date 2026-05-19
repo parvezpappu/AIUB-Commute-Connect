@@ -84,7 +84,7 @@ export default function VerifyEmailPage() {
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-4 py-10 text-[#07131a]">
-      <section className="mx-auto max-w-md rounded-[24px] border border-[#07131a]/10 bg-white p-6 shadow-2xl shadow-[#07131a]/10">
+      <section className="mx-auto max-w-md rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] p-6 shadow-2xl shadow-[#07131a]/10">
         <div className="mb-6">
           <h1 className="text-2xl font-black text-[#07131a]">
             Verify email
@@ -184,4 +184,6 @@ export default function VerifyEmailPage() {
     </main>
   );
 }
+
+
 

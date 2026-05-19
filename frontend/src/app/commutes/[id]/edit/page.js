@@ -194,7 +194,7 @@ export default function EditCommutePage() {
       <AuthenticatedNav />
 
       <section className="mx-auto max-w-3xl px-4 py-8">
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-lg border border-[#1d5d82] bg-[#abc9d3] p-6 shadow-sm">
           <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
             <div>
               <p className="w-fit rounded-full bg-[#003b73]/5 px-3 py-1 text-sm font-medium text-[#003b73]">
@@ -206,7 +206,7 @@ export default function EditCommutePage() {
             </div>
             <Link
               href="/commutes/my"
-              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+              className="rounded-md border border-[#02121b] bg-white/75 px-4 py-2 text-sm font-semibold text-[#d6e2e9]"
             >
               Back to my posts
             </Link>
@@ -224,7 +224,7 @@ export default function EditCommutePage() {
                     className={`cursor-pointer rounded-md border p-3 text-center text-sm font-semibold transition ${
                       formData.transportType === type.value
                         ? "border-[#003b73] bg-[#003b73] text-white"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-[#003b73]/40"
+                        : "border-[#02121b] bg-white/75 text-[#d6e2e9] hover:border-[#1d5d82]"
                     }`}
                   >
                     <input
@@ -252,7 +252,7 @@ export default function EditCommutePage() {
                     className={`cursor-pointer rounded-md border p-3 text-center text-sm font-semibold transition ${
                       formData.participantGenderPreference === option.value
                         ? "border-[#003b73] bg-[#003b73] text-white"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-[#003b73]/40"
+                        : "border-[#02121b] bg-white/75 text-[#d6e2e9] hover:border-[#1d5d82]"
                     }`}
                   >
                     <input
@@ -286,7 +286,7 @@ export default function EditCommutePage() {
                   name="fromLocation"
                   value={formData.fromLocation}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
                   required
                 />
                 {fieldErrors.fromLocation && (
@@ -305,7 +305,7 @@ export default function EditCommutePage() {
                   name="toLocation"
                   value={formData.toLocation}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
                   required
                 />
                 {fieldErrors.toLocation && (
@@ -325,7 +325,7 @@ export default function EditCommutePage() {
                 name="meetingLocation"
                 value={formData.meetingLocation}
                 onChange={handleChange}
-                className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
                 required
               />
               {formData.meetingAddress && (
@@ -344,7 +344,7 @@ export default function EditCommutePage() {
               <button
                 type="button"
                 onClick={() => setIsMapOpen((current) => !current)}
-                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                className="rounded-md border border-[#02121b] bg-white/75 px-4 py-2 text-sm font-semibold text-[#d6e2e9] hover:bg-slate-50"
               >
                 {isMapOpen ? "Hide map" : "Change exact map location"}
               </button>
@@ -380,7 +380,7 @@ export default function EditCommutePage() {
                   name="departureTime"
                   value={formData.departureTime}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
                   required
                 />
                 {fieldErrors.departureTime && (
@@ -399,7 +399,7 @@ export default function EditCommutePage() {
                   name="expiresAt"
                   value={formData.expiresAt}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
                   required
                 />
                 {fieldErrors.expiresAt && (
@@ -422,7 +422,7 @@ export default function EditCommutePage() {
                   max="10"
                   value={formData.seats}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
                   required
                 />
                 {fieldErrors.seats && (
@@ -443,10 +443,10 @@ export default function EditCommutePage() {
                   value={formData.costPerPerson}
                   onChange={handleChange}
                   disabled={formData.costToBeDecided}
-                  className="w-full rounded-md border border-slate-300 px-3 py-3 text-slate-900 outline-none focus:border-[#003b73]"
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
                   required
                 />
-                <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-3 text-sm font-semibold text-slate-800">
+                <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-md border border-[#02121b] bg-white/75 px-3 py-3 text-sm font-semibold text-[#d6e2e9]">
                   <input
                     type="checkbox"
                     name="costToBeDecided"
@@ -483,3 +483,6 @@ export default function EditCommutePage() {
     </main>
   );
 }
+
+
+

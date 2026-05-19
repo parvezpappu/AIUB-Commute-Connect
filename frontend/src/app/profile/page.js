@@ -12,6 +12,10 @@ import {
   uploadProfilePicture,
 } from "../lib/api";
 import { useRequireAuth } from "../lib/auth";
+import {
+  hasValidationErrors,
+  validateChangePasswordForm,
+} from "../lib/validation";
 
 const backendUrl = "http://localhost:3000";
 
@@ -169,8 +173,20 @@ export default function ProfilePage() {
     setPasswordError("");
     setMessage("");
 
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError("New password and confirmation do not match.");
+    const validationErrors = validateChangePasswordForm(passwordForm);
+
+    if (hasValidationErrors(validationErrors)) {
+      const isAllPasswordFieldsEmpty =
+        !passwordForm.currentPassword.trim() &&
+        !passwordForm.newPassword.trim() &&
+        !passwordForm.confirmPassword.trim();
+
+      if (isAllPasswordFieldsEmpty) {
+        setPasswordError("Password input fields are empty.");
+        return;
+      }
+
+      setPasswordError(Object.values(validationErrors).join(" "));
       return;
     }
 
@@ -200,7 +216,7 @@ export default function ProfilePage() {
   if (error) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-4">
-        <section className="w-full max-w-md rounded-[28px] border border-white/20 bg-white/76 p-6 text-center shadow-sm backdrop-blur">
+        <section className="w-full max-w-md rounded-[28px] border border-[#1d5d82] bg-[#abc9d3] p-6 text-center shadow-sm backdrop-blur">
           <h1 className="text-xl font-semibold text-[#07131a]">
             Session expired
           </h1>
@@ -220,13 +236,12 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
       <AuthenticatedNav />
-      <section className="mx-auto max-w-3xl px-4 py-4 sm:px-6 lg:px-8">
-        <h1 className="mb-3 text-2xl font-black text-[#07131a]">Profile</h1>
-        <div className="rounded-[24px] border border-[#07131a]/15 bg-white/72 p-4 shadow-sm backdrop-blur sm:p-5">
-          <div className="border-b border-[#07131a]/10 pb-4">
+      <section className="mx-auto max-w-2xl px-4 py-4 sm:px-6 lg:px-8">
+        <h1 className="mb-3 text-2xl font-black text-[#407fa4]">Profile</h1>
+          <div className="min-h-[650px] flex flex-col justify-evenly rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-sm backdrop-blur sm:p-5">                 <div className="border-b border-[#07131a]/10 pb-4">
             <div className="flex items-center gap-4">
               <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#07131a] bg-cover bg-center text-xl font-black text-white ring-2 ring-white"
+                className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#4b87a9] bg-cover bg-center text-xl font-black text-white ring-2 ring-white"
                 style={
                   profilePictureSrc
                     ? { backgroundImage: `url(${profilePictureSrc})` }
@@ -285,34 +300,34 @@ export default function ProfilePage() {
           )}
 
           <div className="mt-5 grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg border border-[#07131a]/10 bg-white/75 px-3.5 py-2.5">
+            <div className="rounded-lg border border-[#02121b] bg-white/75 px-3.5 py-2.5">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Full name
               </p>
-              <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">{user.fullName}</p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#d6e2e9]">{user.fullName}</p>
             </div>
 
-            <div className="rounded-lg border border-[#07131a]/10 bg-white/75 px-3.5 py-2.5">
+            <div className="rounded-lg border border-[#02121b] bg-white/75 px-3.5 py-2.5">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 University ID
               </p>
-              <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">{user.aiubId}</p>
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#d6e2e9]">{user.aiubId}</p>
             </div>
 
-            <div className="rounded-lg border border-[#07131a]/10 bg-white/75 px-3.5 py-2.5">
+            <div className="rounded-lg border border-[#02121b] bg-white/75 px-3.5 py-2.5">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Email
               </p>
-              <p className="mt-0.5 break-words text-sm font-black leading-5 text-[#07131a]">
+              <p className="mt-0.5 break-words text-sm font-black leading-5 text-[#d6e2e9]">
                 {user.email}
               </p>
             </div>
 
-            <div className="rounded-lg border border-[#07131a]/10 bg-white/75 px-3.5 py-2.5">
+            <div className="rounded-lg border border-[#02121b] bg-white/75 px-3.5 py-2.5">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                 Gender
               </p>
-              <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
+              <p className="mt-0.5 text-sm font-black leading-5 text-[#d6e2e9]">
                 {user.gender === "MALE"
                   ? "Male"
                   : user.gender === "FEMALE"
@@ -323,11 +338,11 @@ export default function ProfilePage() {
 
             {!isAdmin && (
               <>
-                <div className="rounded-lg border border-[#07131a]/10 bg-[#e8eef0] px-3.5 py-2.5">
+                <div className="rounded-lg border border-[#02121b] bg-white/75 px-3.5 py-2.5">
                   <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                     Preferred route
                   </p>
-                  <p className="mt-0.5 text-sm font-black leading-5 text-[#07131a]">
+                  <p className="mt-0.5 text-sm font-black leading-5 text-[#d6e2e9]">
                     {user.preferredFromLocation || "Not set"} to{" "}
                     {user.preferredToLocation || "Not set"}
                   </p>
@@ -339,7 +354,7 @@ export default function ProfilePage() {
           </div>
 
           {!isAdmin && (
-          <section className="mt-5 rounded-xl border border-[#07131a]/10 bg-white/60 px-4 py-3">
+          <section className="mt-5 rounded-xl border border-[#1d5d82] bg-[#abc9d3] px-4 py-3">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
                 <h2 className="text-sm font-black text-[#07131a]">
@@ -355,7 +370,7 @@ export default function ProfilePage() {
                 onClick={() =>
                   setIsPreferenceOpen((currentValue) => !currentValue)
                 }
-                className="w-fit rounded-lg border border-[#07131a]/15 bg-white px-3 py-1.5 text-xs font-black text-[#07131a] hover:border-[#07131a]/35"
+                className="w-fit rounded-lg cursor-pointer border  border-[#07131a]/15 bg-white px-3 py-1.5 text-xs font-black text-[#07131a] hover:border-[#07131a]/35"
               >
                 {isPreferenceOpen ? "Close" : "Edit preference"}
               </button>
@@ -408,7 +423,7 @@ export default function ProfilePage() {
           </section>
           )}
 
-          <section className="mt-4 rounded-xl border border-[#07131a]/10 bg-white/60 px-4 py-3">
+          <section className="mt-4 rounded-xl border border-[#1d5d82] bg-[#abc9d3] px-4 py-3">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
                 <h2 className="text-sm font-black text-[#07131a]">
@@ -422,7 +437,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsPasswordOpen((currentValue) => !currentValue)}
-                className="w-fit rounded-lg border border-[#07131a]/15 bg-white px-3 py-1.5 text-xs font-black text-[#07131a] hover:border-[#07131a]/35"
+                className="w-fit rounded-lg cursor-pointer border border-[#07131a]/15 bg-white px-3 py-1.5 text-xs font-black text-[#07131a] hover:border-[#07131a]/35"
               >
                 {isPasswordOpen ? "Close" : "Change password"}
               </button>
@@ -445,7 +460,6 @@ export default function ProfilePage() {
                     value={passwordForm.currentPassword}
                     onChange={handlePasswordChange}
                     className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2 text-sm font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
-                    required
                   />
                 </div>
 
@@ -459,9 +473,6 @@ export default function ProfilePage() {
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChange}
                     className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2 text-sm font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
-                    minLength={6}
-                    maxLength={20}
-                    required
                   />
                 </div>
 
@@ -475,7 +486,6 @@ export default function ProfilePage() {
                     value={passwordForm.confirmPassword}
                     onChange={handlePasswordChange}
                     className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2 text-sm font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
-                    required
                   />
                 </div>
               </div>
@@ -501,4 +511,7 @@ export default function ProfilePage() {
     </main>
   );
 }
+
+
+
 

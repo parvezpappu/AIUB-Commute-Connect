@@ -194,7 +194,7 @@ export default function NotificationsPage() {
       <AuthenticatedNav />
 
       <section className="mx-auto max-w-5xl px-4 py-6">
-        <div className="rounded-[28px] border border-[#07131a]/15 bg-white/80 p-5 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
+        <div className="rounded-[28px] border border-[#1d5d82] bg-[#abc9d3] p-5 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.28em] text-[#244b58]">
@@ -237,7 +237,7 @@ export default function NotificationsPage() {
                 className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-black transition ${
                   isActive
                     ? "bg-[#8ed8ff] text-[#07131a]"
-                    : "border border-[#07131a]/15 bg-white/72 text-[#4f6268] hover:bg-white"
+                    : "border border-[#1d5d82] bg-[#abc9d3] text-[#4f6268] hover:bg-white"
                 }`}
               >
                 {filter.label}
@@ -297,7 +297,7 @@ export default function NotificationsPage() {
                       <button
                         type="button"
                         onClick={() => handleMarkRead(notification)}
-                        className="rounded-2xl border border-[#07131a]/15 bg-white/75 px-4 py-2 text-sm font-black text-[#07131a] transition hover:bg-white"
+                        className="rounded-2xl border border-[#1d5d82] bg-[#abc9d3] px-4 py-2 text-sm font-black text-[#07131a] transition hover:bg-white"
                       >
                         Mark read
                       </button>
@@ -319,3 +319,5 @@ export default function NotificationsPage() {
     </main>
   );
 }
+
+

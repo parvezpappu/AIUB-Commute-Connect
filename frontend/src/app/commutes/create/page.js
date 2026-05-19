@@ -115,18 +115,6 @@ export default function CreateCommutePage() {
     });
   }
 
-  function handleUseDetectedAddress(address) {
-    setFormData({
-      ...formData,
-      meetingLocation: address,
-    });
-
-    setFieldErrors({
-      ...fieldErrors,
-      meetingLocation: "",
-    });
-  }
-
   function handleCostModeChange(costToBeDecided) {
     setFormData({
       ...formData,
@@ -197,17 +185,17 @@ export default function CreateCommutePage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
       <AuthenticatedNav />
 
-      <section className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-3xl px-4 py-4 sm:px-6 lg:px-8">
         <h1 className="mb-3 text-2xl font-black text-[#07131a]">
           Create post
         </h1>
-        <section className="rounded-[24px] border border-[#07131a]/15 bg-white/72 p-4 shadow-sm backdrop-blur">
+        <section className="rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-sm backdrop-blur">
           <form
             onSubmit={handleSubmit}
             noValidate
             className="max-w-2xl space-y-4"
           >
-            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+            <section className="rounded-2xl border border-[#031e2d] bg-[#abc9d3] p-4">
               <h2 className="mb-3 text-lg font-black text-[#07131a]">
                 Transport
               </h2>
@@ -218,7 +206,7 @@ export default function CreateCommutePage() {
                     key={type.value}
                     className={`cursor-pointer rounded-xl border px-3 py-2 text-center text-sm font-black transition ${
                       formData.transportType === type.value
-                        ? "border-[#07131a] bg-[#07131a] text-white"
+                        ? "border-[#07131a] bg-[#1da1c2] text-white"
                         : "border-[#07131a]/15 bg-white text-[#07131a] hover:border-[#07131a]/40"
                     }`}
                   >
@@ -236,7 +224,7 @@ export default function CreateCommutePage() {
               </div>
             </section>
 
-            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+            <section className="rounded-2xl border border-[#031e2d] bg-[#abc9d3] p-4">
               <h2 className="mb-3 text-lg font-black text-[#07131a]">
                 Who can join
               </h2>
@@ -246,7 +234,7 @@ export default function CreateCommutePage() {
                     key={option.value}
                     className={`cursor-pointer rounded-xl border px-3 py-2 text-center text-sm font-black transition ${
                       formData.participantGenderPreference === option.value
-                        ? "border-[#07131a] bg-[#07131a] text-white"
+                        ? "border-[#07131a] bg-[#1da1c2] text-white"
                         : "border-[#07131a]/15 bg-white text-[#07131a] hover:border-[#07131a]/40"
                     }`}
                   >
@@ -267,7 +255,7 @@ export default function CreateCommutePage() {
               <FieldError message={fieldErrors.participantGenderPreference} />
             </section>
 
-            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+            <section className="rounded-2xl border border-[#031e2d] bg-[#abc9d3] p-4">
               <h2 className="mb-3 text-lg font-black text-[#07131a]">Route</h2>
 
               <div className="grid gap-4 sm:grid-cols-2">
@@ -303,7 +291,7 @@ export default function CreateCommutePage() {
               </div>
             </section>
 
-            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+            <section className="rounded-2xl border border-[#031e2d] bg-[#abc9d3] p-4">
               <div className="mb-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
                 <div>
                   <h2 className="text-lg font-black text-[#07131a]">
@@ -316,7 +304,7 @@ export default function CreateCommutePage() {
                 <button
                   type="button"
                   onClick={() => setIsMapOpen((current) => !current)}
-                  className="w-fit rounded-xl border border-[#07131a]/15 bg-white px-3 py-2 text-sm font-black text-[#07131a] hover:border-[#07131a]/35"
+                  className="w-fit rounded-xl border cursor-pointer border-[#07131a]/15 bg-white px-3 py-2 text-sm font-black text-[#07131a] hover:border-[#07131a]/35"
                 >
                   {isMapOpen
                     ? "Hide map"
@@ -335,7 +323,7 @@ export default function CreateCommutePage() {
                 placeholder="Example: AIUB main gate or Kuril foot overbridge"
               />
               {formData.meetingAddress && (
-                <p className="mt-2 rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2 text-sm font-semibold text-[#4f6268]">
+                <p className="mt-2 rounded-xl border border-[#1d5d82] bg-[#abc9d3] px-3 py-2 text-sm font-semibold text-[#4f6268]">
                   Exact address: {formData.meetingAddress}
                 </p>
               )}
@@ -349,7 +337,6 @@ export default function CreateCommutePage() {
                       longitude: formData.meetingLongitude,
                     }}
                     onChange={handleMeetingPointChange}
-                    onUseDetectedAddress={handleUseDetectedAddress}
                   />
                 </div>
               )}
@@ -360,7 +347,7 @@ export default function CreateCommutePage() {
               />
             </section>
 
-            <section className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-4">
+            <section className="rounded-2xl border border-[#031e2d] bg-[#abc9d3] p-4">
               <h2 className="mb-3 text-lg font-black text-[#07131a]">
                 Schedule and cost
               </h2>
@@ -475,7 +462,7 @@ export default function CreateCommutePage() {
             <button
               type="submit"
               disabled={isLoading || (currentUser && !currentUser.isVerified)}
-              className="w-full rounded-xl bg-[#07131a] px-5 py-3 text-sm font-black text-white transition hover:bg-[#17303a] disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="w-full cursor-pointer rounded-xl bg-[#07131a] px-5 py-3 text-sm font-black text-white transition hover:bg-[#17303a] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isLoading ? "Creating commute..." : "Publish commute"}
             </button>
@@ -485,4 +472,6 @@ export default function CreateCommutePage() {
     </main>
   );
 }
+
+
 

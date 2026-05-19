@@ -270,7 +270,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
 
         <div className="overflow-y-auto px-5 py-5">
           {isLoading ? (
-            <p className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-5 text-sm font-semibold text-[#4f6268]">
+            <p className="rounded-2xl border border-[#1d5d82] bg-[#abc9d3] p-5 text-sm font-semibold text-[#4f6268]">
               Loading members and map...
             </p>
           ) : error ? (
@@ -280,7 +280,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
           ) : (
             <div className="space-y-5">
               {shouldPromptLocation && (
-                <div className="rounded-2xl border border-[#8ed8ff]/60 bg-[#e8eef0] p-4 shadow-sm">
+                <div className="rounded-2xl border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-sm">
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div>
                       <p className="text-sm font-black uppercase tracking-[0.14em] text-[#9a6a00]">
@@ -314,8 +314,8 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                   </div>
                 </div>
               )}
-              <div className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-4">
-                <div className="rounded-2xl border border-[#07131a]/10 bg-white/80 p-4">
+              <div className="rounded-2xl border border-[#1d5d82] bg-[#abc9d3] p-4">
+                <div className="rounded-2xl border border-[#1d5d82] bg-[#abc9d3] p-4">
                   <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                     Meeting point
                   </p>
@@ -393,7 +393,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
               </div>
 
               <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
-                <div className="rounded-2xl border border-[#07131a]/10 bg-white p-5">
+                <div className="rounded-2xl border border-[#1d5d82] bg-[#abc9d3] p-5">
                   <h3 className="text-lg font-black text-[#07131a]">Creator</h3>
                   <div className="mt-4">
                     <div className="flex flex-wrap items-center gap-2">
@@ -420,7 +420,7 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
                   </div>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-[#07131a]/10 bg-white">
+                <div className="overflow-hidden rounded-2xl border border-[#1d5d82] bg-[#abc9d3]">
                   <div className="border-b border-[#07131a]/10 px-5 py-4">
                     <h3 className="text-lg font-black text-[#07131a]">
                       Joined members
@@ -481,3 +481,5 @@ export default function CommuteRoomModal({ commuteId, onClose }) {
     </div>
   );
 }
+
+

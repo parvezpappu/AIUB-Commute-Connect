@@ -87,8 +87,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
-      <header className="sticky top-0 z-40 border-b border-[#07131a]/10 bg-[#e8eef0]/95 backdrop-blur">
+<main className="min-h-screen bg-[#e8eef0] text-[#07131a]">   
+     <header className="sticky top-0 z-40 border-b border-[#07131a]/10 bg-[#e8eef0]/95 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/" className="flex min-w-0 items-center gap-3">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#07131a] text-base font-black text-[#8ed8ff] sm:h-10 sm:w-10">
@@ -117,7 +117,7 @@ export default function RegisterPage() {
           
         </aside>
 
-            <section className="reveal w-full max-w-md rounded-[22px] border border-[#07131a]/10 bg-white p-4 shadow-xl sm:rounded-2xl sm:p-5">          <div className="mb-5 lg:hidden">
+            <section className="reveal w-full max-w-md rounded-[22px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-xl sm:rounded-2xl sm:p-5">          <div className="mb-5 lg:hidden">
             <Link href="/" className="flex items-center gap-3 lg:hidden">
               <div className="grid h-10 w-10 place-items-center rounded-full bg-[#07131a] text-lg font-black text-[#8ed8ff]">
                 চ
@@ -149,7 +149,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="fullName"
-                  className="mb-1.5 block text-sm font-black text-[#244b58]"
+                  className="mb-1.5 block text-sm font-black text-white"
                 >
                   Full name
                 </label>
@@ -173,7 +173,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="aiubId"
-                  className="mb-1.5 block text-sm font-black text-[#244b58]"
+                  className="mb-1.5 block text-sm font-black text-white"
                 >
                   University ID
                 </label>
@@ -199,7 +199,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-1.5 block text-sm font-black text-[#244b58]"
+                  className="mb-1.5 block text-sm font-black text-white"
                 >
                   Email
                 </label>
@@ -223,7 +223,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="mb-1.5 block text-sm font-black text-[#244b58]"
+                  className="mb-1.5 block text-sm font-black text-white"
                 >
                   Password
                 </label>
@@ -246,7 +246,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-black text-[#244b58]">
+              <label className="mb-1.5 block text-sm font-black text-white">
                 Gender
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -278,7 +278,7 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div className="rounded-[20px] border border-[#07131a]/10 bg-[#eef3f4] p-3.5">
+            <div className="rounded-[20px] border border-[#1d5d82] bg-[#abc9d3] p-3.5">
               <p className="font-black text-[#07131a]">Daily route preference</p>
               <p className="mt-1 text-sm leading-5 text-[#4f6268]">
                 Optional. These locations will auto-fill when you create a
@@ -289,7 +289,7 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="preferredFromLocation"
-                    className="mb-1.5 block text-sm font-black text-[#244b58]"
+                    className="mb-1.5 block text-sm font-black text-white"
                   >
                     Preferred from
                   </label>
@@ -307,7 +307,7 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="preferredToLocation"
-                    className="mb-1.5 block text-sm font-black text-[#244b58]"
+                    className="mb-1.5 block text-sm font-black text-white"
                   >
                     Preferred to
                   </label>
@@ -333,7 +333,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#07131a] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:bg-[#0b1d25] disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="flex w-full items-center cursor-pointer justify-center gap-2 rounded-full bg-[#07131a] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:bg-[#0b1d25] disabled:cursor-not-allowed disabled:bg-slate-400"
             >
               {isLoading ? "Creating account..." : "Create account"}
             </button>
@@ -350,3 +350,5 @@ export default function RegisterPage() {
     </main>
   );
 }
+
+

@@ -55,6 +55,31 @@
     password: z.string().min(1, "Password is required"),
     });
 
+    const changePasswordSchema = z
+    .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+
+    newPassword: z
+        .string()
+        .min(1, "New password is required")
+        .min(6, "New password must be at least 6 characters")
+        .max(20, "New password must not be more than 20 characters")
+        .regex(
+        strongPasswordRegex,
+        "New password must include a letter, number, and special character",
+        ),
+
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "New password and confirmation do not match",
+    })
+    .refine((data) => data.currentPassword !== data.newPassword, {
+    path: ["newPassword"],
+    message: "New password must be different from current password",
+    });
+
     const createCommuteSchema = z.object({
     transportType: z.enum(["UBER", "BUS", "BIKE", "CNG", "RICKSHAW", "WALKING"], {
         message: "Select a valid transport type",
@@ -169,6 +194,11 @@
     return formatZodErrors(result);
     }
 
+    export function validateChangePasswordForm(formData) {
+    const result = changePasswordSchema.safeParse(formData);
+    return formatZodErrors(result);
+    }
+
     export function validateCreateCommuteForm(formData) {
     const result = createCommuteSchema.safeParse(formData);
     return formatZodErrors(result);
@@ -177,3 +207,4 @@
     export function hasValidationErrors(errors) {
     return Object.keys(errors).length > 0;
     }
+

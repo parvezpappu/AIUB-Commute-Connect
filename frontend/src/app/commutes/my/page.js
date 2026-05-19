@@ -161,7 +161,7 @@ export default function MyCommutesPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
       <AuthenticatedNav />
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="rounded-[28px] border border-[#07131a]/15 bg-white/76 p-5 shadow-sm backdrop-blur sm:p-6 lg:p-8">
+        <div className="rounded-[28px] border border-[#1d5d82] bg-[#abc9d3] p-5 shadow-sm backdrop-blur sm:p-6 lg:p-8">
           <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-[#244b58]">
@@ -232,7 +232,7 @@ export default function MyCommutesPage() {
               return (
                 <article
                   key={commute.id}
-                  className="overflow-hidden rounded-[28px] border border-[#07131a]/15 bg-white/82 shadow-sm backdrop-blur"
+                  className="overflow-hidden rounded-[28px] border border-[#1d5d82] bg-[#abc9d3] shadow-sm backdrop-blur"
                 >
                   <div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:p-6">
                     <div>
@@ -255,7 +255,7 @@ export default function MyCommutesPage() {
                         {formatDateTime(commute.departureTime)}
                       </p>
 
-                      <div className="mt-4 rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-4">
+                      <div className="mt-4 rounded-2xl border border-[#02121b] bg-white/75 p-4">
                         <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#56696f]">
                           Meeting point
                         </p>
@@ -346,7 +346,7 @@ export default function MyCommutesPage() {
                       </div>
 
                       <div className="mt-4 grid grid-cols-2 gap-3">
-                        <div className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-3">
+                        <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3">
                           <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#56696f]">Who can join</p>
                           <p className="mt-1 text-sm font-black text-[#07131a]">
                             {genderPreferenceLabels[
@@ -354,25 +354,25 @@ export default function MyCommutesPage() {
                             ] || "Male/Female"}
                           </p>
                         </div>
-                        <div className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-3">
+                        <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3">
                           <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#56696f]">Total seats</p>
                           <p className="mt-1 text-sm font-black text-[#07131a]">
                             {commute.seats}
                           </p>
                         </div>
-                        <div className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-3">
+                        <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3">
                           <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#56696f]">Seats left</p>
                           <p className="mt-1 text-sm font-black text-[#0f6b50]">
                             {commute.availableSeats ?? commute.seats}
                           </p>
                         </div>
-                        <div className="rounded-2xl border border-[#07131a]/10 bg-white/70 p-3">
+                        <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3">
                           <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#56696f]">Accepted</p>
                           <p className="mt-1 text-sm font-black text-[#07131a]">
                             {commute.acceptedSeats ?? 0}
                           </p>
                         </div>
-                        <div className="rounded-2xl border border-[#07131a]/10 bg-[#e8eef0] p-3 sm:col-span-2">
+                        <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3 sm:col-span-2">
                           <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#56696f]">Cost</p>
                           <p className="mt-1 text-sm font-black text-[#9a6a00]">
                             {formatCommuteCost(commute)}
@@ -382,7 +382,7 @@ export default function MyCommutesPage() {
                     </div>
 
                     <div className="space-y-4">
-                    <div className="overflow-hidden rounded-2xl border border-[#07131a]/10 bg-white/70">
+                    <div className="overflow-hidden rounded-2xl border border-[#1d5d82] bg-[#abc9d3]">
                       <div className="border-b border-[#07131a]/10 bg-[#e8eef0]/70 px-4 py-3">
                         <p className="font-black text-[#07131a]">
                           Pending requests
@@ -457,7 +457,7 @@ export default function MyCommutesPage() {
                       )}
                     </div>
 
-                    <div className="overflow-hidden rounded-2xl border border-[#07131a]/10 bg-white/70">
+                    <div className="overflow-hidden rounded-2xl border border-[#1d5d82] bg-[#abc9d3]">
                       <div className="border-b border-[#07131a]/10 bg-[#dbe6ea]/80 px-4 py-3">
                         <p className="font-black text-[#07131a]">
                           Accepted members
@@ -507,5 +507,8 @@ export default function MyCommutesPage() {
     </main>
   );
 }
+
+
+
 
 

@@ -233,7 +233,7 @@ export default function CommuteMembersPage() {
   if (error) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-4">
-        <section className="max-w-md rounded-lg border border-slate-200 bg-white p-6 text-center shadow-sm">
+        <section className="max-w-md rounded-lg border border-[#1d5d82] bg-[#abc9d3] p-6 text-center shadow-sm">
           <h1 className="text-xl font-semibold text-slate-900">
             Members unavailable
           </h1>
@@ -252,7 +252,7 @@ export default function CommuteMembersPage() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-4 py-8 text-slate-950">
       <section className="mx-auto max-w-5xl">
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-lg border border-[#1d5d82] bg-[#abc9d3] p-6 shadow-sm">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div>
               <p className="text-sm font-medium uppercase tracking-wide text-[#003b73]">
@@ -379,7 +379,7 @@ export default function CommuteMembersPage() {
           )}
         </div>
 
-        <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 rounded-lg border border-[#1d5d82] bg-[#abc9d3] shadow-sm">
           <div className="border-b border-slate-200 px-6 py-4">
             <h2 className="text-xl font-semibold text-slate-950">Creator</h2>
             <p className="mt-1 text-sm text-slate-600">
@@ -412,7 +412,7 @@ export default function CommuteMembersPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 rounded-lg border border-[#1d5d82] bg-[#abc9d3] shadow-sm">
           <div className="border-b border-slate-200 px-6 py-4">
             <h2 className="text-xl font-semibold text-slate-950">
               Joined members
@@ -468,3 +468,5 @@ export default function CommuteMembersPage() {
     </main>
   );
 }
+
+

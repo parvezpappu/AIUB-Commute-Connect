@@ -133,7 +133,18 @@ function getJoinButtonLabel(participationStatus, noSeatsLeft, isJoining) {
     return "Sending request...";
   }
 
-  return "Request to join";
+  return "Join Ride";
+}
+
+function hasMeaningfulFilters(filterValues) {
+  return Boolean(
+    filterValues.from.trim() ||
+      filterValues.to.trim() ||
+      filterValues.time ||
+      filterValues.transportType ||
+      filterValues.genderPreference ||
+      filterValues.sortBy !== "earliest",
+  );
 }
 
 export default function CommutesPage() {
@@ -149,6 +160,7 @@ export default function CommutesPage() {
   const [joiningId, setJoiningId] = useState(null);
   const [error, setError] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filterError, setFilterError] = useState("");
   const [filters, setFilters] = useState(() => ({
     from: searchParams.get("from") || "",
     to: searchParams.get("to") || "",
@@ -258,12 +270,7 @@ export default function CommutesPage() {
       });
   }, [browseCommutes, filters]);
 
-  const hasRouteFilters =
-    filters.from ||
-    filters.to ||
-    filters.time ||
-    filters.transportType ||
-    filters.genderPreference;
+  const hasRouteFilters = hasMeaningfulFilters(filters);
 
   const isAdmin = currentUser?.role === "ADMIN";
 
@@ -287,6 +294,7 @@ export default function CommutesPage() {
   function handleFilterChange(event) {
     const { name, value } = event.target;
 
+    setFilterError("");
     setFilters((currentFilters) => ({
       ...currentFilters,
       [name]: value,
@@ -295,6 +303,11 @@ export default function CommutesPage() {
 
   function handleFilterSubmit(event) {
     event.preventDefault();
+
+    if (!hasMeaningfulFilters(filters)) {
+      setFilterError("Choose at least one filter before applying.");
+      return;
+    }
 
     const nextParams = new URLSearchParams();
 
@@ -310,6 +323,11 @@ export default function CommutesPage() {
   }
 
   function handleClearFilters() {
+    if (!hasMeaningfulFilters(filters)) {
+      setFilterError("There are no filters to clear.");
+      return;
+    }
+
     setFilters({
       from: "",
       to: "",
@@ -318,7 +336,7 @@ export default function CommutesPage() {
       genderPreference: "",
       sortBy: "earliest",
     });
-    setIsFilterOpen(false);
+    setFilterError("");
     router.push("/commutes");
   }
 
@@ -358,15 +376,18 @@ export default function CommutesPage() {
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             <button
               type="button"
-              onClick={() => setIsFilterOpen(true)}
-              className="rounded-xl bg-[#07131a] px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-[#17303a]"
+              onClick={() => {
+                setFilterError("");
+                setIsFilterOpen(true);
+              }}
+              className="rounded-xl bg-[#07131a] px-4 py-2 text-sm font-black cursor-pointer text-white shadow-sm transition hover:bg-[#17303a]"
             >
               Filter commutes
             </button>
             <button
               type="button"
               onClick={handleClearFilters}
-              className="rounded-xl border border-[#07131a]/15 bg-white/82 px-4 py-2 text-sm font-black text-[#07131a] transition hover:border-[#07131a]/35"
+              className="rounded-xl border cursor-pointer border-[#1d5d82] bg-[#07131a] px-4 py-2 text-sm font-black text-[#07131a] transition hover:border-[#07131a]/35"
             >
               Clear filters
             </button>
@@ -486,6 +507,12 @@ export default function CommutesPage() {
                 </label>
               </div>
 
+              {filterError && (
+                <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                  {filterError}
+                </div>
+              )}
+
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   type="submit"
@@ -551,7 +578,7 @@ export default function CommutesPage() {
               return (
                 <article
                   key={commute.id}
-                  className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#3E4D52]/15 bg-white/82 p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md"
+                  className="flex h-[400px] w-full max-w-[380px] flex-col rounded-xl border border-[#1d5d82] bg-[#abc9d3] p-3 text-[#07131a] shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-2.5">
                     <div className="flex min-w-0 items-center gap-2.5">
@@ -614,7 +641,7 @@ export default function CommutesPage() {
                   <div className="mt-auto">
                   <div className="grid gap-2 text-sm">
                     <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+                      <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
                         <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Expected time
                         </p>
@@ -622,7 +649,7 @@ export default function CommutesPage() {
                           {formatExpectedTime(commute)}
                         </p>
                       </div>
-                      <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+                      <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
                         <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Who can join
                         </p>
@@ -635,7 +662,7 @@ export default function CommutesPage() {
                     </div>
 
                     <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="rounded-xl border border-[#07131a]/10 bg-[#e8eef0] px-3 py-2">
+                      <div className="rounded-xl border border-[#07131a]/10 bg-[#dbe6ea] px-3 py-2">
                         <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#56696f]">
                           Remaining
                         </p>
@@ -667,7 +694,7 @@ export default function CommutesPage() {
                       joiningId === commute.id
                     }
                     onClick={() => handleJoin(commute.id)}
-                    className={`mt-3 w-full rounded-xl px-4 py-2 text-sm font-black transition disabled:cursor-not-allowed ${
+                    className={`mt-3 w-full rounded-xl px-4 py-2  cursor-pointer text-sm font-black transition disabled:cursor-not-allowed ${
                       isAdmin
                         ? "bg-[#dbe6ea] text-[#4f6268]"
                         : needsVerification
@@ -699,4 +726,6 @@ export default function CommutesPage() {
     </main>
   );
 }
+
+
 

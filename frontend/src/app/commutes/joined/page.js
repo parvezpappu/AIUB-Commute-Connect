@@ -235,7 +235,7 @@ export default function JoinedCommutesPage() {
     return (
       <article
         key={participation.id}
-        className="overflow-hidden rounded-[24px] border border-[#07131a]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
+        className="overflow-hidden rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
       >
         <div className="p-5">
           <div className="flex items-start justify-between gap-4">
@@ -284,7 +284,7 @@ export default function JoinedCommutesPage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-[#8ed8ff]/35 bg-[#e8eef0] p-3">
+              <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3">
                 <p className="text-xs font-black uppercase text-[#244b58]">
                   Countdown
                 </p>
@@ -360,7 +360,7 @@ export default function JoinedCommutesPage() {
           </div>
           )}
 
-          <div className="mt-3 rounded-2xl border border-[#07131a]/15 bg-white/70 p-3">
+          <div className="mt-3 rounded-2xl border border-[#02121b] bg-white/75 p-3">
             <p className="text-xs font-bold uppercase text-[#56696f]">
               Creator
             </p>
@@ -401,7 +401,7 @@ export default function JoinedCommutesPage() {
     return (
       <article
         key={commute.id}
-        className="overflow-hidden rounded-[24px] border border-[#07131a]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
+        className="overflow-hidden rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
       >
         <div className="p-5">
           <div className="flex items-start justify-between gap-4">
@@ -448,7 +448,7 @@ export default function JoinedCommutesPage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-[#8ed8ff]/35 bg-[#e8eef0] p-3">
+              <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3">
                 <p className="text-xs font-black uppercase text-[#244b58]">
                   Countdown
                 </p>
@@ -508,7 +508,7 @@ export default function JoinedCommutesPage() {
           </div>
           <Link
             href="/commutes/my"
-            className="w-fit rounded-2xl border border-[#07131a]/15 bg-white/80 px-4 py-2.5 text-sm font-black text-[#07131a] shadow-sm transition hover:bg-white"
+            className="w-fit rounded-2xl border border-[#1d5d82] bg-[#abc9d3] px-4 py-2.5 text-sm font-black text-[#07131a] shadow-sm transition hover:bg-white"
           >
             Manage posts
           </Link>
@@ -600,7 +600,7 @@ export default function JoinedCommutesPage() {
               return (
                 <article
                   key={participation.id}
-                  className="rounded-[24px] border border-[#07131a]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
+                  className="rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur"
                 >
                   <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-3">
@@ -779,3 +779,6 @@ export default function JoinedCommutesPage() {
     </main>
   );
 }
+
+
+

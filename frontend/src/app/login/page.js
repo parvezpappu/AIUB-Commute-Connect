@@ -96,8 +96,8 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] text-[#07131a]">
-      <header className="sticky top-0 z-40 border-b border-[#07131a]/10 bg-[#e8eef0]/95 backdrop-blur">
+<main className="min-h-screen bg-[#e8eef0] text-[#07131a]">   
+     <header className="sticky top-0 z-40 border-b border-[#07131a]/10 bg-[#e8eef0]/95 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/" className="flex min-w-0 items-center gap-3">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#07131a] text-base font-black text-[#8ed8ff] sm:h-10 sm:w-10">
@@ -123,7 +123,7 @@ export default function LoginPage() {
       </header>
 
       <section className="flex min-h-[calc(100vh-65px)] items-center justify-center px-3 py-6 sm:px-4 sm:py-8">
-        <section className="reveal w-full max-w-sm rounded-[22px] border border-[#07131a]/10 bg-white p-4 shadow-2xl shadow-[#07131a]/10 sm:rounded-[24px] sm:p-5">
+        <section className="reveal w-full max-w-sm rounded-[22px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-2xl shadow-[#07131a]/10 sm:rounded-[24px] sm:p-5">
           <h1 className="text-2xl font-black text-center text-[#07131a]">Login</h1>
 
           <form
@@ -135,7 +135,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="aiubId"
-                className="mb-1.5 block text-sm font-black text-[#244b58]"
+                className="mb-1.5 block text-sm font-black text-white"
               >
                 University ID
               </label>
@@ -159,7 +159,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="mb-1.5 block text-sm font-black text-[#244b58]"
+                className="mb-1.5 block text-sm font-black text-white"
               >
                 Password
               </label>
@@ -224,3 +224,5 @@ export default function LoginPage() {
     </main>
   );
 }
+
+

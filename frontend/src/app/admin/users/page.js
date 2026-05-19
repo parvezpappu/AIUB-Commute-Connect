@@ -86,7 +86,7 @@ export default function AdminUsersPage() {
     >
       <AuthenticatedNav />
       <section className="mx-auto max-w-6xl px-4 py-8">
-        <div className="flex flex-col justify-between gap-4 rounded-[28px] border border-[#07131a]/15 bg-white/80 p-6 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-4 rounded-[28px] border border-[#1d5d82] bg-[#abc9d3] p-6 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[#244b58]">
               Admin
@@ -119,7 +119,7 @@ export default function AdminUsersPage() {
           </div>
         )}
 
-        <div className="mt-6 overflow-hidden rounded-[28px] border border-[#07131a]/15 bg-white/82 shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
+        <div className="mt-6 overflow-hidden rounded-[28px] border border-[#1d5d82] bg-[#abc9d3] shadow-[0_20px_60px_rgba(24,55,47,0.08)] backdrop-blur">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-[#07131a]/10 text-sm">
               <thead className="bg-[#e8eef0] text-left text-xs font-black uppercase tracking-[0.12em] text-[#4f6268]">
@@ -194,3 +194,5 @@ export default function AdminUsersPage() {
     </main>
   );
 }
+
+

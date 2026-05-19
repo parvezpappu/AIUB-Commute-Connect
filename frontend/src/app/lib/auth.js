@@ -128,3 +128,4 @@ export function useRequireStudent() {
 
   return isCheckingAuth;
 }
+

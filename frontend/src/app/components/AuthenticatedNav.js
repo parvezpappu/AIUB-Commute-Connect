@@ -133,7 +133,7 @@ export default function AuthenticatedNav() {
 
   return (
     <>
-      <header className="acc-auth-shell sticky top-0 z-50 border-b-2 border-white bg-[#405257] text-white shadow-[18px_0_60px_rgba(7,19,26,0.2)] backdrop-blur-xl lg:fixed lg:inset-y-0 lg:left-0 lg:w-60 lg:border-b-0 lg:border-r-4 lg:border-white">
+      <header className="acc-auth-shell sticky top-0 z-50 border-b-2 border-white bg-[#0e1c1f] text-white shadow-[18px_0_60px_rgba(7,19,26,0.2)] backdrop-blur-xl lg:fixed lg:inset-y-0 lg:left-0 lg:w-60 lg:border-b-0 lg:border-r-4 lg:border-white">
         <nav className="flex h-full flex-col gap-5 px-4 py-4">
           <Link
             href="/dashboard"
@@ -147,7 +147,7 @@ export default function AuthenticatedNav() {
                 চলোযাই
               </p>
               <p className="mt-1 truncate text-xs font-semibold text-[#c2e2ec]/82 transition group-hover:text-white/90">
-                AIUB Commute
+                AIUB Commute Connect
               </p>
             </div>
           </Link>
@@ -209,7 +209,7 @@ export default function AuthenticatedNav() {
       </header>
 
       {pathname === "/dashboard" && (
-        <div className="acc-dashboard-topbar hidden lg:fixed lg:left-60 lg:right-0 lg:top-0 lg:z-40 lg:h-20 lg:items-center lg:justify-end lg:border-b-4 lg:border-white lg:bg-[#405257] lg:px-8 lg:text-white lg:shadow-[0_18px_60px_rgba(7,19,26,0.16)] lg:backdrop-blur-xl lg:flex">
+        <div className="acc-dashboard-topbar hidden lg:fixed lg:left-60 lg:right-0 lg:top-0 lg:z-40 lg:h-20 lg:items-center lg:justify-end lg:border-b-4 lg:border-white lg:bg-[#112227] lg:px-8 lg:text-white lg:shadow-[0_18px_60px_rgba(7,19,26,0.16)] lg:backdrop-blur-xl lg:flex">
           <div className="flex items-center gap-3">
             <div className="group flex items-center gap-3 rounded-2xl border border-white/40 bg-[#173441]/55 px-4 py-3 shadow-sm backdrop-blur transition hover:border-white/70 hover:bg-[#1d4251]/75 hover:shadow-[0_12px_40px_rgba(11,111,158,0.18)]">
               <div className="min-w-0 text-right">
@@ -229,3 +229,4 @@ export default function AuthenticatedNav() {
     </>
   );
 }
+
