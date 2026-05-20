@@ -2,23 +2,19 @@
 
 Cholojai is a web-based commute sharing system for AIUB students. The project helps students create commute posts, request to join available rides, manage accepted members, and coordinate meeting points using map-based location features.
 
+## Student Information
+
+**Name:** Md Parvej Mia  
+**ID:** 22-49155-3  
+**Course Teacher:** MD. KHAIRUL ALAM MAZUMDER  
+**Designation:** Lecturer, Faculty  
+**Department:** Department of Computer Science
+
 ## Project Overview
 
 AIUB students often travel through similar routes at similar times, but there is no structured way to find trusted commute partners. Cholojai solves this by allowing verified students to share commute plans and join suitable commute posts based on route, time, seats, cost, and gender preference.
 
 The system includes role-based access for students and admin users. Students can register, verify email with OTP, log in securely, create commute posts, request to join posts, manage their rides, and view live meeting information. Admin users can monitor users and commute posts.
-
-
-
-
-## Member
-
-**Name:** Md Parvej Mia  
-**ID:** 22-49155-3 
-
-## Course Teacher:
-**Name:** MD. KHAIRUL ALAM MAZUMDER  
-**Department:** Department of Computer Science
 
 ## Main Functionalities
 

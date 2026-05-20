@@ -142,6 +142,7 @@ export default function HomePage() {
                     viewBox="0 0 100 100"
                     preserveAspectRatio="none"
                     aria-hidden="true"
+                    suppressHydrationWarning
                   >
                     <line
                       x1="20"
@@ -162,6 +163,7 @@ export default function HomePage() {
                       viewBox="0 0 64 76"
                       className="h-full w-full drop-shadow-xl"
                       aria-hidden="true"
+                      suppressHydrationWarning
                     >
                       <path
                         d="M32 4C18.2 4 7 15.2 7 29c0 19.8 25 43 25 43s25-23.2 25-43C57 15.2 45.8 4 32 4Z"

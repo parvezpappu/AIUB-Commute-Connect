@@ -9,7 +9,7 @@ import { getCommute, updateCommute } from "../../../lib/api";
 import { useRequireStudent } from "../../../lib/auth";
 import {
   hasValidationErrors,
-  validateCreateCommuteForm,
+  validateEditCommuteForm,
 } from "../../../lib/validation";
 
 const transportTypes = [
@@ -83,6 +83,7 @@ export default function EditCommutePage() {
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
+      ...(name === "costPerPerson" ? { costToBeDecided: false } : {}),
     });
 
     setFieldErrors({
@@ -114,15 +115,16 @@ export default function EditCommutePage() {
     });
   }
 
-  function handleUseDetectedAddress(address) {
+  function handleCostModeChange(costToBeDecided) {
     setFormData({
       ...formData,
-      meetingLocation: address,
+      costToBeDecided,
+      costPerPerson: costToBeDecided ? "" : formData.costPerPerson || "0",
     });
 
     setFieldErrors({
       ...fieldErrors,
-      meetingLocation: "",
+      costPerPerson: "",
     });
   }
 
@@ -130,7 +132,7 @@ export default function EditCommutePage() {
     event.preventDefault();
     setError("");
 
-    const validationErrors = validateCreateCommuteForm(formData);
+    const validationErrors = validateEditCommuteForm(formData);
     setFieldErrors(validationErrors);
 
     if (hasValidationErrors(validationErrors)) {
@@ -206,13 +208,13 @@ export default function EditCommutePage() {
             </div>
             <Link
               href="/commutes/my"
-              className="rounded-md border border-[#02121b] bg-white/75 px-4 py-2 text-sm font-semibold text-[#d6e2e9]"
+              className="rounded-md border border-[#02121b] bg-white/75 px-4 py-2 text-sm font-semibold text-[#07131a]"
             >
               Back to my posts
             </Link>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Transport type
@@ -224,7 +226,7 @@ export default function EditCommutePage() {
                     className={`cursor-pointer rounded-md border p-3 text-center text-sm font-semibold transition ${
                       formData.transportType === type.value
                         ? "border-[#003b73] bg-[#003b73] text-white"
-                        : "border-[#02121b] bg-white/75 text-[#d6e2e9] hover:border-[#1d5d82]"
+                        : "border-[#02121b] bg-white/75 text-[#07131a] hover:border-[#1d5d82]"
                     }`}
                   >
                     <input
@@ -252,7 +254,7 @@ export default function EditCommutePage() {
                     className={`cursor-pointer rounded-md border p-3 text-center text-sm font-semibold transition ${
                       formData.participantGenderPreference === option.value
                         ? "border-[#003b73] bg-[#003b73] text-white"
-                        : "border-[#02121b] bg-white/75 text-[#d6e2e9] hover:border-[#1d5d82]"
+                        : "border-[#02121b] bg-white/75 text-[#07131a] hover:border-[#1d5d82]"
                     }`}
                   >
                     <input
@@ -286,8 +288,7 @@ export default function EditCommutePage() {
                   name="fromLocation"
                   value={formData.fromLocation}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
-                  required
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#07131a] outline-none focus:border-[#1d5d82]"
                 />
                 {fieldErrors.fromLocation && (
                   <p className="mt-1 text-sm text-red-600">
@@ -305,8 +306,7 @@ export default function EditCommutePage() {
                   name="toLocation"
                   value={formData.toLocation}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
-                  required
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#07131a] outline-none focus:border-[#1d5d82]"
                 />
                 {fieldErrors.toLocation && (
                   <p className="mt-1 text-sm text-red-600">
@@ -325,8 +325,7 @@ export default function EditCommutePage() {
                 name="meetingLocation"
                 value={formData.meetingLocation}
                 onChange={handleChange}
-                className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
-                required
+                className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#07131a] outline-none focus:border-[#1d5d82]"
               />
               {formData.meetingAddress && (
                 <p className="mt-1 text-sm text-slate-500">
@@ -344,7 +343,7 @@ export default function EditCommutePage() {
               <button
                 type="button"
                 onClick={() => setIsMapOpen((current) => !current)}
-                className="rounded-md border border-[#02121b] bg-white/75 px-4 py-2 text-sm font-semibold text-[#d6e2e9] hover:bg-slate-50"
+                className="rounded-md border border-[#02121b] bg-white/75 px-4 py-2 text-sm font-semibold text-[#07131a] hover:bg-slate-50"
               >
                 {isMapOpen ? "Hide map" : "Change exact map location"}
               </button>
@@ -357,7 +356,6 @@ export default function EditCommutePage() {
                       longitude: formData.meetingLongitude,
                     }}
                     onChange={handleMeetingPointChange}
-                    onUseDetectedAddress={handleUseDetectedAddress}
                   />
                   {(fieldErrors.meetingLatitude ||
                     fieldErrors.meetingLongitude) && (
@@ -380,8 +378,7 @@ export default function EditCommutePage() {
                   name="departureTime"
                   value={formData.departureTime}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
-                  required
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#07131a] outline-none focus:border-[#1d5d82]"
                 />
                 {fieldErrors.departureTime && (
                   <p className="mt-1 text-sm text-red-600">
@@ -399,8 +396,7 @@ export default function EditCommutePage() {
                   name="expiresAt"
                   value={formData.expiresAt}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
-                  required
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#07131a] outline-none focus:border-[#1d5d82]"
                 />
                 {fieldErrors.expiresAt && (
                   <p className="mt-1 text-sm text-red-600">
@@ -422,8 +418,7 @@ export default function EditCommutePage() {
                   max="10"
                   value={formData.seats}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
-                  required
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#07131a] outline-none focus:border-[#1d5d82]"
                 />
                 {fieldErrors.seats && (
                   <p className="mt-1 text-sm text-red-600">
@@ -443,19 +438,32 @@ export default function EditCommutePage() {
                   value={formData.costPerPerson}
                   onChange={handleChange}
                   disabled={formData.costToBeDecided}
-                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#d6e2e9] outline-none focus:border-[#1d5d82]"
-                  required
+                  className="w-full rounded-md border border-[#02121b] bg-white/75 px-3 py-3 font-semibold text-[#07131a] outline-none focus:border-[#1d5d82]"
                 />
-                <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-md border border-[#02121b] bg-white/75 px-3 py-3 text-sm font-semibold text-[#d6e2e9]">
-                  <input
-                    type="checkbox"
-                    name="costToBeDecided"
-                    checked={formData.costToBeDecided}
-                    onChange={handleChange}
-                    className="h-4 w-4 accent-[#003b73]"
-                  />
-                  Will be decided
-                </label>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCostModeChange(false)}
+                    className={`rounded-md border px-3 py-3 text-sm font-semibold transition ${
+                      !formData.costToBeDecided
+                        ? "border-[#003b73] bg-[#003b73] text-white"
+                        : "border-[#02121b] bg-white/75 text-[#07131a]"
+                    }`}
+                  >
+                    Taka
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleCostModeChange(true)}
+                    className={`rounded-md border px-3 py-3 text-sm font-semibold transition ${
+                      formData.costToBeDecided
+                        ? "border-[#003b73] bg-[#003b73] text-white"
+                        : "border-[#02121b] bg-white/75 text-[#07131a]"
+                    }`}
+                  >
+                    Will be decided
+                  </button>
+                </div>
                 {fieldErrors.costPerPerson && (
                   <p className="mt-1 text-sm text-red-600">
                     {fieldErrors.costPerPerson}

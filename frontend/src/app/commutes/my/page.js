@@ -274,22 +274,28 @@ export default function MyCommutesPage() {
                         )}
                       </div>
 
-                      <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                        <Link
-                          href={`/commutes/${commute.id}/edit`}
-                          className={`rounded-2xl border px-4 py-2.5 text-center text-sm font-black ${
-                            commute.status === "OPEN"
-                              ? "border-[#07131a]/15 bg-white text-[#07131a]"
-                              : "pointer-events-none border-slate-200 text-slate-400"
-                          }`}
-                        >
-                          Edit post
-                        </Link>
+                      <div className="mt-4 grid gap-2 cursor-pointer text-center sm:grid-cols-2">
+                        {commute.status === "OPEN" ? (
+                          <Link
+                            href={`/commutes/${commute.id}/edit`}
+                            className="rounded-2xl cursor-pointer border border-[#07131a]/15 bg-white px-4 py-2.5 text-center text-sm font-black text-[#07131a]"
+                          >
+                            Edit post
+                          </Link>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled
+                            className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2.5 text-center text-sm font-black text-slate-400"
+                          >
+                            Edit unavailable
+                          </button>
+                        )}
 
                         <button
                           type="button"
                           onClick={() => setRoomCommuteId(commute.id)}
-                          className="rounded-2xl border border-[#07131a]/15 bg-white px-4 py-2.5 text-center text-sm font-black text-[#07131a]"
+                          className="rounded-2xl border cursor-pointer border-[#07131a]/15 bg-white px-4 py-2.5 text-center text-sm font-black text-[#07131a]"
                         >
                           View members & map
                         </button>
@@ -302,7 +308,7 @@ export default function MyCommutesPage() {
                             commute.status === "CLOSED" ||
                             commute.status === "CANCELLED"
                           }
-                          className="rounded-2xl bg-[#07131a] px-4 py-2.5 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+                          className="rounded-2xl cursor-pointer bg-[#07131a] px-4 py-2.5 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
                         >
                           {commute.status === "CLOSED"
                             ? "Closed"
@@ -311,20 +317,7 @@ export default function MyCommutesPage() {
                               : "Close post"}
                         </button>
 
-                        {canFinishJourney(commute) && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleCommuteAction(commute.id, "finish")
-                            }
-                            disabled={managingId === commute.id}
-                            className="rounded-2xl bg-emerald-600 px-4 py-2.5 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
-                          >
-                            {managingId === commute.id
-                              ? "Finishing..."
-                              : "Finish journey"}
-                          </button>
-                        )}
+                       
 
                         <button
                           type="button"
@@ -337,7 +330,7 @@ export default function MyCommutesPage() {
                             managingId === commute.id ||
                             commute.status === "CANCELLED"
                           }
-                          className="rounded-2xl border border-rose-200 bg-white px-4 py-2.5 text-sm font-black text-rose-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 sm:col-span-2"
+                          className="rounded-2xl border cursor-pointer border-rose-200 bg-white px-4 py-2.5 text-sm font-black text-rose-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 sm:col-span-2"
                         >
                           {commute.status === "CANCELLED"
                             ? "Cancelled"
@@ -458,7 +451,7 @@ export default function MyCommutesPage() {
                     </div>
 
                     <div className="overflow-hidden rounded-2xl border border-[#1d5d82] bg-[#abc9d3]">
-                      <div className="border-b border-[#07131a]/10 bg-[#dbe6ea]/80 px-4 py-3">
+                      <div className="border-b border-[#07131a]/10 bg-[#e8eef0]/70 px-4 py-3">
                         <p className="font-black text-[#07131a]">
                           Accepted members
                         </p>
@@ -507,7 +500,6 @@ export default function MyCommutesPage() {
     </main>
   );
 }
-
 
 
 

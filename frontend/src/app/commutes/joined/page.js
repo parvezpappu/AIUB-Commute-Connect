@@ -286,7 +286,7 @@ export default function JoinedCommutesPage() {
 
               <div className="rounded-2xl border border-[#02121b] bg-white/75 p-3">
                 <p className="text-xs font-black uppercase text-[#244b58]">
-                  Countdown
+                  
                 </p>
                 <p className="mt-1 text-base font-black text-[#07131a]">
                   {getCountdown(commute.expiresAt || commute.departureTime)}

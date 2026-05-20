@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import AuthenticatedNav from "../components/AuthenticatedNav";
 import {
   getCommutes,
@@ -148,6 +148,29 @@ function hasMeaningfulFilters(filterValues) {
 }
 
 export default function CommutesPage() {
+  return (
+    <Suspense fallback={<CommutesLoading />}>
+      <CommutesContent />
+    </Suspense>
+  );
+}
+
+function CommutesLoading() {
+  return (
+    <main className="min-h-screen bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-4 py-10">
+      <section className="mx-auto max-w-6xl">
+        <div className="h-48 animate-pulse rounded-lg bg-white" />
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {[1, 2, 3].map((item) => (
+            <div key={item} className="h-72 animate-pulse rounded-lg bg-white" />
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function CommutesContent() {
   const isCheckingAuth = useRequireAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -726,6 +749,5 @@ export default function CommutesPage() {
     </main>
   );
 }
-
 
 

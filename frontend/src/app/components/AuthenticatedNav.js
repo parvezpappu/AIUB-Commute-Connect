@@ -12,11 +12,11 @@ import {
 
 const studentLinks = [
   { href: "/dashboard", label: "Dashboard", icon: "D" },
-  { href: "/profile", label: "Profile", icon: "P" },
   { href: "/commutes", label: "Browse", icon: "B" },
   { href: "/commutes/create", label: "Create", icon: "+" },
   { href: "/commutes/my", label: "My posts", icon: "M" },
   { href: "/commutes/joined", label: "My rides", icon: "R" },
+  { href: "/profile", label: "Profile", icon: "P" },
   { href: "/notifications", label: "Notifications", icon: "N" },
 ];
 
@@ -193,11 +193,11 @@ export default function AuthenticatedNav() {
             })}
           </div>
 
-          <div className="mt-auto flex gap-2 lg:flex-col">
+          <div className="mt-auto flex gap-2  lg:flex-col">
             <button
               type="button"
               onClick={handleLogout}
-              className="group flex shrink-0 items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm font-semibold text-[#dbe6ea]/86 transition hover:border-[#ff9aa9]/20 hover:bg-[#351a23]/70 hover:text-[#ffd5dc]"
+              className="group flex shrink-0 cursor-pointer items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm font-semibold text-[#dbe6ea]/86 transition hover:border-[#ff9aa9]/20 hover:bg-[#351a23]/70 hover:text-[#ffd5dc]"
             >
               <span className="grid h-6 w-6 place-items-center rounded-md bg-[#9ed7ec]/10 text-xs font-black group-hover:bg-[#ff9aa9]/15">
                 L
@@ -229,4 +229,3 @@ export default function AuthenticatedNav() {
     </>
   );
 }
-

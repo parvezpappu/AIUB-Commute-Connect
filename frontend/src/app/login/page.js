@@ -122,9 +122,9 @@ export default function LoginPage() {
         </nav>
       </header>
 
-      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center px-3 py-6 sm:px-4 sm:py-8">
-        <section className="reveal w-full max-w-sm rounded-[22px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-2xl shadow-[#07131a]/10 sm:rounded-[24px] sm:p-5">
-          <h1 className="text-2xl font-black text-center text-[#07131a]">Login</h1>
+      <section className="flex  min-h-[calc(100vh-65px)] items-center justify-center px-3 py-6 sm:px-4 sm:py-8">
+        <section className="reveal  w-full max-w-sm rounded-[22px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-2xl shadow-[#07131a]/10 sm:rounded-[24px] sm:p-5">
+          <h1 className="text-2xl   font-black text-center text-[#07131a]">Login</h1>
 
           <form
             method="post"
@@ -207,7 +207,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#07131a] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:bg-[#0b1d25] disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="flex w-full items-center cursor-pointer justify-center gap-2 rounded-full bg-[#07131a] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#07131a]/15 transition hover:bg-[#0b1d25] disabled:cursor-not-allowed disabled:bg-slate-400"
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>

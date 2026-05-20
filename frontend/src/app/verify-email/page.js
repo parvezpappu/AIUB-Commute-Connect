@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { resendVerificationOtp, verifyEmail } from "../lib/api";
 
 const OTP_EXPIRY_SECONDS = 5 * 60;
@@ -15,6 +15,26 @@ function formatCountdown(seconds) {
 }
 
 export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<VerifyEmailLoading />}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
+}
+
+function VerifyEmailLoading() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)] px-4 py-10 text-[#07131a]">
+      <section className="w-full max-w-md rounded-[24px] border border-[#1d5d82] bg-[#abc9d3] p-6 shadow-2xl shadow-[#07131a]/10">
+        <div className="h-8 w-40 animate-pulse rounded-xl bg-white/60" />
+        <div className="mt-4 h-12 animate-pulse rounded-2xl bg-white/60" />
+        <div className="mt-6 h-44 animate-pulse rounded-2xl bg-white/60" />
+      </section>
+    </main>
+  );
+}
+
+function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialEmail = searchParams.get("email") ?? "";

@@ -434,8 +434,24 @@ export default function DashboardPage() {
   const recommendedCommutes = useMemo(() => {
     const from = formData.from.trim().toLowerCase();
     const to = formData.to.trim().toLowerCase();
+    const currentRideIds = new Set([
+      ...myCommutes
+        .filter(
+          (commute) => commute.status === "OPEN" || commute.status === "CLOSED",
+        )
+        .map((commute) => commute.id),
+      ...participations
+        .filter(
+          (participation) =>
+            participation.status === "ACCEPTED" &&
+            participation.commute?.status !== "CANCELLED" &&
+            participation.commute?.status !== "COMPLETED",
+        )
+        .map((participation) => participation.commute.id),
+    ]);
 
     return [...commutes]
+      .filter((commute) => !currentRideIds.has(commute.id))
       .sort((firstCommute, secondCommute) => {
         const firstMatches =
           (from &&
@@ -456,7 +472,7 @@ export default function DashboardPage() {
         );
       })
       .slice(0, 3);
-  }, [commutes, formData.from, formData.to]);
+  }, [commutes, formData.from, formData.to, myCommutes, participations]);
 
   const currentRides = useMemo(() => {
     const rideById = new Map();

@@ -80,7 +80,7 @@
     message: "New password must be different from current password",
     });
 
-    const createCommuteSchema = z.object({
+    const commuteBaseSchema = z.object({
     transportType: z.enum(["UBER", "BUS", "BIKE", "CNG", "RICKSHAW", "WALKING"], {
         message: "Select a valid transport type",
     }),
@@ -126,14 +126,12 @@
     departureTime: z
         .string()
         .min(1, "Departure time is required")
-        .refine(isValidDateTime, "Enter a valid departure date and time")
-        .refine((value) => new Date(value) > new Date(), "Departure time must be in the future"),
+        .refine(isValidDateTime, "Enter a valid departure date and time"),
 
     expiresAt: z
         .string()
         .min(1, "Request close time is required")
-        .refine(isValidDateTime, "Enter a valid request close date and time")
-        .refine((value) => new Date(value) > new Date(), "Request close time must be in the future"),
+        .refine(isValidDateTime, "Enter a valid request close date and time"),
 
     seats: z
         .string()
@@ -149,7 +147,9 @@
         .refine((value) => Number.isInteger(Number(value)), "Cost must be a whole number")
         .refine((value) => Number(value) >= 0, "Cost must be 0 or more"),
     costToBeDecided: z.boolean().optional(),
-    }).refine(
+    });
+
+    const commuteTimeOrderSchema = (schema) => schema.refine(
     (data) => data.costToBeDecided || String(data.costPerPerson || "").trim().length > 0,
     {
         path: ["costPerPerson"],
@@ -165,6 +165,18 @@
         message: "Request close time must be after departure time",
     },
     );
+
+    const createCommuteSchema = commuteTimeOrderSchema(commuteBaseSchema)
+    .refine((data) => new Date(data.departureTime) > new Date(), {
+        path: ["departureTime"],
+        message: "Departure time must be in the future",
+    })
+    .refine((data) => new Date(data.expiresAt) > new Date(), {
+        path: ["expiresAt"],
+        message: "Request close time must be in the future",
+    });
+
+    const editCommuteSchema = commuteTimeOrderSchema(commuteBaseSchema);
 
     function formatZodErrors(result) {
     const errors = {};
@@ -201,6 +213,11 @@
 
     export function validateCreateCommuteForm(formData) {
     const result = createCommuteSchema.safeParse(formData);
+    return formatZodErrors(result);
+    }
+
+    export function validateEditCommuteForm(formData) {
+    const result = editCommuteSchema.safeParse(formData);
     return formatZodErrors(result);
     }
 
