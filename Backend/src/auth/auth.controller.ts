@@ -23,10 +23,15 @@ import { RolesGuard } from './guards/roles.guard';
 import { UserRole } from '../user/entities/user.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const useCrossSiteCookies = process.env.CROSS_SITE_COOKIES === 'true';
 const authCookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: isProduction ? ('none' as const) : ('strict' as const),
+  sameSite:
+    isProduction && useCrossSiteCookies
+      ? ('none' as const)
+      : ('lax' as const),
+  path: '/',
 };
 
 @Controller('auth')
