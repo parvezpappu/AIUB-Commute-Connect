@@ -22,6 +22,13 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { UserRole } from '../user/entities/user.entity';
 
+const isProduction = process.env.NODE_ENV === 'production';
+const authCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? ('none' as const) : ('strict' as const),
+};
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -39,9 +46,7 @@ export class AuthController {
     const data = await this.authService.loginUser(loginAuthDto);
 
     res.cookie('accessToken', data.accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'strict',
+      ...authCookieOptions,
       maxAge: 60 * 60 * 1000,
     });
 
@@ -82,11 +87,7 @@ export class AuthController {
 
   @Post('logout')
   logoutUser(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('accessToken', {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'strict',
-    });
+    res.clearCookie('accessToken', authCookieOptions);
 
     return {
       message: 'Logout successful',
@@ -106,11 +107,7 @@ export class AuthController {
       changePasswordDto,
     );
 
-    res.clearCookie('accessToken', {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'strict',
-    });
+    res.clearCookie('accessToken', authCookieOptions);
 
     return result;
   }

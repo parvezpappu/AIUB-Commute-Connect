@@ -25,8 +25,13 @@ import { NotificationModule } from './notification/notification.module';
         username: configService.get<string>('DB_USERNAME', 'postgres'),
         password: configService.get<string>('DB_PASSWORD', ''),
         database: configService.get<string>('DB_DATABASE', 'AIUB_Commute_Connect'),
+        ssl:
+          configService.get<string>('DB_SSL', 'false') === 'true'
+            ? { rejectUnauthorized: false }
+            : false,
         autoLoadEntities: true,
-        synchronize: configService.get<string>('DB_SYNCHRONIZE', 'true') === 'true',
+        synchronize:
+          configService.get<string>('DB_SYNCHRONIZE', 'true') === 'true',
       }),
     }),
     AuthModule,
