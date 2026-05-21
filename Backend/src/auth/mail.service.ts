@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 @Injectable()
 export class MailService {
@@ -57,29 +58,49 @@ export class MailService {
     const from = process.env.SMTP_FROM ?? user;
 
     if (!host || !user || !pass || !from) {
-      console.log(
-        `${fallbackLabel} for ${email} (${fullName}): ${otp}. Configure SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM to send real email.`,
-      );
+      this.logOtpFallback(email, fullName, otp, fallbackLabel);
       return;
     }
 
-    const transporter = nodemailer.createTransport({
+    const transportOptions: SMTPTransport.Options & { family?: number } = {
       host,
       port,
       secure: port === 465,
+      family: 4,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
       auth: {
         user,
         pass,
       },
-    });
+    };
 
-    await transporter.sendMail({
-      from,
-      to: email,
-      subject,
-      text: this.buildPlainTextEmail({ fullName, otp, intro, note }),
-      html: this.buildHtmlEmail({ fullName, otp, heading, intro, note }),
-    });
+    const transporter = nodemailer.createTransport(transportOptions);
+
+    try {
+      await transporter.sendMail({
+        from,
+        to: email,
+        subject,
+        text: this.buildPlainTextEmail({ fullName, otp, intro, note }),
+        html: this.buildHtmlEmail({ fullName, otp, heading, intro, note }),
+      });
+    } catch (error) {
+      console.error('Failed to send OTP email. Falling back to server logs.', error);
+      this.logOtpFallback(email, fullName, otp, fallbackLabel);
+    }
+  }
+
+  private logOtpFallback(
+    email: string,
+    fullName: string,
+    otp: string,
+    fallbackLabel: string,
+  ) {
+    console.log(
+      `${fallbackLabel} for ${email} (${fullName}): ${otp}. Configure SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM to send real email.`,
+    );
   }
 
   private buildPlainTextEmail({
