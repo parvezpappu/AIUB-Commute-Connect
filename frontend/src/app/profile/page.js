@@ -8,6 +8,7 @@ import {
   changePassword,
   clearProfilePicture,
   getCurrentUser,
+  updateName,
   updateRoutePreference,
   uploadProfilePicture,
 } from "../lib/api";
@@ -50,6 +51,7 @@ export default function ProfilePage() {
     preferredFromLocation: "",
     preferredToLocation: "",
   });
+  const [nameForm, setNameForm] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -59,14 +61,17 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isClearingPicture, setIsClearingPicture] = useState(false);
   const [isSavingPreference, setIsSavingPreference] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isPreferenceOpen, setIsPreferenceOpen] = useState(false);
+  const [isNameOpen, setIsNameOpen] = useState(false);
 
   useEffect(() => {
     async function loadProfile() {
       try {
         const data = await getCurrentUser();
         setUser(data);
+        setNameForm(data.fullName || "");
         setPreferenceForm({
           preferredFromLocation: data.preferredFromLocation || "",
           preferredToLocation: data.preferredToLocation || "",
@@ -126,6 +131,34 @@ export default function ProfilePage() {
       setError(error.message);
     } finally {
       setIsSavingPreference(false);
+    }
+  }
+
+  async function handleNameSubmit(event) {
+    event.preventDefault();
+    setMessage("");
+    setError("");
+
+    const fullName = nameForm.trim();
+    if (fullName.length < 3 || fullName.length > 80) {
+      setError("Full name must be between 3 and 80 characters.");
+      return;
+    }
+
+    setIsSavingName(true);
+    try {
+      const updatedUser = await updateName(fullName);
+      setUser(updatedUser);
+      setNameForm(updatedUser.fullName);
+      setIsNameOpen(false);
+      setMessage("Profile name updated.");
+      window.dispatchEvent(
+        new CustomEvent("profile-updated", { detail: updatedUser }),
+      );
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsSavingName(false);
     }
   }
 
@@ -352,6 +385,45 @@ export default function ProfilePage() {
             )}
 
           </div>
+
+          <section className="mt-5 rounded-xl border border-[#1d5d82] bg-[#abc9d3] px-4 py-3">
+            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+              <div>
+                <h2 className="text-sm font-black text-[#07131a]">Profile name</h2>
+                <p className="mt-1 text-xs font-semibold text-[#4f6268]">
+                  Change the name shown on your profile and navigation bar.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsNameOpen((currentValue) => !currentValue)}
+                className="w-fit cursor-pointer rounded-lg border border-[#07131a]/15 bg-white px-3 py-1.5 text-xs font-black text-[#07131a] hover:border-[#07131a]/35"
+              >
+                {isNameOpen ? "Close" : "Edit name"}
+              </button>
+            </div>
+
+            {isNameOpen && (
+              <form onSubmit={handleNameSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row">
+                <input
+                  type="text"
+                  value={nameForm}
+                  onChange={(event) => setNameForm(event.target.value)}
+                  minLength={3}
+                  maxLength={80}
+                  className="w-full rounded-xl border border-[#07131a]/15 bg-white px-3 py-2 text-sm font-semibold text-[#07131a] outline-none focus:border-[#07131a]"
+                  placeholder="Full name"
+                />
+                <button
+                  type="submit"
+                  disabled={isSavingName}
+                  className="shrink-0 rounded-xl bg-[#07131a] px-4 py-2 text-xs font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+                >
+                  {isSavingName ? "Saving..." : "Save name"}
+                </button>
+              </form>
+            )}
+          </section>
 
           {!isAdmin && (
           <section className="mt-5 rounded-xl border border-[#1d5d82] bg-[#abc9d3] px-4 py-3">

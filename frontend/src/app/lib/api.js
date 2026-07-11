@@ -345,6 +345,15 @@ export async function clearProfilePicture() {
   }
 }
 
+export async function updateName(fullName) {
+  try {
+    const response = await api.patch("/users/me/name", { fullName });
+    return response.data;
+  } catch (error) {
+    throw createApiError(error, "Failed to update name");
+  }
+}
+
 export async function updateRoutePreference(preferenceData) {
   try {
     const response = await api.patch(

@@ -7,6 +7,7 @@ import {
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
 import { UpdateRoutePreferenceDto } from './dto/update-route-preference.dto';
 import { UpdateGenderDto } from './dto/update-gender.dto';
+import { UpdateNameDto } from './dto/update-name.dto';
 import { User, UserGender, UserRole } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -200,6 +201,19 @@ export class UserService {
   const savedUser = await this.userRepository.save(user);
   const { password, ...result } = savedUser;
   return result;
-}
+ }
+
+ async updateName(id: number, updateNameDto: UpdateNameDto) {
+  const user = await this.findById(id);
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  user.fullName = updateNameDto.fullName;
+  const savedUser = await this.userRepository.save(user);
+  const { password, ...result } = savedUser;
+  return result;
+ }
 
 }

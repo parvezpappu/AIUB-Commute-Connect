@@ -22,6 +22,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UpdateRoutePreferenceDto } from './dto/update-route-preference.dto';
 import { UpdateGenderDto } from './dto/update-gender.dto';
+import { UpdateNameDto } from './dto/update-name.dto';
 import { UserRole } from './entities/user.entity';
 import { UserService } from './user.service';
 
@@ -64,6 +65,13 @@ export class UserController {
   @Patch('me/gender')
   updateGender(@Body() updateGenderDto: UpdateGenderDto, @Req() req) {
     return this.userService.updateGender(req.user.id, updateGenderDto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
+  @Patch('me/name')
+  updateName(@Body() updateNameDto: UpdateNameDto, @Req() req) {
+    return this.userService.updateName(req.user.id, updateNameDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

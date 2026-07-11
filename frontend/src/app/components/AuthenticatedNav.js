@@ -94,6 +94,17 @@ export default function AuthenticatedNav() {
   }, []);
 
   useEffect(() => {
+    function handleProfileUpdated(event) {
+      setUser(event.detail);
+    }
+
+    window.addEventListener("profile-updated", handleProfileUpdated);
+    return () => {
+      window.removeEventListener("profile-updated", handleProfileUpdated);
+    };
+  }, []);
+
+  useEffect(() => {
     let isMounted = true;
 
     async function loadNotifications() {
