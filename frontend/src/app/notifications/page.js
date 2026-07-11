@@ -10,8 +10,8 @@ import {
 } from "../lib/api";
 import { useRequireAuth } from "../lib/auth";
 
-const pageBackground =
-  "radial-gradient(circle at 78% 18%, rgba(160,183,190,0.42) 0%, transparent 34%), linear-gradient(115deg, #07131a 0%, #17303a 32%, #4f6268 70%, #d7dedc 100%)";
+const pageBackgroundClass =
+  "bg-[radial-gradient(circle_at_78%_18%,rgba(160,183,190,0.42)_0%,transparent_34%),linear-gradient(115deg,#07131a_0%,#17303a_32%,#4f6268_70%,#d7dedc_100%)]";
 
 const filters = [
   { label: "All", value: "ALL" },
@@ -176,8 +176,7 @@ export default function NotificationsPage() {
   if (isCheckingAuth || isLoading) {
     return (
       <main
-        className="flex min-h-screen items-center justify-center"
-        style={{ background: pageBackground }}
+        className={`flex min-h-screen items-center justify-center ${pageBackgroundClass}`}
       >
         <p className="font-semibold text-[#4f6268]">
           {isCheckingAuth ? "Checking session..." : "Loading notifications..."}
@@ -188,8 +187,7 @@ export default function NotificationsPage() {
 
   return (
     <main
-      className="min-h-screen text-[#07131a]"
-      style={{ background: pageBackground }}
+      className={`min-h-screen text-[#07131a] ${pageBackgroundClass}`}
     >
       <AuthenticatedNav />
 

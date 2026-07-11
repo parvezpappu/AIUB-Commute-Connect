@@ -139,6 +139,14 @@ export default function RegisterPage() {
             </h2>
           </div>
 
+          <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
+            <p>Currently, email verification is not working.</p>
+            <p className="mt-1">
+              Please log in with ID: <strong>22-49154-3</strong> and password:{" "}
+              <strong>654321</strong>.
+            </p>
+          </div>
+
           <form
             method="post"
             onSubmit={handleSubmit}
@@ -350,5 +358,4 @@ export default function RegisterPage() {
     </main>
   );
 }
-
 

@@ -126,6 +126,14 @@ export default function LoginPage() {
         <section className="reveal  w-full max-w-sm rounded-[22px] border border-[#1d5d82] bg-[#abc9d3] p-4 shadow-2xl shadow-[#07131a]/10 sm:rounded-[24px] sm:p-5">
           <h1 className="text-2xl   font-black text-center text-[#07131a]">Login</h1>
 
+          <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
+            <p>Currently, email verification is not working.</p>
+            <p className="mt-1">
+              Please log in with ID: <strong>22-49154-3</strong> and password:{" "}
+              <strong>654321</strong>.
+            </p>
+          </div>
+
           <form
             method="post"
             onSubmit={handleSubmit}
